@@ -3,8 +3,10 @@ import { Link, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { HiMenu, HiX } from 'react-icons/hi'
 import Button from './Button'
+import { useReducedMotion } from '../hooks/useReducedMotion'
 
 export default function Header() {
+  const prefersReducedMotion = useReducedMotion()
   const location = useLocation()
   const [scrolled, setScrolled] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -16,6 +18,16 @@ export default function Header() {
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
+
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && mobileMenuOpen) {
+        setMobileMenuOpen(false)
+      }
+    }
+    window.addEventListener('keydown', handleEscape)
+    return () => window.removeEventListener('keydown', handleEscape)
+  }, [mobileMenuOpen])
   
   const navItems = [
     { path: '/', label: 'Home' },
@@ -28,9 +40,9 @@ export default function Header() {
   
   return (
     <motion.header
-      initial={{ y: -100 }}
+      initial={prefersReducedMotion ? { y: 0 } : { y: -100 }}
       animate={{ y: 0 }}
-      transition={{ duration: 0.6 }}
+      transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6 }}
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled 
           ? 'bg-primary-white/95 backdrop-blur-md shadow-sm h-16' 
@@ -41,10 +53,13 @@ export default function Header() {
         {/* Logo */}
         <Link to="/" className="flex items-center">
           <motion.img
-            whileHover={{ scale: 1.05 }}
+            whileHover={prefersReducedMotion ? {} : { scale: 1.05 }}
             src="/images/fulllogo_transparent_nobuffer.png"
             alt="Studio Thielman"
+            width={200}
+            height={80}
             className="h-14 md:h-16 w-auto object-contain"
+            fetchPriority="high"
           />
         </Link>
         
@@ -64,7 +79,7 @@ export default function Header() {
                 />
               )}
               <motion.span
-                whileHover={{ scale: 1.1 }}
+                whileHover={prefersReducedMotion ? {} : { scale: 1.1 }}
                 className={`block ${
                   location.pathname === item.path 
                     ? 'text-primary-black' 
@@ -86,9 +101,10 @@ export default function Header() {
         
         {/* Mobile Menu Button */}
         <button
-          className="md:hidden text-primary-black"
+          className="md:hidden text-primary-black min-h-[44px] min-w-[44px] flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-primary-black focus:ring-offset-2 rounded"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           aria-label="Toggle menu"
+          aria-expanded={mobileMenuOpen}
         >
           {mobileMenuOpen ? (
             <HiX className="h-6 w-6" />
@@ -102,18 +118,18 @@ export default function Header() {
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
-            initial={{ height: 0, opacity: 0 }}
+            initial={prefersReducedMotion ? { height: 'auto', opacity: 1 } : { height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3 }}
+            exit={prefersReducedMotion ? { height: 'auto', opacity: 1 } : { height: 0, opacity: 0 }}
+            transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.3 }}
             className="md:hidden bg-primary-white border-t border-gray-200 overflow-hidden"
           >
             <nav className="container-custom py-4 space-y-2">
               {navItems.map((item) => (
                 <motion.div
                   key={item.path}
-                  whileHover={{ x: 10 }}
-                  whileTap={{ scale: 0.95 }}
+                  whileHover={prefersReducedMotion ? {} : { x: 10 }}
+                  whileTap={prefersReducedMotion ? {} : { scale: 0.95 }}
                 >
                   <Link
                     to={item.path}

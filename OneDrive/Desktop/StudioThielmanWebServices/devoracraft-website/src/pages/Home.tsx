@@ -4,8 +4,10 @@ import { Link } from 'react-router-dom'
 import { HiArrowDown, HiChevronLeft, HiChevronRight } from 'react-icons/hi'
 import Button from '../components/Button'
 import Card from '../components/Card'
+import { useReducedMotion } from '../hooks/useReducedMotion'
 
 export default function Home() {
+  const prefersReducedMotion = useReducedMotion()
   const heroRef = useRef(null)
   const heroInView = useInView(heroRef, { once: true, margin: '-100px' })
   
@@ -13,19 +15,23 @@ export default function Home() {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      transition: { staggerChildren: 0.2, delayChildren: 0.3 }
+      transition: prefersReducedMotion 
+        ? { duration: 0 }
+        : { staggerChildren: 0.2, delayChildren: 0.3 }
     }
   }
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 30 },
+    hidden: { opacity: 0, y: prefersReducedMotion ? 0 : 30 },
     visible: {
       opacity: 1,
       y: 0,
-      transition: {
-        duration: 0.8,
-        ease: [0.6, -0.05, 0.01, 0.99] as any
-      }
+      transition: prefersReducedMotion
+        ? { duration: 0 }
+        : {
+            duration: 0.8,
+            ease: [0.6, -0.05, 0.01, 0.99] as any
+          }
     }
   }
 
@@ -151,8 +157,9 @@ export default function Home() {
   }
   
   function TestimonialsSection({ testimonials }: { testimonials: Testimonial[] }) {
+    const prefersReducedMotion = useReducedMotion()
     const [currentIndex, setCurrentIndex] = useState(0)
-    const [isAutoPlaying, setIsAutoPlaying] = useState(true)
+    const [isAutoPlaying, setIsAutoPlaying] = useState(!prefersReducedMotion)
     const [reviewsPerView, setReviewsPerView] = useState(1)
 
     useEffect(() => {
@@ -172,7 +179,7 @@ export default function Home() {
     }, [])
 
     useEffect(() => {
-      if (!isAutoPlaying) return
+      if (!isAutoPlaying || prefersReducedMotion) return
       
       const interval = setInterval(() => {
         setCurrentIndex((prev) => {
@@ -182,7 +189,7 @@ export default function Home() {
       }, 5000) // Auto-advance every 5 seconds
 
       return () => clearInterval(interval)
-    }, [isAutoPlaying, testimonials.length, reviewsPerView])
+    }, [isAutoPlaying, testimonials.length, reviewsPerView, prefersReducedMotion])
 
     const handleNext = () => {
       setCurrentIndex((prev) => {
@@ -200,6 +207,22 @@ export default function Home() {
       setIsAutoPlaying(false)
     }
 
+    useEffect(() => {
+      const handleKeyDown = (e: KeyboardEvent) => {
+        // Only handle arrow keys when carousel is in focus or visible
+        if (e.key === 'ArrowLeft') {
+          e.preventDefault()
+          handlePrev()
+        } else if (e.key === 'ArrowRight') {
+          e.preventDefault()
+          handleNext()
+        }
+      }
+      window.addEventListener('keydown', handleKeyDown)
+      return () => window.removeEventListener('keydown', handleKeyDown)
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [currentIndex, testimonials.length, reviewsPerView])
+
     const visibleTestimonials = testimonials.slice(currentIndex, currentIndex + reviewsPerView)
     
     // If we're near the end, wrap around to show the first ones
@@ -212,10 +235,10 @@ export default function Home() {
       <section className="section-padding bg-gray-light overflow-hidden">
         <div className="container-custom">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={prefersReducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-100px' }}
-            transition={{ duration: 0.6 }}
+            transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6 }}
             className="text-center mb-10 md:mb-12 lg:mb-16"
           >
             <h2 className="heading-h2 mb-4">What Our Clients Say</h2>
@@ -230,18 +253,18 @@ export default function Home() {
               <AnimatePresence mode="wait">
                 <motion.div
                   key={currentIndex}
-                  initial={{ opacity: 0, x: 100 }}
+                  initial={prefersReducedMotion ? { opacity: 1, x: 0 } : { opacity: 0, x: 100 }}
                   animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -100 }}
-                  transition={{ duration: 0.6, ease: [0.6, -0.05, 0.01, 0.99] }}
+                  exit={prefersReducedMotion ? { opacity: 1, x: 0 } : { opacity: 0, x: -100 }}
+                  transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6, ease: [0.6, -0.05, 0.01, 0.99] }}
                   className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8"
                 >
                    {visibleTestimonials.map((testimonial: Testimonial, index: number) => (
                     <motion.div
                       key={`${testimonial.id}-${currentIndex}`}
-                      initial={{ opacity: 0, y: 30, scale: 0.95 }}
+                      initial={prefersReducedMotion ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 30, scale: 0.95 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
-                      transition={{ 
+                      transition={prefersReducedMotion ? { duration: 0 } : { 
                         duration: 0.5, 
                         delay: index * 0.1,
                         ease: [0.6, -0.05, 0.01, 0.99]
@@ -255,9 +278,9 @@ export default function Home() {
                           {[1, 2, 3, 4, 5].map((i) => (
                             <motion.span
                               key={i}
-                              initial={{ opacity: 0, scale: 0, rotate: -180 }}
+                              initial={prefersReducedMotion ? { opacity: 1, scale: 1, rotate: 0 } : { opacity: 0, scale: 0, rotate: -180 }}
                               animate={{ opacity: 1, scale: 1, rotate: 0 }}
-                              transition={{ 
+                              transition={prefersReducedMotion ? { duration: 0 } : { 
                                 delay: 0.3 + i * 0.05,
                                 type: "spring",
                                 stiffness: 200,
@@ -286,9 +309,9 @@ export default function Home() {
             <div className="flex items-center justify-center gap-4 mt-8">
               <motion.button
                 onClick={handlePrev}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                className="w-12 h-12 rounded-full bg-primary-black text-primary-white flex items-center justify-center hover:bg-primary-black/90 transition-colors min-h-[44px] min-w-[44px]"
+                whileHover={prefersReducedMotion ? {} : { scale: 1.1 }}
+                whileTap={prefersReducedMotion ? {} : { scale: 0.9 }}
+                className="w-12 h-12 rounded-full bg-primary-black text-primary-white flex items-center justify-center hover:bg-primary-black/90 transition-colors min-h-[44px] min-w-[44px] focus:outline-none focus:ring-2 focus:ring-primary-white focus:ring-offset-2"
                 aria-label="Previous testimonial"
               >
                 <HiChevronLeft className="h-6 w-6" />
@@ -303,23 +326,23 @@ export default function Home() {
                       setCurrentIndex(index)
                       setIsAutoPlaying(false)
                     }}
-                    className={`w-2 h-2 rounded-full transition-all min-h-[44px] min-w-[44px] flex items-center justify-center ${
+                    className={`w-2 h-2 rounded-full transition-all min-h-[44px] min-w-[44px] flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-primary-black focus:ring-offset-2 ${
                       currentIndex === index
                         ? 'bg-primary-black w-8'
                         : 'bg-gray-400 hover:bg-gray-600'
                     }`}
                     aria-label={`Go to testimonial ${index + 1}`}
-                    whileHover={{ scale: 1.2 }}
-                    whileTap={{ scale: 0.9 }}
+                    whileHover={prefersReducedMotion ? {} : { scale: 1.2 }}
+                    whileTap={prefersReducedMotion ? {} : { scale: 0.9 }}
                   />
                 ))}
               </div>
 
               <motion.button
                 onClick={handleNext}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                className="w-12 h-12 rounded-full bg-primary-black text-primary-white flex items-center justify-center hover:bg-primary-black/90 transition-colors min-h-[44px] min-w-[44px]"
+                whileHover={prefersReducedMotion ? {} : { scale: 1.1 }}
+                whileTap={prefersReducedMotion ? {} : { scale: 0.9 }}
+                className="w-12 h-12 rounded-full bg-primary-black text-primary-white flex items-center justify-center hover:bg-primary-black/90 transition-colors min-h-[44px] min-w-[44px] focus:outline-none focus:ring-2 focus:ring-primary-white focus:ring-offset-2"
                 aria-label="Next testimonial"
               >
                 <HiChevronRight className="h-6 w-6" />
@@ -336,28 +359,32 @@ export default function Home() {
       {/* Hero Section */}
       <section ref={heroRef} className="min-h-screen flex items-center justify-center bg-primary-white overflow-hidden relative pt-16 md:pt-20">
         {/* Animated Background Circles */}
-        <motion.div
-          className="absolute top-1/4 left-1/4 w-96 h-96 border border-primary-black/5 rounded-full"
-          animate={{
-            scale: [1, 1.1, 1],
-          }}
-          transition={{
-            duration: 4,
-            repeat: Infinity,
-            ease: 'easeInOut'
-          }}
-        />
-        <motion.div
-          className="absolute bottom-1/4 right-1/4 w-64 h-64 border border-primary-black/5 rounded-full"
-          animate={{
-            scale: [1, 1.2, 1],
-          }}
-          transition={{
-            duration: 5,
-            repeat: Infinity,
-            ease: 'easeInOut'
-          }}
-        />
+        {!prefersReducedMotion && (
+          <>
+            <motion.div
+              className="absolute top-1/4 left-1/4 w-96 h-96 border border-primary-black/5 rounded-full"
+              animate={{
+                scale: [1, 1.1, 1],
+              }}
+              transition={{
+                duration: 4,
+                repeat: Infinity,
+                ease: 'easeInOut'
+              }}
+            />
+            <motion.div
+              className="absolute bottom-1/4 right-1/4 w-64 h-64 border border-primary-black/5 rounded-full"
+              animate={{
+                scale: [1, 1.2, 1],
+              }}
+              transition={{
+                duration: 5,
+                repeat: Infinity,
+                ease: 'easeInOut'
+              }}
+            />
+          </>
+        )}
         
         <motion.div
           variants={containerVariants}
@@ -369,10 +396,13 @@ export default function Home() {
             <motion.img
               src="/images/fulllogo_transparent_nobuffer.png"
               alt="Studio Thielman"
+              width={400}
+              height={160}
               className="h-24 md:h-32 lg:h-40 mx-auto w-auto object-contain"
-              initial={{ scale: 0.8, opacity: 0 }}
+              fetchPriority="high"
+              initial={prefersReducedMotion ? { scale: 1, opacity: 1 } : { scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 1, ease: [0.6, -0.05, 0.01, 0.99] }}
+              transition={prefersReducedMotion ? { duration: 0 } : { duration: 1, ease: [0.6, -0.05, 0.01, 0.99] }}
             />
           </motion.div>
           
@@ -402,10 +432,19 @@ export default function Home() {
         
         {/* Scroll Indicator */}
         <motion.div
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-primary-black/60 hover:text-primary-black transition-colors cursor-pointer"
-          animate={{ y: [0, 10, 0] }}
-          transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-          onClick={() => window.scrollTo({ top: window.innerHeight, behavior: 'smooth' })}
+          className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-primary-black/60 hover:text-primary-black transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary-black focus:ring-offset-2 rounded"
+          animate={prefersReducedMotion ? {} : { y: [0, 10, 0] }}
+          transition={prefersReducedMotion ? {} : { duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+          onClick={() => window.scrollTo({ top: window.innerHeight, behavior: prefersReducedMotion ? 'auto' : 'smooth' })}
+          tabIndex={0}
+          role="button"
+          aria-label="Scroll to next section"
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault()
+              window.scrollTo({ top: window.innerHeight, behavior: prefersReducedMotion ? 'auto' : 'smooth' })
+            }
+          }}
         >
           <span className="text-xs uppercase tracking-wider">Scroll</span>
           <HiArrowDown className="h-6 w-6" />
@@ -416,19 +455,19 @@ export default function Home() {
       <section className="section-padding bg-primary-white">
         <div className="container-custom">
           <motion.h2 
-            initial={{ opacity: 0, y: 30 }}
+            initial={prefersReducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-100px' }}
-            transition={{ duration: 0.6 }}
+            transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6 }}
             className="heading-h2 text-center mb-4"
           >
             Why Studio Thielman?
           </motion.h2>
           <motion.p
-            initial={{ opacity: 0, y: 30 }}
+            initial={prefersReducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-100px' }}
-            transition={{ duration: 0.6, delay: 0.1 }}
+            transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6, delay: 0.1 }}
             className="text-body-large text-gray-600 text-center max-w-2xl mx-auto mb-10 md:mb-12 lg:mb-16"
           >
             Professional web solutions designed for your success
@@ -437,10 +476,10 @@ export default function Home() {
             {features.map((feature, index) => (
               <motion.div
                 key={index}
-                initial={{ opacity: 0, y: 50 }}
+                initial={prefersReducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-100px' }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
+                transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6, delay: index * 0.1 }}
               >
                 <Card variant="feature">
                   <div className="text-4xl mb-4">{feature.icon}</div>
@@ -457,10 +496,10 @@ export default function Home() {
       <section className="section-padding bg-gray-light">
         <div className="container-custom">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={prefersReducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-100px' }}
-            transition={{ duration: 0.6 }}
+            transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6 }}
             className="text-center mb-10 md:mb-12 lg:mb-16"
           >
             <h2 className="heading-h2 mb-4">Pick Your Perfect Plan</h2>
@@ -472,10 +511,10 @@ export default function Home() {
             {packages.map((pkg, index) => (
               <motion.div
                 key={pkg.id}
-                initial={{ opacity: 0, y: 50 }}
+                initial={prefersReducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-100px' }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
+                transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6, delay: index * 0.1 }}
               >
                 <Card 
                   variant="feature" 
@@ -515,10 +554,10 @@ export default function Home() {
       <section className="section-padding bg-primary-white">
         <div className="container-custom">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={prefersReducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-100px' }}
-            transition={{ duration: 0.6 }}
+            transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6 }}
             className="text-center mb-10 md:mb-12 lg:mb-16"
           >
             <h2 className="heading-h2 mb-4">See What's Possible</h2>
@@ -530,10 +569,10 @@ export default function Home() {
             {[1, 2, 3].map((i) => (
               <motion.div
                 key={i}
-                initial={{ opacity: 0, y: 50 }}
+                initial={prefersReducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-100px' }}
-                transition={{ duration: 0.6, delay: i * 0.1 }}
+                transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6, delay: i * 0.1 }}
               >
                 <Card variant="portfolio">
                   <div className="h-48 bg-gray-200 rounded mb-4 overflow-hidden">
@@ -570,18 +609,19 @@ export default function Home() {
         <div className="container-custom relative z-10">
           <div className="max-w-5xl mx-auto">
             {/* Main Heading */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-100px' }}
-              transition={{ duration: 0.6 }}
-              className="text-center mb-12 md:mb-16"
-            >
-              <h2 className="heading-h2 mb-6 text-primary-white">
-                Ready to Transform Your
-                <br />
-                <span className="relative inline-block">
-                  Online Presence?
+          <motion.div
+            initial={prefersReducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-100px' }}
+            transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6 }}
+            className="text-center mb-12 md:mb-16"
+          >
+            <h2 className="heading-h2 mb-6 text-primary-white">
+              Ready to Transform Your
+              <br />
+              <span className="relative inline-block">
+                Online Presence?
+                {!prefersReducedMotion && (
                   <motion.span
                     className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary-white"
                     initial={{ scaleX: 0 }}
@@ -589,8 +629,9 @@ export default function Home() {
                     viewport={{ once: true }}
                     transition={{ duration: 0.8, delay: 0.3 }}
                   />
-                </span>
-              </h2>
+                )}
+              </span>
+            </h2>
               <p className="text-body-large text-primary-white/80 max-w-2xl mx-auto">
                 Join businesses that have transformed their online presence. Let's build something amazing together.
               </p>
@@ -598,10 +639,10 @@ export default function Home() {
 
             {/* Benefits Grid */}
             <motion.div
-              initial={{ opacity: 0, y: 30 }}
+              initial={prefersReducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-100px' }}
-              transition={{ duration: 0.6, delay: 0.1 }}
+              transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6, delay: 0.1 }}
               className="grid md:grid-cols-3 gap-6 md:gap-8 mb-12"
             >
               {[
@@ -623,17 +664,17 @@ export default function Home() {
               ].map((benefit, index) => (
                 <motion.div
                   key={index}
-                  initial={{ opacity: 0, y: 30 }}
+                  initial={prefersReducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: '-100px' }}
-                  transition={{ duration: 0.5, delay: 0.2 + index * 0.1 }}
-                  whileHover={{ y: -5 }}
+                  transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.5, delay: 0.2 + index * 0.1 }}
+                  whileHover={prefersReducedMotion ? {} : { y: -5 }}
                   className="bg-primary-white/5 backdrop-blur-sm border border-primary-white/10 rounded-lg p-6 md:p-8 text-center transition-all duration-300 hover:bg-primary-white/10 hover:border-primary-white/20"
                 >
                   <motion.div
                     className="text-4xl md:text-5xl mb-4"
-                    whileHover={{ scale: 1.1, rotate: 5 }}
-                    transition={{ type: 'spring', stiffness: 300 }}
+                    whileHover={prefersReducedMotion ? {} : { scale: 1.1, rotate: 5 }}
+                    transition={prefersReducedMotion ? {} : { type: 'spring', stiffness: 300 }}
                   >
                     {benefit.icon}
                   </motion.div>
@@ -649,10 +690,10 @@ export default function Home() {
 
             {/* CTA Section */}
             <motion.div
-              initial={{ opacity: 0, y: 30 }}
+              initial={prefersReducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-100px' }}
-              transition={{ duration: 0.6, delay: 0.3 }}
+              transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6, delay: 0.3 }}
               className="text-center"
             >
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-6">
@@ -678,10 +719,10 @@ export default function Home() {
               
               {/* Trust Indicators */}
               <motion.div
-                initial={{ opacity: 0 }}
+                initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0 }}
                 whileInView={{ opacity: 1 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: 0.5 }}
+                transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6, delay: 0.5 }}
                 className="flex flex-wrap items-center justify-center gap-4 md:gap-6 text-xs md:text-sm text-primary-white/60"
               >
                 <div className="flex items-center gap-2">

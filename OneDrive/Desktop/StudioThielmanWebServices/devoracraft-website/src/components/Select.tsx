@@ -21,6 +21,8 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
         <select
           ref={ref}
           className={`input-field rounded bg-white ${error ? 'border-error focus:border-error' : ''} ${className}`}
+          aria-invalid={error ? 'true' : 'false'}
+          aria-describedby={error ? `${props.id || label}-error` : undefined}
           {...props}
         >
           {options.map((option) => (
@@ -31,6 +33,8 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
         </select>
         {error && (
           <motion.p
+            id={`${props.id || label}-error`}
+            role="alert"
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             className="mt-1 text-sm text-error"

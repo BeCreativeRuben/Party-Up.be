@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { motion } from 'framer-motion'
+import { useReducedMotion } from '../hooks/useReducedMotion'
 
 interface CardProps {
   children: ReactNode
@@ -14,6 +15,7 @@ export default function Card({
   className = '',
   variant = 'feature'
 }: CardProps) {
+  const prefersReducedMotion = useReducedMotion()
   const baseClasses = 'card-base p-6'
   
   const variantClasses = {
@@ -22,21 +24,21 @@ export default function Card({
     testimonial: 'bg-gray-light border-0'
   }
   
-  if (hover) {
+  if (!hover || prefersReducedMotion) {
     return (
-      <motion.div
-        whileHover={{ y: -10, boxShadow: '0 20px 40px rgba(0,0,0,0.1)' }}
-        transition={{ duration: 0.3 }}
-        className={`${baseClasses} ${variantClasses[variant]} ${className}`}
-      >
+      <div className={`${baseClasses} ${variantClasses[variant]} ${className}`}>
         {children}
-      </motion.div>
+      </div>
     )
   }
   
   return (
-    <div className={`${baseClasses} ${variantClasses[variant]} ${className}`}>
+    <motion.div
+      whileHover={{ y: -10, boxShadow: '0 20px 40px rgba(0,0,0,0.1)' }}
+      transition={{ duration: 0.3 }}
+      className={`${baseClasses} ${variantClasses[variant]} ${className}`}
+    >
       {children}
-    </div>
+    </motion.div>
   )
 }

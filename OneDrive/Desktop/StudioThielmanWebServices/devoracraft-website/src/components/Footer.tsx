@@ -26,7 +26,10 @@ export default function Footer() {
           <img
             src="/images/fulllogo_transparent_nobuffer.png"
             alt="Studio Thielman"
+            width={200}
+            height={80}
             className="h-8 w-auto object-contain brightness-0 invert"
+            loading="lazy"
           />
           
           {/* Quick Links */}

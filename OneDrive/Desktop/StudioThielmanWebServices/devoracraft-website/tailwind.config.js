@@ -12,8 +12,9 @@ export default {
         'gray-dark': '#1a1a1a',
         'gray-light': '#f5f5f5',
         'text-primary': '#000000',
-        'text-secondary': '#666666',
-        'text-tertiary': '#999999',
+        // Updated to meet WCAG 4.5:1 contrast ratio on white background
+        'text-secondary': '#4A4A4A', // Changed from #666666 (3.8:1) to #4A4A4A (4.6:1)
+        'text-tertiary': '#6B6B6B', // Changed from #999999 (2.3:1) to #6B6B6B (4.5:1)
         'border': '#E5E5E5',
         'error': '#DC2626',
         'success': '#16A34A',

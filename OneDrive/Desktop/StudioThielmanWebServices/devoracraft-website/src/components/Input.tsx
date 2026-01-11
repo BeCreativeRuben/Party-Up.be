@@ -20,10 +20,14 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         <input
           ref={ref}
           className={`input-field rounded ${error ? 'border-error focus:border-error' : ''} ${className}`}
+          aria-invalid={error ? 'true' : 'false'}
+          aria-describedby={error ? `${props.id || label}-error` : undefined}
           {...props}
         />
         {error && (
           <motion.p
+            id={`${props.id || label}-error`}
+            role="alert"
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             className="mt-1 text-sm text-error"

@@ -1,5 +1,6 @@
 import type { ButtonHTMLAttributes, ReactNode } from 'react'
 import { motion } from 'framer-motion'
+import { useReducedMotion } from '../hooks/useReducedMotion'
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'outline'
@@ -14,6 +15,7 @@ export default function Button({
   className = '',
   ...props 
 }: ButtonProps) {
+  const prefersReducedMotion = useReducedMotion()
   const baseClasses = 'font-semibold uppercase tracking-wider text-sm focus:outline-none focus:ring-2 focus:ring-primary-black focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
   
   const variantClasses = {
@@ -26,6 +28,17 @@ export default function Button({
     sm: 'px-6 py-3',
     md: 'px-8 py-4',
     lg: 'px-10 py-5'
+  }
+  
+  if (prefersReducedMotion) {
+    return (
+      <button
+        className={`${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${className}`}
+        {...props}
+      >
+        {children}
+      </button>
+    )
   }
   
   return (

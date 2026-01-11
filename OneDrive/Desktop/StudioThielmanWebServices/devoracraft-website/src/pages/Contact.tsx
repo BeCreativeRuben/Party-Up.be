@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import Input from '../components/Input'
 import Textarea from '../components/Textarea'
@@ -90,6 +90,27 @@ export default function Contact() {
   const [isSubmitted, setIsSubmitted] = useState(false)
 
   const totalSections = 6
+
+  // Persist form data to localStorage
+  useEffect(() => {
+    const savedData = localStorage.getItem('contactFormData')
+    if (savedData && !isSubmitted) {
+      try {
+        const parsed = JSON.parse(savedData)
+        setFormData(prev => ({ ...prev, ...parsed }))
+      } catch (e) {
+        console.error('Failed to load saved form data', e)
+      }
+    }
+  }, [isSubmitted])
+
+  useEffect(() => {
+    if (!isSubmitted) {
+      localStorage.setItem('contactFormData', JSON.stringify(formData))
+    } else {
+      localStorage.removeItem('contactFormData')
+    }
+  }, [formData, isSubmitted])
 
   const validateSection = (section: number): boolean => {
     const newErrors: Record<string, string> = {}
@@ -191,6 +212,7 @@ export default function Contact() {
       }
       
       setIsSubmitted(true)
+      localStorage.removeItem('contactFormData')
     } catch (error: any) {
       console.error('Form submission error:', error)
       setErrors({ submit: error.message || 'Failed to submit form. Please try again.' })
@@ -264,7 +286,7 @@ export default function Contact() {
                 <span>Section {currentSection} of {totalSections}</span>
                 <span>{Math.round(progress)}%</span>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
+              <div className="w-full bg-gray-200 rounded-full h-2" role="progressbar" aria-valuenow={Math.round(progress)} aria-valuemin={0} aria-valuemax={100} aria-label={`Form progress: ${Math.round(progress)}%`}>
                 <motion.div
                   className="bg-primary-black h-2 rounded-full"
                   initial={{ width: 0 }}
@@ -648,8 +670,16 @@ export default function Contact() {
                   variant="primary" 
                   onClick={handleSubmit}
                   disabled={isSubmitting}
+                  aria-busy={isSubmitting}
                 >
-                  {isSubmitting ? 'Submitting...' : 'Submit'}
+                  {isSubmitting ? (
+                    <span className="flex items-center gap-2">
+                      <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-solid border-current border-r-transparent"></span>
+                      Submitting...
+                    </span>
+                  ) : (
+                    'Submit'
+                  )}
                 </Button>
               )}
             </div>
