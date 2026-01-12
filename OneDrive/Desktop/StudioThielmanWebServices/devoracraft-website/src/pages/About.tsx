@@ -1,27 +1,41 @@
 import { motion, useInView } from 'framer-motion'
 import { useRef } from 'react'
 import Card from '../components/Card'
+import { useReducedMotion } from '../hooks/useReducedMotion'
 
 export default function About() {
+  const prefersReducedMotion = useReducedMotion()
   const sectionRef = useRef(null)
   const inView = useInView(sectionRef, { once: true, margin: '-100px' })
 
   const values = [
     {
       title: 'Professionalism',
-      description: 'We are experts. Our work speaks. No compromises on quality.'
+      description: 'We are experts. Our work speaks. No compromises on quality.',
+      icon: '🎯',
+      color: 'bg-primary-black',
+      gradient: 'from-gray-900 to-gray-800'
     },
     {
       title: 'Accessibility',
-      description: 'Enterprise-grade solutions at startup prices.'
+      description: 'Enterprise-grade solutions at startup prices.',
+      icon: '💰',
+      color: 'bg-success',
+      gradient: 'from-green-600 to-green-500'
     },
     {
       title: 'Innovation',
-      description: 'AI-powered solutions that give you a competitive edge.'
+      description: 'AI-powered solutions that give you a competitive edge.',
+      icon: '⚡',
+      color: 'bg-primary-black',
+      gradient: 'from-blue-600 to-purple-600'
     },
     {
       title: 'Partnership',
-      description: 'We\'re invested in your success. Personal support included.'
+      description: 'We\'re invested in your success. Personal support included.',
+      icon: '🤝',
+      color: 'bg-primary-black',
+      gradient: 'from-orange-500 to-pink-500'
     }
   ]
 
@@ -30,7 +44,7 @@ export default function About() {
       name: 'Ruben Thielman',
       role: 'Founder & Developer',
       bio: '22-year-old passionate developer building web solutions. Dedicated to creating exceptional digital experiences with clean code, innovative solutions, and user-centered design.',
-      photo: '/team-placeholder.jpg'
+      photo: '/images/ruben-thielman-about.webp'
     }
   ]
 
@@ -45,9 +59,9 @@ export default function About() {
       <section className="section-padding bg-primary-white text-center">
         <div className="container-custom max-w-3xl">
           <motion.h1
-            initial={{ opacity: 0, y: 30 }}
+            initial={prefersReducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6 }}
             className="heading-h1 mb-6"
           >
             We're Here to Make Web Simple.
@@ -69,18 +83,23 @@ export default function About() {
             >
               <div className="max-w-xs mx-auto md:mx-0">
                 <div className="aspect-[3/4] bg-gray-200 rounded-lg shadow-lg overflow-hidden">
-                  <div className="w-full h-full flex items-center justify-center">
-                    <span className="text-6xl">👤</span>
-                  </div>
+                  <img
+                    src="/images/ruben-thielman-about.webp"
+                    alt="Ruben Thielman - Founder & Developer of Studio Thielman"
+                    width={400}
+                    height={533}
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                  />
                 </div>
               </div>
             </motion.div>
             
             <motion.div
-              initial={{ opacity: 0, y: 30 }}
+              initial={prefersReducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-100px' }}
-              transition={{ duration: 0.6, delay: 0.1 }}
+              transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6, delay: 0.1 }}
               className="space-y-6"
             >
               <div>
@@ -131,10 +150,10 @@ export default function About() {
       <section className="section-padding bg-primary-white">
         <div className="container-custom">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={prefersReducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-100px' }}
-            transition={{ duration: 0.6 }}
+            transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6 }}
             className="text-center mb-10 md:mb-12 lg:mb-16"
           >
             <h2 className="heading-h2 mb-4">Meet the Team</h2>
@@ -146,14 +165,21 @@ export default function About() {
             {team.map((member, index) => (
               <motion.div
                 key={index}
-                initial={{ opacity: 0, y: 50 }}
+                initial={prefersReducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-100px' }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
+                transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6, delay: index * 0.1 }}
               >
                 <Card variant="feature" className="text-center">
-                  <div className="w-48 h-48 mx-auto mb-6 bg-gray-200 rounded-full flex items-center justify-center">
-                    <span className="text-4xl">👤</span>
+                  <div className="w-48 h-48 mx-auto mb-6 bg-gray-200 rounded-full overflow-hidden flex items-center justify-center">
+                    <img
+                      src="/images/ruben-thielman-about.webp"
+                      alt={`${member.name} - ${member.role}`}
+                      width={192}
+                      height={192}
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                    />
                   </div>
                   <h3 className="heading-h3 mb-2">{member.name}</h3>
                   <p className="text-sm text-gray-600 mb-4 uppercase tracking-wider">{member.role}</p>
@@ -169,26 +195,66 @@ export default function About() {
       <section className="section-padding bg-gray-light">
         <div className="container-custom">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={prefersReducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-100px' }}
-            transition={{ duration: 0.6 }}
+            transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6 }}
             className="text-center mb-10 md:mb-12 lg:mb-16"
           >
-            <h2 className="heading-h2">Our Values</h2>
+            <h2 className="heading-h2 mb-4">Our Values</h2>
+            <p className="text-body-large text-gray-600 max-w-2xl mx-auto">
+              The principles that guide everything we do
+            </p>
           </motion.div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
             {values.map((value, index) => (
               <motion.div
                 key={index}
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={prefersReducedMotion ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 50, scale: 0.9 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
                 viewport={{ once: true, margin: '-100px' }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
+                transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6, delay: index * 0.1 }}
+                whileHover={prefersReducedMotion ? {} : { y: -8, scale: 1.02 }}
+                className="group"
               >
-                <Card variant="feature">
-                  <h3 className="heading-h3 mb-3">{value.title}</h3>
-                  <p className="text-base text-gray-700 leading-relaxed">{value.description}</p>
+                <Card variant="feature" className="h-full flex flex-col relative overflow-hidden transition-all duration-300 hover:shadow-xl">
+                  {/* Gradient Background Effect */}
+                  <div className={`absolute inset-0 bg-gradient-to-br ${value.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-300`}></div>
+                  
+                  {/* Icon */}
+                  <div className="mb-6 relative z-10">
+                    <motion.div
+                      className="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center text-3xl group-hover:scale-110 transition-transform duration-300"
+                      whileHover={prefersReducedMotion ? {} : { rotate: [0, -5, 5, -5, 0] }}
+                      transition={prefersReducedMotion ? {} : { duration: 0.5 }}
+                    >
+                      {value.icon}
+                    </motion.div>
+                  </div>
+                  
+                  {/* Content */}
+                  <div className="flex-grow relative z-10">
+                    <h3 className="heading-h3 mb-3 group-hover:text-primary-black transition-colors duration-300">
+                      {value.title}
+                    </h3>
+                    <p className="text-base text-gray-700 leading-relaxed group-hover:text-gray-900 transition-colors duration-300">
+                      {value.description}
+                    </p>
+                  </div>
+                  
+                  {/* Decorative Element */}
+                  <div className="mt-6 pt-6 border-t border-gray-200 group-hover:border-primary-black transition-colors duration-300 relative z-10">
+                    <div className="flex items-center gap-2 text-sm text-gray-500 group-hover:text-primary-black transition-colors duration-300">
+                      <span className="font-semibold uppercase tracking-wider">Learn More</span>
+                      <motion.span
+                        className="inline-block"
+                        animate={prefersReducedMotion ? {} : { x: [0, 4, 0] }}
+                        transition={prefersReducedMotion ? {} : { duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                      >
+                        →
+                      </motion.span>
+                    </div>
+                  </div>
                 </Card>
               </motion.div>
             ))}
