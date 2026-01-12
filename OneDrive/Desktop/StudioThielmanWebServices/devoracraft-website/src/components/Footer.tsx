@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { FaGithub, FaLinkedin } from 'react-icons/fa'
+import { FaGithub, FaLinkedin, FaInstagram, FaFacebook } from 'react-icons/fa'
 
 export default function Footer() {
   const currentYear = new Date().getFullYear()
@@ -24,7 +24,7 @@ export default function Footer() {
         <div className="flex flex-col md:flex-row justify-between items-center gap-8">
           {/* Logo */}
           <img
-            src="/images/fulllogo_transparent_nobuffer.png"
+            src="/images/fulllogo copy.png"
             alt="Studio Thielman"
             width={200}
             height={80}
@@ -48,12 +48,34 @@ export default function Footer() {
           {/* Social Links */}
           <div className="flex items-center gap-6">
             <motion.a
+              href="https://www.instagram.com/studio_thielman/"
+              target="_blank"
+              rel="noopener noreferrer"
+              whileHover={{ scale: 1.2, y: -5 }}
+              whileTap={{ scale: 0.9 }}
+              className="text-primary-white/80 hover:text-primary-white transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+              aria-label="Instagram"
+            >
+              <FaInstagram className="h-6 w-6" />
+            </motion.a>
+            <motion.a
+              href="https://www.facebook.com/profile.php?id=61586029966601"
+              target="_blank"
+              rel="noopener noreferrer"
+              whileHover={{ scale: 1.2, y: -5 }}
+              whileTap={{ scale: 0.9 }}
+              className="text-primary-white/80 hover:text-primary-white transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+              aria-label="Facebook"
+            >
+              <FaFacebook className="h-6 w-6" />
+            </motion.a>
+            <motion.a
               href="https://github.com"
               target="_blank"
               rel="noopener noreferrer"
               whileHover={{ scale: 1.2, y: -5 }}
               whileTap={{ scale: 0.9 }}
-              className="text-primary-white/80 hover:text-primary-white transition-colors"
+              className="text-primary-white/80 hover:text-primary-white transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
               aria-label="GitHub"
             >
               <FaGithub className="h-6 w-6" />
@@ -64,7 +86,7 @@ export default function Footer() {
               rel="noopener noreferrer"
               whileHover={{ scale: 1.2, y: -5 }}
               whileTap={{ scale: 0.9 }}
-              className="text-primary-white/80 hover:text-primary-white transition-colors"
+              className="text-primary-white/80 hover:text-primary-white transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
               aria-label="LinkedIn"
             >
               <FaLinkedin className="h-6 w-6" />
