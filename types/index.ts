@@ -6,6 +6,8 @@ export type Product = {
   price: number;
   image?: string;
   available: boolean;
+  availabilityCount?: number;
+  popular?: boolean;
 };
 
 export type Category = "tents" | "tables-chairs" | "sound-light" | "decoration" | "packages";

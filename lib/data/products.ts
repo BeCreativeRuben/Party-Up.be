@@ -8,6 +8,8 @@ export const products: Product[] = [
     category: "tents",
     price: 75,
     available: true,
+    availabilityCount: 5,
+    popular: true,
   },
   {
     id: "tent-4x4",
@@ -16,6 +18,7 @@ export const products: Product[] = [
     category: "tents",
     price: 100,
     available: true,
+    availabilityCount: 3,
   },
   {
     id: "table-round-8",
@@ -24,6 +27,8 @@ export const products: Product[] = [
     category: "tables-chairs",
     price: 15,
     available: true,
+    availabilityCount: 12,
+    popular: true,
   },
   {
     id: "table-rect-10",
@@ -32,6 +37,7 @@ export const products: Product[] = [
     category: "tables-chairs",
     price: 18,
     available: true,
+    availabilityCount: 8,
   },
   {
     id: "chair-folding",
@@ -40,6 +46,8 @@ export const products: Product[] = [
     category: "tables-chairs",
     price: 3,
     available: true,
+    availabilityCount: 80,
+    popular: true,
   },
   {
     id: "sound-system-basic",
@@ -48,6 +56,7 @@ export const products: Product[] = [
     category: "sound-light",
     price: 50,
     available: true,
+    availabilityCount: 4,
   },
   {
     id: "sound-system-premium",
@@ -56,14 +65,17 @@ export const products: Product[] = [
     category: "sound-light",
     price: 120,
     available: true,
+    availabilityCount: 2,
   },
   {
     id: "lighting-basic",
-    name: "Basic Lighting Set",
+    name: "LED Stage Lighting",
     description: "LED lighting set with stands. Creates perfect party atmosphere.",
     category: "sound-light",
     price: 30,
     available: true,
+    availabilityCount: 6,
+    popular: true,
   },
   {
     id: "decoration-banner",
@@ -72,6 +84,7 @@ export const products: Product[] = [
     category: "decoration",
     price: 25,
     available: true,
+    availabilityCount: 10,
   },
   {
     id: "decoration-centerpiece",
@@ -80,6 +93,7 @@ export const products: Product[] = [
     category: "decoration",
     price: 20,
     available: true,
+    availabilityCount: 15,
   },
   {
     id: "package-basic",
@@ -88,6 +102,7 @@ export const products: Product[] = [
     category: "packages",
     price: 250,
     available: true,
+    availabilityCount: 3,
   },
   {
     id: "package-premium",
@@ -96,36 +111,47 @@ export const products: Product[] = [
     category: "packages",
     price: 500,
     available: true,
+    availabilityCount: 2,
   },
 ];
 
-export const categories: { id: Category; name: string; description: string }[] = [
+export const categories: { id: Category; name: string; description: string; displayName: string }[] = [
   {
     id: "tents",
     name: "Tents",
+    displayName: "Tents",
     description: "Weatherproof party tents in various sizes",
   },
   {
     id: "tables-chairs",
     name: "Tables & Chairs",
+    displayName: "Tables",
     description: "Tables and seating for your guests",
   },
   {
     id: "sound-light",
     name: "Sound & Light",
+    displayName: "Lighting",
     description: "Audio systems and lighting equipment",
   },
   {
     id: "decoration",
     name: "Decoration",
+    displayName: "Decorations",
     description: "Banners, centerpieces, and party decorations",
   },
   {
     id: "packages",
     name: "Packages",
+    displayName: "Packages",
     description: "Complete party packages for easy planning",
   },
 ];
+
+export function getCategoryDisplayName(categoryId: Category): string {
+  const category = categories.find(c => c.id === categoryId);
+  return category?.displayName || category?.name || categoryId;
+}
 
 export function getProductsByCategory(category: Category): Product[] {
   return products.filter((product) => product.category === category);
