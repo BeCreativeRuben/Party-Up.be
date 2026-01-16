@@ -1,4 +1,4 @@
-import { type ClassValue, clsx } from "clsx";
+﻿import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
@@ -6,9 +6,9 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function formatPrice(price: number): string {
-  return `€${price.toFixed(2)}`;
+  return â‚¬;
 }
 
 export function formatPricePerDay(price: number): string {
-  return €${price} / day;
+  return â‚¬ / day;
 }
