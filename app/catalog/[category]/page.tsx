@@ -24,33 +24,29 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
   const products = getProductsByCategory(category as any);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 via-white to-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="mb-12 animate-fade-in-up">
-          <Link
-            href="/catalog"
-            className="inline-flex items-center text-primary-600 hover:text-primary-700 font-medium mb-6 transition-colors group"
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="mb-8">
+        <Link
+          href="/catalog"
+          className="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium mb-6 transition-colors group"
+        >
+          <svg
+            className="mr-2 w-5 h-5 transform group-hover:-translate-x-1 transition-transform"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
           >
-            <svg
-              className="mr-2 w-5 h-5 transform group-hover:-translate-x-1 transition-transform"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-            Back to Catalog
-          </Link>
-          <h1 className="text-5xl font-bold text-gray-900 mb-4">
-            <span className="bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent">
-              {categoryData.name}
-            </span>
-          </h1>
-          <p className="text-xl text-gray-600">{categoryData.description}</p>
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+          Back to Catalog
+        </Link>
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold text-gray-900 mb-3">{categoryData.name}</h1>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">{categoryData.description}</p>
         </div>
-
-        <CategoryGrid products={products} />
       </div>
+
+      <CategoryGrid products={products} />
     </div>
   );
 }

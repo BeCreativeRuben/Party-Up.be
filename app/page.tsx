@@ -1,12 +1,12 @@
 import Hero from "@/components/sections/Hero";
-import CategoryPreview from "@/components/sections/CategoryPreview";
+import FeaturedProducts from "@/components/sections/FeaturedProducts";
 import Testimonials from "@/components/sections/Testimonials";
 
 export default function Home() {
   return (
     <div>
       <Hero />
-      <CategoryPreview />
+      <FeaturedProducts />
       <Testimonials />
     </div>
   );

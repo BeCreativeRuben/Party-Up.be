@@ -1,7 +1,9 @@
 export default function WaiverPage() {
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <h1 className="text-4xl font-bold text-gray-900 mb-8">Liability Waiver</h1>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="text-center mb-8">
+        <h1 className="text-4xl font-bold text-gray-900 mb-3">Liability Waiver</h1>
+      </div>
       
       <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 mb-8">
         <p className="text-yellow-800">
@@ -97,7 +99,7 @@ export default function WaiverPage() {
           <h2 className="text-2xl font-semibold text-gray-900 mb-4">Contact</h2>
           <p className="text-gray-700">
             For questions about this waiver, please contact us at{" "}
-            <a href="mailto:info@party-up.be" className="text-primary-600 hover:underline">
+            <a href="mailto:info@party-up.be" className="text-blue-600 hover:underline">
               info@party-up.be
             </a>
             .

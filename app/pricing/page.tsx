@@ -7,8 +7,8 @@ export default function PricingPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold text-gray-900 mb-4">Pricing</h1>
+      <div className="text-center mb-8">
+        <h1 className="text-4xl font-bold text-gray-900 mb-3">Pricing</h1>
         <p className="text-lg text-gray-600 max-w-2xl mx-auto">
           Transparent pricing with no hidden costs. All prices are per rental period.
         </p>
@@ -22,16 +22,16 @@ export default function PricingPage() {
             {packages.map((pkg) => (
               <div
                 key={pkg.id}
-                className="bg-white rounded-lg shadow-md p-8 border-2 border-primary-200"
+                className="bg-white rounded-lg shadow-md p-8 border-2 border-blue-200"
               >
                 <h3 className="text-2xl font-semibold text-gray-900 mb-2">{pkg.name}</h3>
                 <p className="text-gray-600 mb-4">{pkg.description}</p>
-                <div className="text-3xl font-bold text-primary-600 mb-6">
+                <div className="text-3xl font-bold text-blue-600 mb-6">
                   {formatPrice(pkg.price)}
                 </div>
                 <Link
                   href="/booking"
-                  className="block w-full text-center px-6 py-3 bg-primary-600 text-white rounded-md font-medium hover:bg-primary-700 transition-colors"
+                  className="block w-full text-center px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
                 >
                   Request Quote
                 </Link>
@@ -79,7 +79,7 @@ export default function PricingPage() {
                           <td className="px-6 py-4">
                             <div className="text-sm text-gray-600">{product.description}</div>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-semibold text-primary-600">
+                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-semibold text-blue-600">
                             {formatPrice(product.price)}
                           </td>
                         </tr>
@@ -104,7 +104,7 @@ export default function PricingPage() {
         </ul>
         <p className="mt-6 text-sm text-gray-600">
           For detailed terms and conditions, please see our{" "}
-          <Link href="/legal/terms" className="text-primary-600 hover:underline">
+          <Link href="/legal/terms" className="text-blue-600 hover:underline">
             Terms & Conditions
           </Link>
           .

@@ -6,7 +6,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { BookingFormData } from "@/types";
 import { products, getProductById } from "@/lib/data/products";
-import { formatPrice } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 
 const bookingSchema = z.object({
@@ -32,6 +31,7 @@ export default function BookingForm({ initialItems = [] }: BookingFormProps) {
   const [selectedItems, setSelectedItems] = useState<string[]>(initialItems);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const {
     register,
@@ -56,15 +56,10 @@ export default function BookingForm({ initialItems = [] }: BookingFormProps) {
     );
   };
 
-  const calculateTotal = () => {
-    return selectedItems.reduce((total, itemId) => {
-      const product = getProductById(itemId);
-      return total + (product?.price || 0);
-    }, 0);
-  };
 
   const onSubmit = async (data: BookingFormValues) => {
     setIsSubmitting(true);
+    setSubmitError(null);
     try {
       const response = await fetch("/api/booking", {
         method: "POST",
@@ -78,10 +73,14 @@ export default function BookingForm({ initialItems = [] }: BookingFormProps) {
       if (response.ok) {
         setSubmitSuccess(true);
       } else {
-        throw new Error("Submission failed");
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || "Submission failed");
       }
     } catch (error) {
-      alert("There was an error submitting your request. Please try again or contact us directly.");
+      setSubmitError(
+        "We couldn't submit your booking request. Please check your information and try again, or contact us directly for assistance."
+      );
+      console.error("Booking submission error:", error);
     } finally {
       setIsSubmitting(false);
     }
@@ -132,7 +131,7 @@ export default function BookingForm({ initialItems = [] }: BookingFormProps) {
               <div
                 className={`flex items-center justify-center w-10 h-10 rounded-full border-2 ${
                   step >= stepNum
-                    ? "bg-primary-600 border-primary-600 text-white"
+                    ? "bg-blue-600 border-blue-600 text-white"
                     : "border-gray-300 text-gray-400"
                 }`}
               >
@@ -141,7 +140,7 @@ export default function BookingForm({ initialItems = [] }: BookingFormProps) {
               {stepNum < 3 && (
                 <div
                   className={`flex-1 h-1 mx-2 ${
-                    step > stepNum ? "bg-primary-600" : "bg-gray-300"
+                    step > stepNum ? "bg-blue-600" : "bg-gray-300"
                   }`}
                 />
               )}
@@ -164,11 +163,11 @@ export default function BookingForm({ initialItems = [] }: BookingFormProps) {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 20 }}
             transition={{ duration: 0.3 }}
-            className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100"
+            className="bg-white rounded-lg shadow-md p-8"
           >
           <h2 className="text-2xl font-bold text-gray-900 mb-6">Event Details</h2>
           
-          <div className="mb-6 bg-amber-50 border-l-4 border-amber-400 p-4 rounded-md">
+          <div className="mb-6 bg-amber-50 border-l-4 border-amber-400 p-4 rounded-lg">
             <div className="flex">
               <div className="flex-shrink-0">
                 <svg
@@ -200,7 +199,7 @@ export default function BookingForm({ initialItems = [] }: BookingFormProps) {
                 type="date"
                 id="eventDate"
                 {...register("eventDate")}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
               {errors.eventDate && (
                 <p className="mt-1 text-sm text-red-600">{errors.eventDate.message}</p>
@@ -219,7 +218,7 @@ export default function BookingForm({ initialItems = [] }: BookingFormProps) {
                 id="eventLocation"
                 {...register("eventLocation")}
                 placeholder="Address or city"
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
               {errors.eventLocation && (
                 <p className="mt-1 text-sm text-red-600">{errors.eventLocation.message}</p>
@@ -239,7 +238,7 @@ export default function BookingForm({ initialItems = [] }: BookingFormProps) {
                 {...register("numberOfGuests", { valueAsNumber: true })}
                 min="10"
                 max="100"
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
               {errors.numberOfGuests && (
                 <p className="mt-1 text-sm text-red-600">{errors.numberOfGuests.message}</p>
@@ -252,7 +251,7 @@ export default function BookingForm({ initialItems = [] }: BookingFormProps) {
                 onClick={() => setStep(2)}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="px-6 py-3 bg-gradient-to-r from-primary-600 to-secondary-600 text-white rounded-xl font-medium hover:shadow-lg transition-all"
+                className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
               >
                 Next: Select Items
               </motion.button>
@@ -269,7 +268,7 @@ export default function BookingForm({ initialItems = [] }: BookingFormProps) {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 20 }}
             transition={{ duration: 0.3 }}
-            className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100"
+            className="bg-white rounded-lg shadow-md p-8"
           >
           <h2 className="text-2xl font-bold text-gray-900 mb-6">Select Items</h2>
           <div className="space-y-4 mb-6">
@@ -278,10 +277,10 @@ export default function BookingForm({ initialItems = [] }: BookingFormProps) {
                 key={product.id}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className={`border-2 rounded-xl p-4 cursor-pointer transition-all duration-300 ${
+                className={`border-2 rounded-lg p-4 cursor-pointer transition-all duration-300 ${
                   selectedItems.includes(product.id)
-                    ? "border-primary-600 bg-gradient-to-r from-primary-50 to-secondary-50 shadow-md"
-                    : "border-gray-200 hover:border-primary-300 hover:shadow-md"
+                    ? "border-blue-600 bg-blue-50 shadow-md"
+                    : "border-gray-200 hover:border-blue-300 hover:shadow-md"
                 }`}
                 onClick={() => toggleItem(product.id)}
               >
@@ -291,16 +290,13 @@ export default function BookingForm({ initialItems = [] }: BookingFormProps) {
                       type="checkbox"
                       checked={selectedItems.includes(product.id)}
                       onChange={() => toggleItem(product.id)}
-                      className="w-5 h-5 text-primary-600 rounded focus:ring-primary-500"
+                      className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500"
                     />
                     <div>
                       <h3 className="font-semibold text-gray-900">{product.name}</h3>
                       <p className="text-sm text-gray-600">{product.description}</p>
                     </div>
                   </div>
-                  <span className="text-lg font-semibold text-primary-600">
-                    {formatPrice(product.price)}
-                  </span>
                 </div>
               </motion.div>
             ))}
@@ -310,13 +306,10 @@ export default function BookingForm({ initialItems = [] }: BookingFormProps) {
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="mb-6 p-6 bg-gradient-to-r from-primary-50 to-secondary-50 rounded-xl border border-primary-200"
+              className="mb-6 p-6 bg-blue-50 rounded-lg border border-blue-200"
             >
               <p className="text-sm text-gray-600 mb-2">
                 Selected {selectedItems.length} item{selectedItems.length !== 1 ? "s" : ""}
-              </p>
-              <p className="text-3xl font-bold bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent">
-                Total: {formatPrice(calculateTotal())}
               </p>
             </motion.div>
           )}
@@ -327,7 +320,7 @@ export default function BookingForm({ initialItems = [] }: BookingFormProps) {
               onClick={() => setStep(1)}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-xl font-medium hover:bg-gray-50 transition-colors"
+              className="px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors"
             >
               Back
             </motion.button>
@@ -337,7 +330,7 @@ export default function BookingForm({ initialItems = [] }: BookingFormProps) {
               disabled={selectedItems.length === 0}
               whileHover={selectedItems.length > 0 ? { scale: 1.05 } : {}}
               whileTap={selectedItems.length > 0 ? { scale: 0.95 } : {}}
-              className="px-6 py-3 bg-gradient-to-r from-primary-600 to-secondary-600 text-white rounded-xl font-medium hover:shadow-lg transition-all disabled:bg-gray-300 disabled:cursor-not-allowed disabled:hover:scale-100"
+              className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
             >
               Next: Review & Submit
             </motion.button>
@@ -353,7 +346,7 @@ export default function BookingForm({ initialItems = [] }: BookingFormProps) {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 20 }}
             transition={{ duration: 0.3 }}
-            className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100"
+            className="bg-white rounded-lg shadow-md p-8"
           >
           <h2 className="text-2xl font-bold text-gray-900 mb-6">Review & Submit</h2>
 
@@ -368,7 +361,7 @@ export default function BookingForm({ initialItems = [] }: BookingFormProps) {
                   <input
                     type="text"
                     {...register("contactName")}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                   {errors.contactName && (
                     <p className="mt-1 text-sm text-red-600">{errors.contactName.message}</p>
@@ -382,7 +375,7 @@ export default function BookingForm({ initialItems = [] }: BookingFormProps) {
                   <input
                     type="email"
                     {...register("contactEmail")}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                   {errors.contactEmail && (
                     <p className="mt-1 text-sm text-red-600">{errors.contactEmail.message}</p>
@@ -396,7 +389,7 @@ export default function BookingForm({ initialItems = [] }: BookingFormProps) {
                   <input
                     type="tel"
                     {...register("contactPhone")}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                   {errors.contactPhone && (
                     <p className="mt-1 text-sm text-red-600">{errors.contactPhone.message}</p>
@@ -412,7 +405,7 @@ export default function BookingForm({ initialItems = [] }: BookingFormProps) {
               <textarea
                 {...register("additionalNotes")}
                 rows={4}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Any special requests or additional information..."
               />
             </div>
@@ -424,19 +417,51 @@ export default function BookingForm({ initialItems = [] }: BookingFormProps) {
                   const product = getProductById(itemId);
                   if (!product) return null;
                   return (
-                    <div key={itemId} className="flex justify-between text-sm">
+                    <div key={itemId} className="text-sm">
                       <span>{product.name}</span>
-                      <span>{formatPrice(product.price)}</span>
                     </div>
                   );
                 })}
               </div>
-              <div className="flex justify-between font-bold text-lg pt-4 border-t">
-                <span>Total:</span>
-                <span className="text-primary-600">{formatPrice(calculateTotal())}</span>
-              </div>
             </div>
           </div>
+
+          {submitError && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-md"
+            >
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <svg
+                    className="h-5 w-5 text-red-500"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </div>
+                <div className="ml-3">
+                  <p className="text-sm text-red-800">{submitError}</p>
+                </div>
+                <div className="ml-auto pl-3">
+                  <button
+                    onClick={() => setSubmitError(null)}
+                    className="text-red-500 hover:text-red-700"
+                  >
+                    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          )}
 
           <div className="flex justify-between">
             <motion.button
@@ -444,7 +469,7 @@ export default function BookingForm({ initialItems = [] }: BookingFormProps) {
               onClick={() => setStep(2)}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-xl font-medium hover:bg-gray-50 transition-colors"
+              className="px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors"
             >
               Back
             </motion.button>
@@ -453,7 +478,7 @@ export default function BookingForm({ initialItems = [] }: BookingFormProps) {
               disabled={isSubmitting}
               whileHover={!isSubmitting ? { scale: 1.05 } : {}}
               whileTap={!isSubmitting ? { scale: 0.95 } : {}}
-              className="px-8 py-3 bg-gradient-to-r from-primary-600 to-secondary-600 text-white rounded-xl font-semibold hover:shadow-xl transition-all disabled:bg-gray-300 disabled:cursor-not-allowed disabled:hover:scale-100"
+              className="px-8 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
             >
               {isSubmitting ? "Submitting..." : "Submit Request"}
             </motion.button>

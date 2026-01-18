@@ -2,22 +2,22 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import Image from "next/image";
 
 export default function Hero() {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Background Image with Overlay */}
+      {/* Background Video with Overlay */}
       <div className="absolute inset-0 z-0">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary-900/90 via-primary-700/85 to-secondary-900/90 z-10" />
-        <Image
-          src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=2070&auto=format&fit=crop"
-          alt="Garden party with tent and buffet"
-          fill
-          priority
-          className="object-cover"
-          quality={90}
-        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/50 z-10" />
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover"
+        >
+          <source src="/hero-video.mp4" type="video/mp4" />
+        </video>
       </div>
 
       {/* Content */}
@@ -65,14 +65,14 @@ export default function Hero() {
           >
             <Link
               href="/booking"
-              className="group relative px-8 py-4 bg-white text-primary-600 rounded-lg font-semibold text-lg overflow-hidden shadow-2xl transform transition-all duration-300 hover:scale-105 hover:shadow-3xl"
+              className="group relative px-8 py-4 bg-white text-blue-600 rounded-lg font-semibold text-lg overflow-hidden shadow-2xl transform transition-all duration-300 hover:scale-105 hover:shadow-3xl"
             >
               <span className="relative z-10">Reserve Now</span>
-              <div className="absolute inset-0 bg-gradient-to-r from-primary-50 to-secondary-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <div className="absolute inset-0 bg-blue-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </Link>
             <Link
               href="/catalog"
-              className="group px-8 py-4 bg-white/10 backdrop-blur-md border-2 border-white/50 text-white rounded-lg font-semibold text-lg transition-all duration-300 hover:bg-white hover:text-primary-600 hover:border-white hover:scale-105 shadow-xl"
+              className="group px-8 py-4 bg-white/10 backdrop-blur-md border-2 border-white/50 text-white rounded-lg font-semibold text-lg transition-all duration-300 hover:bg-white hover:text-blue-600 hover:border-white hover:scale-105 shadow-xl"
             >
               Browse Catalog
             </Link>
@@ -93,7 +93,7 @@ export default function Hero() {
           }}
         />
         <motion.div
-          className="absolute bottom-20 right-10 w-32 h-32 bg-secondary-400/20 rounded-full blur-2xl"
+          className="absolute bottom-20 right-10 w-32 h-32 bg-blue-400/20 rounded-full blur-2xl"
           animate={{
             y: [0, 30, 0],
             scale: [1, 1.3, 1],

@@ -32,10 +32,10 @@ export default function Navigation() {
           <Link
             key={link.href}
             href={link.href}
-            className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+            className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
               isActive(link.href)
-                ? "text-primary-700 bg-primary-100"
-                : "text-gray-700 hover:text-primary-600 hover:bg-gray-50"
+                ? "text-blue-700 bg-blue-100"
+                : "text-gray-700 hover:text-blue-600 hover:bg-gray-50"
             }`}
           >
             {link.label}
@@ -43,7 +43,7 @@ export default function Navigation() {
         ))}
         <Link
           href="/booking"
-          className="ml-4 px-4 py-2 bg-primary-600 text-white rounded-md text-sm font-medium hover:bg-primary-700 transition-colors"
+          className="ml-4 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
         >
           Reserve Now
         </Link>
@@ -53,7 +53,7 @@ export default function Navigation() {
       <div className="md:hidden">
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="p-2 rounded-md text-gray-700 hover:text-primary-600 hover:bg-gray-50"
+          className="p-2 rounded-lg text-gray-700 hover:text-blue-600 hover:bg-gray-50"
           aria-label="Toggle menu"
         >
           <svg
@@ -81,7 +81,7 @@ export default function Navigation() {
         </button>
 
         {isOpen && (
-          <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+          <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-1 z-50">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
@@ -89,8 +89,8 @@ export default function Navigation() {
                 onClick={() => setIsOpen(false)}
                 className={`block px-4 py-2 text-sm ${
                   isActive(link.href)
-                    ? "text-primary-700 bg-primary-100"
-                    : "text-gray-700 hover:text-primary-600 hover:bg-gray-50"
+                    ? "text-blue-700 bg-blue-100"
+                    : "text-gray-700 hover:text-blue-600 hover:bg-gray-50"
                 }`}
               >
                 {link.label}
@@ -99,7 +99,7 @@ export default function Navigation() {
             <Link
               href="/booking"
               onClick={() => setIsOpen(false)}
-              className="block px-4 py-2 text-sm bg-primary-600 text-white hover:bg-primary-700"
+              className="block px-4 py-2 text-sm bg-blue-600 text-white hover:bg-blue-700"
             >
               Reserve Now
             </Link>

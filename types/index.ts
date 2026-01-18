@@ -6,6 +6,8 @@ export type Product = {
   price: number;
   image?: string;
   available: boolean;
+  availabilityCount?: number;
+  popular?: boolean;
 };
 
 export type Category = "tents" | "tables-chairs" | "sound-light" | "decoration" | "packages";
@@ -30,3 +32,18 @@ export type Testimonial = {
   image?: string;
 };
 
+
+export type CartItem = {
+  productId: string;
+  quantity: number;
+};
+
+export type CartContextType = {
+  items: CartItem[];
+  addItem: (productId: string) => void;
+  removeItem: (productId: string) => void;
+  updateQuantity: (productId: string, quantity: number) => void;
+  clearCart: () => void;
+  getItemCount: () => number;
+  getTotalPrice: () => number;
+};

@@ -105,7 +105,7 @@ export default function TermsPage() {
           <h2 className="text-2xl font-semibold text-gray-900 mb-4">Contact</h2>
           <p className="text-gray-700">
             For questions about these terms, please contact us at{" "}
-            <a href="mailto:info@party-up.be" className="text-primary-600 hover:underline">
+            <a href="mailto:info@party-up.be" className="text-blue-600 hover:underline">
               info@party-up.be
             </a>
             .

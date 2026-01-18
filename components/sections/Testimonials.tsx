@@ -62,10 +62,8 @@ export default function Testimonials() {
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section className="py-20 bg-gradient-to-b from-white via-primary-50/30 to-white relative overflow-hidden">
+    <section className="py-20 bg-white relative overflow-hidden">
       {/* Decorative elements */}
-      <div className="absolute top-0 right-0 w-96 h-96 bg-secondary-200/10 rounded-full blur-3xl" />
-      <div className="absolute bottom-0 left-0 w-96 h-96 bg-primary-200/10 rounded-full blur-3xl" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
@@ -77,13 +75,13 @@ export default function Testimonials() {
         >
           <motion.h2
             variants={itemVariants}
-            className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4"
+            className="text-4xl font-bold text-gray-900 mb-3"
           >
-            <span className="text-gradient">What Our Customers Say</span>
+            What Our Customers Say
           </motion.h2>
           <motion.p
             variants={itemVariants}
-            className="text-xl text-gray-600"
+            className="text-lg text-gray-600 max-w-2xl mx-auto"
           >
             Real reviews from real customers
           </motion.p>
@@ -102,10 +100,9 @@ export default function Testimonials() {
               variants={itemVariants}
               whileHover={{ scale: 1.05, y: -10 }}
               transition={{ type: "spring", stiffness: 300 }}
-              className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 relative overflow-hidden group flex flex-col h-full"
+              className="bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300 relative overflow-hidden group flex flex-col h-full"
             >
               {/* Gradient border effect */}
-              <div className="absolute inset-0 bg-gradient-to-br from-primary-500/0 to-secondary-500/0 group-hover:from-primary-500/20 group-hover:to-secondary-500/20 transition-all duration-300 rounded-2xl pointer-events-none" />
               
               {/* Image section - only renders if image exists */}
               {testimonial.image && (
@@ -141,7 +138,7 @@ export default function Testimonials() {
                 </p>
                 <div className="text-sm text-gray-600 mt-auto">
                   <p className="font-bold text-gray-900">{testimonial.name}</p>
-                  <p className="text-primary-600">{testimonial.event}</p>
+                  <p className="text-blue-600">{testimonial.event}</p>
                 </div>
               </div>
             </motion.div>
@@ -157,7 +154,7 @@ export default function Testimonials() {
         >
           <Link
             href="/reviews"
-            className="inline-flex items-center text-primary-600 font-semibold text-lg hover:text-primary-700 transition-colors group"
+            className="inline-flex items-center text-blue-600 font-semibold text-lg hover:text-blue-700 transition-colors group"
           >
             Read More Reviews
             <svg

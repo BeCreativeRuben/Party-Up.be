@@ -132,3 +132,17 @@ html {
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
+
+/* Ensure transparent images don't show checkerboard pattern */
+img[src*="logo"] {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+/* Remove any default transparency patterns */
+img[src*="logo-full.png"],
+img[src*="logo-icon.png"] {
+  background: none !important;
+  background-color: transparent !important;
+  background-image: none !important;
+}

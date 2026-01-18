@@ -1,6 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useInView } from "framer-motion";
+import { useRef } from "react";
 
 const faqs = [
   {
@@ -55,61 +58,148 @@ const faqs = [
   },
 ];
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.4,
+    },
+  },
+};
+
 export default function FAQPage() {
-  const [openIndex, setOpenIndex] = useState<number | null>(0);
+  const [openIndices, setOpenIndices] = useState<Set<number>>(new Set([0]));
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   const toggleFAQ = (index: number) => {
-    setOpenIndex(openIndex === index ? null : index);
+    setOpenIndices((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(index)) {
+        newSet.delete(index);
+      } else {
+        newSet.add(index);
+      }
+      return newSet;
+    });
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold text-gray-900 mb-4">Frequently Asked Questions</h1>
-        <p className="text-lg text-gray-600">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <motion.div
+        ref={ref}
+        initial="hidden"
+        animate={isInView ? "visible" : "hidden"}
+        variants={containerVariants}
+        className="text-center mb-12"
+      >
+        <motion.h1
+          variants={itemVariants}
+          className="text-4xl font-bold text-gray-900 mb-3"
+        >
+          <span className="bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
+            Frequently Asked Questions
+          </span>
+        </motion.h1>
+        <motion.p
+          variants={itemVariants}
+          className="text-lg text-gray-600 max-w-2xl mx-auto"
+        >
           Find answers to common questions about our party rental services
-        </p>
-      </div>
+        </motion.p>
+      </motion.div>
 
-      <div className="space-y-4">
-        {faqs.map((faq, index) => (
-          <div key={index} className="bg-white rounded-lg shadow-md overflow-hidden">
-            <button
-              onClick={() => toggleFAQ(index)}
-              className="w-full px-6 py-4 text-left flex justify-between items-center hover:bg-gray-50 transition-colors"
+      <motion.div
+        initial="hidden"
+        animate={isInView ? "visible" : "hidden"}
+        variants={containerVariants}
+        className="space-y-4"
+      >
+        {faqs.map((faq, index) => {
+          const isOpen = openIndices.has(index);
+          return (
+            <motion.div
+              key={index}
+              variants={itemVariants}
+              whileHover={{ scale: 1.01 }}
+              className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 hover:shadow-lg transition-shadow"
             >
-              <span className="font-semibold text-gray-900">{faq.question}</span>
-              <svg
-                className={`w-5 h-5 text-gray-500 transition-transform ${
-                  openIndex === index ? "transform rotate-180" : ""
-                }`}
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
+              <motion.button
+                onClick={() => toggleFAQ(index)}
+                className="w-full px-6 py-5 text-left flex justify-between items-center hover:bg-blue-50 transition-colors group"
+                whileHover={{ backgroundColor: "rgba(239, 246, 255, 0.5)" }}
+                whileTap={{ scale: 0.98 }}
               >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
-            {openIndex === index && (
-              <div className="px-6 py-4 bg-gray-50 border-t">
-                <p className="text-gray-700">{faq.answer}</p>
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
+                <span className="font-semibold text-gray-900 group-hover:text-blue-700 transition-colors pr-4">
+                  {faq.question}
+                </span>
+                <motion.svg
+                  className="w-5 h-5 text-gray-500 flex-shrink-0"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  animate={{ rotate: isOpen ? 180 : 0 }}
+                  transition={{ duration: 0.3, ease: "easeInOut" }}
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </motion.svg>
+              </motion.button>
+              <AnimatePresence>
+                {isOpen && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.3, ease: "easeInOut" }}
+                    className="overflow-hidden"
+                  >
+                    <motion.div
+                      initial={{ y: -10 }}
+                      animate={{ y: 0 }}
+                      exit={{ y: -10 }}
+                      transition={{ duration: 0.3 }}
+                      className="px-6 py-5 bg-gradient-to-b from-blue-50 to-white border-t border-blue-100"
+                    >
+                      <p className="text-gray-700 leading-relaxed">{faq.answer}</p>
+                    </motion.div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
+          );
+        })}
+      </motion.div>
 
-      <div className="mt-12 bg-primary-100 rounded-lg p-6 text-center">
-        <p className="text-gray-700 mb-4">
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+        transition={{ delay: 0.5, duration: 0.5 }}
+        className="mt-12 bg-gradient-to-br from-blue-50 to-gray-50 rounded-lg p-8 text-center border border-blue-100 shadow-md"
+      >
+        <p className="text-gray-700 mb-4 text-lg">
           Still have questions? We&apos;re here to help!
         </p>
-        <a
+        <motion.a
           href="/contact"
-          className="inline-block px-6 py-3 bg-primary-600 text-white rounded-md font-medium hover:bg-primary-700 transition-colors"
+          className="inline-block px-8 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors shadow-md hover:shadow-lg"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
         >
           Contact Us
-        </a>
-      </div>
+        </motion.a>
+      </motion.div>
     </div>
   );
 }

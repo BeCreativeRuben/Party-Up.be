@@ -7,7 +7,10 @@ export const products: Product[] = [
     description: "Waterproof party tent perfect for garden events. Easy setup, includes side walls.",
     category: "tents",
     price: 75,
+    image: "/products/tent-3x3.jpg",
     available: true,
+    availabilityCount: 5,
+    popular: true,
   },
   {
     id: "tent-4x4",
@@ -15,7 +18,9 @@ export const products: Product[] = [
     description: "Spacious party tent for larger gatherings. Includes side walls and groundsheet.",
     category: "tents",
     price: 100,
+    image: "/products/tent-4x4.jpg",
     available: true,
+    availabilityCount: 3,
   },
   {
     id: "table-round-8",
@@ -23,7 +28,10 @@ export const products: Product[] = [
     description: "Sturdy round table seating 8 people. Easy to clean surface.",
     category: "tables-chairs",
     price: 15,
+    image: "/products/table-round.jpg",
     available: true,
+    availabilityCount: 12,
+    popular: true,
   },
   {
     id: "table-rect-10",
@@ -31,7 +39,9 @@ export const products: Product[] = [
     description: "Long rectangular table perfect for buffets or seating arrangements.",
     category: "tables-chairs",
     price: 18,
+    image: "/products/table-rect.jpg",
     available: true,
+    availabilityCount: 8,
   },
   {
     id: "chair-folding",
@@ -39,7 +49,10 @@ export const products: Product[] = [
     description: "Comfortable folding chair. Stackable for easy storage and transport.",
     category: "tables-chairs",
     price: 3,
+    image: "/products/chair-folding.jpg",
     available: true,
+    availabilityCount: 80,
+    popular: true,
   },
   {
     id: "sound-system-basic",
@@ -47,7 +60,9 @@ export const products: Product[] = [
     description: "Portable sound system with microphone. Perfect for speeches and background music.",
     category: "sound-light",
     price: 50,
+    image: "/products/sound-basic.jpg",
     available: true,
+    availabilityCount: 4,
   },
   {
     id: "sound-system-premium",
@@ -55,15 +70,20 @@ export const products: Product[] = [
     description: "Professional sound system with DJ setup. Includes speakers, mixer, and microphone.",
     category: "sound-light",
     price: 120,
+    image: "/products/sound-premium.jpg",
     available: true,
+    availabilityCount: 2,
   },
   {
     id: "lighting-basic",
-    name: "Basic Lighting Set",
+    name: "LED Stage Lighting",
     description: "LED lighting set with stands. Creates perfect party atmosphere.",
     category: "sound-light",
     price: 30,
+    image: "/products/lighting-led.jpg",
     available: true,
+    availabilityCount: 6,
+    popular: true,
   },
   {
     id: "decoration-banner",
@@ -71,7 +91,9 @@ export const products: Product[] = [
     description: "Personalized banner for your event. Various sizes available.",
     category: "decoration",
     price: 25,
+    image: "/products/banner.jpg",
     available: true,
+    availabilityCount: 10,
   },
   {
     id: "decoration-centerpiece",
@@ -79,7 +101,9 @@ export const products: Product[] = [
     description: "Elegant table centerpieces. Set of 10 pieces.",
     category: "decoration",
     price: 20,
+    image: "/products/centerpiece.jpg",
     available: true,
+    availabilityCount: 15,
   },
   {
     id: "package-basic",
@@ -87,7 +111,9 @@ export const products: Product[] = [
     description: "Complete package for 20-30 guests: tent, tables, chairs, basic sound system.",
     category: "packages",
     price: 250,
+    image: "/products/package-basic.jpg",
     available: true,
+    availabilityCount: 3,
   },
   {
     id: "package-premium",
@@ -95,37 +121,49 @@ export const products: Product[] = [
     description: "Complete package for 50-80 guests: large tent, all tables/chairs, premium sound, lighting, decoration.",
     category: "packages",
     price: 500,
+    image: "/products/package-premium.jpg",
     available: true,
+    availabilityCount: 2,
   },
 ];
 
-export const categories: { id: Category; name: string; description: string }[] = [
+export const categories: { id: Category; name: string; description: string; displayName: string }[] = [
   {
     id: "tents",
     name: "Tents",
+    displayName: "Tents",
     description: "Weatherproof party tents in various sizes",
   },
   {
     id: "tables-chairs",
     name: "Tables & Chairs",
+    displayName: "Tables",
     description: "Tables and seating for your guests",
   },
   {
     id: "sound-light",
     name: "Sound & Light",
+    displayName: "Lighting",
     description: "Audio systems and lighting equipment",
   },
   {
     id: "decoration",
     name: "Decoration",
+    displayName: "Decorations",
     description: "Banners, centerpieces, and party decorations",
   },
   {
     id: "packages",
     name: "Packages",
+    displayName: "Packages",
     description: "Complete party packages for easy planning",
   },
 ];
+
+export function getCategoryDisplayName(categoryId: Category): string {
+  const category = categories.find(c => c.id === categoryId);
+  return category?.displayName || category?.name || categoryId;
+}
 
 export function getProductsByCategory(category: Category): Product[] {
   return products.filter((product) => product.category === category);

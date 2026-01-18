@@ -57,9 +57,9 @@ const testimonials: Testimonial[] = [
 export default function ReviewsPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold text-gray-900 mb-4">Customer Reviews</h1>
-        <p className="text-lg text-gray-600">
+      <div className="text-center mb-8">
+        <h1 className="text-4xl font-bold text-gray-900 mb-3">Customer Reviews</h1>
+        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
           Real reviews from real customers. We only publish authentic testimonials.
         </p>
       </div>
@@ -107,7 +107,7 @@ export default function ReviewsPage() {
         ))}
       </div>
 
-      <div className="bg-primary-100 rounded-lg p-8 text-center">
+      <div className="bg-gray-50 rounded-lg p-8 text-center">
         <h2 className="text-2xl font-semibold text-gray-900 mb-4">
           Share Your Experience
         </h2>
@@ -116,7 +116,7 @@ export default function ReviewsPage() {
         </p>
         <a
           href="/contact"
-          className="inline-block px-6 py-3 bg-primary-600 text-white rounded-md font-medium hover:bg-primary-700 transition-colors"
+          className="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
         >
           Leave a Review
         </a>

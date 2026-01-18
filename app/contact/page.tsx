@@ -18,6 +18,7 @@ type ContactFormValues = z.infer<typeof contactSchema>;
 export default function ContactPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const {
     register,
@@ -30,6 +31,7 @@ export default function ContactPage() {
 
   const onSubmit = async (data: ContactFormValues) => {
     setIsSubmitting(true);
+    setSubmitError(null);
     try {
       // TODO: Implement actual email sending
       console.log("Contact form submitted:", data);
@@ -42,7 +44,10 @@ export default function ContactPage() {
       
       setTimeout(() => setSubmitSuccess(false), 5000);
     } catch (error) {
-      alert("There was an error sending your message. Please try again or call us directly.");
+      setSubmitError(
+        "We couldn't send your message. Please try again or contact us directly at info@party-up.be"
+      );
+      console.error("Contact form error:", error);
     } finally {
       setIsSubmitting(false);
     }
@@ -50,9 +55,9 @@ export default function ContactPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold text-gray-900 mb-4">Contact Us</h1>
-        <p className="text-lg text-gray-600">
+      <div className="text-center mb-8">
+        <h1 className="text-4xl font-bold text-gray-900 mb-3">Contact Us</h1>
+        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
           Have a question? Get in touch with us and we&apos;ll respond as soon as possible.
         </p>
       </div>
@@ -68,6 +73,39 @@ export default function ContactPage() {
             </div>
           )}
 
+          {submitError && (
+            <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-md">
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <svg
+                    className="h-5 w-5 text-red-500"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </div>
+                <div className="ml-3 flex-1">
+                  <p className="text-sm text-red-800">{submitError}</p>
+                </div>
+                <div className="ml-auto pl-3">
+                  <button
+                    onClick={() => setSubmitError(null)}
+                    className="text-red-500 hover:text-red-700"
+                  >
+                    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
@@ -77,7 +115,7 @@ export default function ContactPage() {
                 type="text"
                 id="name"
                 {...register("name")}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
               {errors.name && (
                 <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
@@ -92,7 +130,7 @@ export default function ContactPage() {
                 type="email"
                 id="email"
                 {...register("email")}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
               {errors.email && (
                 <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
@@ -107,7 +145,7 @@ export default function ContactPage() {
                 type="tel"
                 id="phone"
                 {...register("phone")}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
 
@@ -119,7 +157,7 @@ export default function ContactPage() {
                 type="text"
                 id="subject"
                 {...register("subject")}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
               {errors.subject && (
                 <p className="mt-1 text-sm text-red-600">{errors.subject.message}</p>
@@ -134,7 +172,7 @@ export default function ContactPage() {
                 id="message"
                 rows={6}
                 {...register("message")}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
               {errors.message && (
                 <p className="mt-1 text-sm text-red-600">{errors.message.message}</p>
@@ -144,7 +182,7 @@ export default function ContactPage() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full px-6 py-3 bg-primary-600 text-white rounded-md font-medium hover:bg-primary-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+              className="w-full px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
             >
               {isSubmitting ? "Sending..." : "Send Message"}
             </button>
@@ -160,7 +198,7 @@ export default function ContactPage() {
                 <h3 className="font-semibold text-gray-900 mb-2">Email</h3>
                 <a
                   href="mailto:info@party-up.be"
-                  className="text-primary-600 hover:underline"
+                  className="text-blue-600 hover:underline"
                 >
                   info@party-up.be
                 </a>
@@ -182,7 +220,7 @@ export default function ContactPage() {
                     href="#"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-primary-600 hover:text-primary-700"
+                    className="text-blue-600 hover:text-blue-700"
                     aria-label="Facebook"
                   >
                     <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
@@ -193,7 +231,7 @@ export default function ContactPage() {
                     href="#"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-primary-600 hover:text-primary-700"
+                    className="text-blue-600 hover:text-blue-700"
                     aria-label="Instagram"
                   >
                     <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
@@ -207,17 +245,51 @@ export default function ContactPage() {
 
           <div className="bg-white rounded-lg shadow-md p-8">
             <h2 className="text-2xl font-semibold text-gray-900 mb-4">Location</h2>
-            <div className="aspect-video bg-gray-200 rounded-lg mb-4 flex items-center justify-center">
-              <p className="text-gray-500">Google Maps integration</p>
+            <div className="aspect-video bg-gray-200 rounded-lg mb-4 overflow-hidden">
+              <iframe
+                src="https://www.google.com/maps?q=Pereboomsteenweg+49,+9180+Moerbeke,+Belgium&output=embed"
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                className="w-full h-full"
+                title="Party-Up Location - Pereboomsteenweg 49, 9180 Moerbeke"
+              />
             </div>
             <p className="text-gray-700">
               <strong>Power Up BV</strong>
               <br />
+              Pereboomsteenweg 49
+              <br />
+              9180 Moerbeke
+              <br />
               Belgium
             </p>
-            <p className="text-sm text-gray-600 mt-2">
-              (Address to be added - Google Maps will be embedded here)
-            </p>
+            <div className="mt-4">
+              <a
+                href="https://www.google.com/maps/dir/?api=1&destination=Pereboomsteenweg+49,+9180+Moerbeke,+Belgium"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium"
+              >
+                <svg
+                  className="w-5 h-5 mr-2"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"
+                  />
+                </svg>
+                Get Directions
+              </a>
+            </div>
             
             <div className="mt-6 bg-amber-50 border-l-4 border-amber-400 p-4 rounded-md">
               <div className="flex">

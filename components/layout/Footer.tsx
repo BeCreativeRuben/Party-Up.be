@@ -7,13 +7,19 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
-            <Image
-              src="/logo.png"
-              alt="Party-Up Logo"
-              width={150}
-              height={67}
-              className="h-10 w-auto object-contain mb-4 brightness-0 invert"
-            />
+            <div className="mb-4 relative inline-block bg-transparent">
+              <Image
+                src="/logo-icon.png"
+                alt="Party-Up Logo"
+                width={80}
+                height={80}
+                className="h-12 w-auto object-contain drop-shadow-xl"
+                style={{ 
+                  backgroundColor: 'transparent',
+                  imageRendering: 'auto'
+                }}
+              />
+            </div>
             <p className="text-sm">No Nonsense Party Rental!</p>
             <p className="text-sm mt-2">Power Up BV</p>
           </div>
