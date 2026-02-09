@@ -1,0 +1,61 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# local env files
+.env*.local
+.env
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# Raw camera files (use optimized JPG for web)
+*.NEF
+*.CR2
+*.ARW
+*.DNG
+
+# Large unoptimized images - optimize before committing
+# Exclude uppercase JPG files (original camera files)
+public/ProductImages/*.JPG
+public/ProductImages/*.JPEG
+public/ProductImages/*.PNG
+
+# Large video files - optimize or host externally
+public/hero-video.mp4
+*.mp4
+hf_*.mp4
+
+# Generated/large assets in project root
+Gemini_Generated_Image_*.png
+ProductGrid.png
+
+# Allow optimized images folder and its contents
+!public/ProductImages/optimized/
+!public/ProductImages/optimized/**
