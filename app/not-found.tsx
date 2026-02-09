@@ -45,7 +45,7 @@ export default function NotFound() {
           </div>
 
           <div className="mt-8 pt-8 border-t border-gray-200">
-            <p className="text-sm text-gray-500 mb-2">Populaire pagina's:</p>
+            <p className="text-sm text-gray-500 mb-2">Populaire pagina&apos;s:</p>
             <div className="flex flex-wrap justify-center gap-4 text-sm">
               <Link href="/catalog" className="text-blue-600 hover:text-blue-700">
                 Catalogus
