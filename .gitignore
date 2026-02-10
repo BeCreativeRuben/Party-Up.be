@@ -48,9 +48,10 @@ public/ProductImages/*.JPEG
 public/ProductImages/*.PNG
 
 # Large video files - optimize or host externally
-public/hero-video.mp4
 *.mp4
 hf_*.mp4
+# Exception: allow hero video
+!public/hero-video.mp4
 
 # Generated/large assets in project root
 Gemini_Generated_Image_*.png
