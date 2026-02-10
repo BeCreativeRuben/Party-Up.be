@@ -7,9 +7,10 @@ import { IMAGE_PLACEHOLDER_BLUR } from "@/lib/utils";
 interface ProductImageGalleryProps {
   images: string[];
   productName: string;
+  imageClassName?: string;
 }
 
-export default function ProductImageGallery({ images, productName }: ProductImageGalleryProps) {
+export default function ProductImageGallery({ images, productName, imageClassName }: ProductImageGalleryProps) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -78,7 +79,7 @@ export default function ProductImageGallery({ images, productName }: ProductImag
                   src={src}
                   alt={`${productName} - ${i + 1}`}
                   fill
-                  className="object-contain"
+                  className={`object-contain ${imageClassName || ""}`}
                   sizes="(max-width: 768px) 100vw, 50vw"
                   priority={i === 0}
                   loading={i === 0 ? undefined : "lazy"}
@@ -123,7 +124,7 @@ export default function ProductImageGallery({ images, productName }: ProductImag
                   src={src}
                   alt={`${productName} thumbnail ${i + 1}`}
                   fill
-                  className="object-cover"
+                  className={`object-cover ${imageClassName || ""}`}
                   sizes="64px"
                   loading="lazy"
                   quality={50}
@@ -158,7 +159,7 @@ export default function ProductImageGallery({ images, productName }: ProductImag
               alt={`${productName} - enlarged`}
               width={1200}
               height={900}
-              className="w-full h-auto max-h-[90vh] object-contain"
+              className={`w-full h-auto max-h-[90vh] object-contain ${imageClassName || ""}`}
               quality={90}
             />
             {images.length > 1 && (

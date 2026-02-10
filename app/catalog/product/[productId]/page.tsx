@@ -52,7 +52,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         {/* Image gallery */}
         <div className="lg:sticky lg:top-28">
           {images.length > 0 ? (
-            <ProductImageGallery images={images} productName={product.name} />
+            <ProductImageGallery images={images} productName={product.name} imageClassName={product.imageClassName} />
           ) : (
             <div className="aspect-square bg-gray-200 rounded-lg flex items-center justify-center">
               <span className="text-gray-400">No image</span>

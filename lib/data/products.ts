@@ -36,6 +36,57 @@ export const products: Product[] = [
     popular: true,
   },
   {
+    id: "tafels-hoog",
+    name: "Tafels hoog",
+    description: "Hoge tafels, 7 stuks. Hoezen zitten er bij. Diameter blad 85cm. Transporthoogte 1.45m. Bladhoogte 1.10m.",
+    category: "tables-chairs",
+    price: 6,
+    image: productImagePaths[52], // dsc_9687.webp
+    images: dsc(9687, 9688, 9689, 9690, 9691),
+    imageClassName: "-rotate-90",
+    available: true,
+    availabilityCount: 7,
+    popular: true,
+  },
+  {
+    id: "tafels-laag",
+    name: "Tafels laag",
+    description: "Lage tafels, 10 stuks. Afmetingen: 1.82m × 76cm. Perfect voor buffetten en zitplaatsen.",
+    category: "tables-chairs",
+    price: 6,
+    image: productImagePaths[46], // dsc_9681.webp
+    images: dsc(9681, 9684),
+    imageClassName: "-rotate-90",
+    available: true,
+    availabilityCount: 10,
+    popular: true,
+  },
+  {
+    id: "hoge-stoelen",
+    name: "Hoge stoelen",
+    description: "Hoge stoelen (bar stools), 25 stuks. Perfect voor gebruik bij hoge tafels.",
+    category: "tables-chairs",
+    price: 3,
+    image: productImagePaths[50], // dsc_9685.webp
+    images: dsc(9685, 9686),
+    imageClassName: "-rotate-90",
+    available: true,
+    availabilityCount: 25,
+    popular: true,
+  },
+  {
+    id: "normale-stoelen",
+    name: "Normale stoelen",
+    description: "Normale stoelen met armleuningen, 20 stuks. Perfect voor gebruik bij lage tafels.",
+    category: "tables-chairs",
+    price: 3,
+    image: productImagePaths[47], // dsc_9682.webp
+    images: dsc(9682, 9683),
+    available: true,
+    availabilityCount: 20,
+    popular: true,
+  },
+  {
     id: "staafleen",
     name: "Staafleen (bar towel)",
     description: "Staafdoek, ideale aanvulling voor je bar. Per stuk.",
@@ -59,7 +110,7 @@ export const products: Product[] = [
   {
     id: "pannenkoeken",
     name: "Pannekoeken machine",
-    description: "Pannekoekenmachine voor je evenement.",
+    description: "Pannekoekenmachine voor je evenement. 220V. Diameter 40cm. 3600 WATT.",
     category: "catering",
     price: 40,
     image: productImagePaths[19],
@@ -81,13 +132,13 @@ export const products: Product[] = [
   {
     id: "borden",
     name: "Bord & bestek set",
-    description: "Bordenset: groot Ø 25 cm, soep Ø 22 cm. Per weekend.",
+    description: "Bordenset: groot Ø 25 cm, soep Ø 22 cm.",
     category: "catering",
     price: 50,
     image: productImagePaths[40],
     images: dsc(9675, 9676, 9677, 9678, 9679, 9680),
     available: true,
-    availabilityCount: 10,
+    availabilityCount: 90,
   },
   {
     id: "bekers",
@@ -127,8 +178,9 @@ export const products: Product[] = [
     description: "Percolator met 8 L verwarmer voor koffie.",
     category: "catering",
     price: 15,
-    image: productImagePaths[12],
-    images: dsc(9647, 9648, 9649, 9650, 9651, 9652),
+    image: productImagePaths[2], // dsc_9637.webp
+    images: dsc(9637, 9638, 9639),
+    imageClassName: "-rotate-90",
     available: true,
     availabilityCount: 4,
   },
@@ -139,7 +191,7 @@ export const products: Product[] = [
     category: "catering",
     price: 25,
     image: productImagePaths[27],
-    images: dsc(9662, 9663),
+    images: dsc(9662, 9663, 9664),
     available: true,
     availabilityCount: 3,
   },
@@ -156,24 +208,102 @@ export const products: Product[] = [
   },
   {
     id: "glazen-6",
-    name: "Glazen (6 st.)",
-    description: "Set van 6 glazen. Champagne.",
+    name: "Champagne glazen (6 st.)",
+    description: "Champagne glazen, 8 dozen van 6 glazen. 19 cl per glas.",
     category: "catering",
     price: 2.7,
     image: productImagePaths[23],
     images: dsc(9658, 9659, 9660, 9661),
     available: true,
-    availabilityCount: 30,
+    availabilityCount: 48, // 8 dozen × 6 = 48
   },
   {
     id: "glazen-wegwerp-12",
-    name: "Glazen wegwerp (12 st.)",
-    description: "Wegwerpglazen, 12 stuks. Water & champagne.",
+    name: "Wijnglazen",
+    description: "Wijnglazen, 5 dozen van 12. 30cl per glas.",
     category: "catering",
     price: 5,
+    image: productImagePaths[30], // dsc_9665.webp
+    images: dsc(9665, 9666),
+    available: true,
+    availabilityCount: 60, // 5 dozen × 12 = 60
+  },
+  {
+    id: "waterglazen",
+    name: "Waterglazen",
+    description: "Waterglazen, 5 dozen van 6. 37 cl per glas.",
+    category: "catering",
+    price: 2.7,
+    image: productImagePaths[32], // dsc_9667.webp
+    images: dsc(9667),
+    available: true,
+    availabilityCount: 30, // 5 dozen × 6 = 30
+  },
+  {
+    id: "koffie-tassen",
+    name: "Koffie tassen",
+    description: "Koffie tassen, 2 dozen van 24. 30cl per tas.",
+    category: "catering",
+    price: 2.7,
+    image: productImagePaths[33], // dsc_9668.webp
+    images: dsc(9668, 9669),
+    available: true,
+    availabilityCount: 48, // 2 dozen × 24 = 48
+  },
+  {
+    id: "koffieglazen",
+    name: "Koffieglazen",
+    description: "Koffieglazen, 15 dozen van 2. 33cl per glas.",
+    category: "catering",
+    price: 2.7,
+    image: productImagePaths[10], // dsc_9645.webp
+    images: dsc(9645, 9646),
+    available: true,
+    availabilityCount: 30, // 15 dozen × 2 = 30
+  },
+  {
+    id: "waterkaraffen",
+    name: "Waterkaraffen",
+    description: "Waterkaraffen, 1 doos van 6. 1.3L per karaff.",
+    category: "catering",
+    price: 5,
+    image: productImagePaths[35], // dsc_9670.webp
+    images: dsc(9670, 9671),
+    available: true,
+    availabilityCount: 6, // 1 doos × 6 = 6
+  },
+  {
+    id: "generator",
+    name: "Generator",
+    description: "Honda generator voor stroomvoorziening tijdens evenementen.",
+    category: "facilities",
+    price: 150,
+    image: productImagePaths[66], // dsc_9701.webp
+    images: dsc(9701, 9702, 9703, 9704),
+    available: true,
+    availabilityCount: 1,
+  },
+  {
+    id: "handenwas-set",
+    name: "Handenwas set",
+    description: "Handenwas set voor hygiëne tijdens evenementen.",
+    category: "facilities",
+    price: 50,
     image: undefined, // placeholder only
     available: true,
-    availabilityCount: 50,
+    availabilityCount: 1,
+  },
+  {
+    id: "gasvuurtjes",
+    name: "Gasvuurtjes",
+    description: "Gasvuurtjes, 13KW. Hoogte wanneer opgezet: 2.25m. Gedemonteerd voor transport.",
+    category: "facilities",
+    price: 80,
+    image: productImagePaths[57], // dsc_9692.webp
+    images: dsc(9692, 9693),
+    imageClassName: "-rotate-90",
+    available: true,
+    availabilityCount: 2,
   },
   {
     id: "tent-6x4",
@@ -196,7 +326,7 @@ export const products: Product[] = [
     images: dsc(9695, 9696, 9697, 9698, 9699, 9700),
     imageClassName: "-rotate-90",
     available: true,
-    availabilityCount: 4,
+    availabilityCount: 1,
   },
   {
     id: "bain-marie",
