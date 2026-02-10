@@ -69,6 +69,17 @@ export default function Footer() {
                   info@party-up.be
                 </a>
               </li>
+              <li className="mt-2">
+                <a
+                  href="https://www.google.com/maps/search/?api=1&query=Pereboomsteenweg+49,+9180+Lokeren"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-white transition-colors text-gray-300"
+                >
+                  Pereboomsteenweg 49<br />
+                  9180 Lokeren
+                </a>
+              </li>
               <li className="mt-4">
                 <h5 className="text-white font-semibold mb-2">Volg Ons</h5>
                 <div className="flex space-x-4">

@@ -14,25 +14,13 @@ export const productImagePaths = Array.from(
 export const products: Product[] = [
   {
     id: "wc-wagen",
-    name: "WC-wagen",
+    name: "VIP WC-wagen",
     description: "Verplaatsbare toiletwagen voor je evenement.",
     category: "facilities",
     price: 285,
     image: undefined, // placeholder only
     available: true,
-    availabilityCount: 2,
-    popular: true,
-  },
-  {
-    id: "tafels-75x180",
-    name: "Tafels hoog & laag (75 × 180 cm)",
-    description: "Hoge en lage tafels, 75 × 180 cm. Perfect voor buffetten en zitplaatsen.",
-    category: "tables-chairs",
-    price: 6,
-    image: productImagePaths[46],
-    images: dsc(9681, 9682, 9683, 9684, 9685, 9686, 9687, 9688, 9689, 9690, 9691),
-    available: true,
-    availabilityCount: 20,
+    availabilityCount: 1,
     popular: true,
   },
   {
@@ -87,16 +75,6 @@ export const products: Product[] = [
     popular: true,
   },
   {
-    id: "staafleen",
-    name: "Staafleen (bar towel)",
-    description: "Staafdoek, ideale aanvulling voor je bar. Per stuk.",
-    category: "decoration",
-    price: 3,
-    image: undefined, // placeholder only
-    available: true,
-    availabilityCount: 50,
-  },
-  {
     id: "bakplaat-gas",
     name: "Bakplaat op gas",
     description: "Bakplaat op gas voor buitenshuis koken.",
@@ -105,18 +83,18 @@ export const products: Product[] = [
     image: productImagePaths[21],
     images: dsc(9656, 9657),
     available: true,
-    availabilityCount: 4,
+    availabilityCount: 1,
   },
   {
     id: "pannenkoeken",
-    name: "Pannekoeken machine",
+    name: "Pannenkoeken bakplaat",
     description: "Pannekoekenmachine voor je evenement. 220V. Diameter 40cm. 3600 WATT.",
     category: "catering",
     price: 40,
     image: productImagePaths[19],
     images: dsc(9654, 9655),
     available: true,
-    availabilityCount: 3,
+    availabilityCount: 1,
   },
   {
     id: "wafels",
@@ -127,7 +105,7 @@ export const products: Product[] = [
     image: productImagePaths[7],
     images: dsc(9642, 9643, 9644),
     available: true,
-    availabilityCount: 3,
+    availabilityCount: 1,
   },
   {
     id: "borden",
@@ -141,16 +119,6 @@ export const products: Product[] = [
     availabilityCount: 90,
   },
   {
-    id: "bekers",
-    name: "Bekers (10 stuks)",
-    description: "Bekers, 10 stuks. Excl. BTW.",
-    category: "catering",
-    price: 40,
-    image: undefined, // placeholder only
-    available: true,
-    availabilityCount: 20,
-  },
-  {
     id: "oven",
     name: "Oven",
     description: "Oven om te bakken en op te warmen.",
@@ -159,7 +127,7 @@ export const products: Product[] = [
     image: productImagePaths[5],
     images: dsc(9640, 9641),
     available: true,
-    availabilityCount: 2,
+    availabilityCount: 1,
     imageClassName: "-rotate-90",
   },
   {
@@ -193,18 +161,18 @@ export const products: Product[] = [
     image: productImagePaths[27],
     images: dsc(9662, 9663, 9664),
     available: true,
-    availabilityCount: 3,
+    availabilityCount: 1,
   },
   {
     id: "licht-slingers",
     name: "Licht slingers",
-    description: "Lichtslingers 10 meter.",
+    description: "Lichtslingers, 3x 10 meter.",
     category: "decoration",
     price: 15,
     image: productImagePaths[37],
     images: dsc(9672, 9673, 9674),
     available: true,
-    availabilityCount: 15,
+    availabilityCount: 3,
   },
   {
     id: "glazen-6",
@@ -263,7 +231,7 @@ export const products: Product[] = [
   },
   {
     id: "waterkaraffen",
-    name: "Waterkaraffen",
+    name: "Waterkaraf",
     description: "Waterkaraffen, 1 doos van 6. 1.3L per karaff.",
     category: "catering",
     price: 5,
@@ -275,7 +243,7 @@ export const products: Product[] = [
   {
     id: "generator",
     name: "Generator",
-    description: "Honda generator voor stroomvoorziening tijdens evenementen.",
+    description: "Honda generator 7 KW voor stroomvoorziening tijdens evenementen.",
     category: "facilities",
     price: 150,
     image: productImagePaths[66], // dsc_9701.webp
@@ -286,7 +254,7 @@ export const products: Product[] = [
   {
     id: "handenwas-set",
     name: "Handenwas set",
-    description: "Handenwas set voor hygiëne tijdens evenementen.",
+    description: "Alleenstaande handenwas set voor hygiëne tijdens evenementen. Water input en output zit erin.",
     category: "facilities",
     price: 50,
     image: undefined, // placeholder only
@@ -295,7 +263,7 @@ export const products: Product[] = [
   },
   {
     id: "gasvuurtjes",
-    name: "Gasvuurtjes",
+    name: "Terrasverwarmer",
     description: "Gasvuurtjes, 13KW. Hoogte wanneer opgezet: 2.25m. Gedemonteerd voor transport.",
     category: "facilities",
     price: 80,
@@ -303,7 +271,7 @@ export const products: Product[] = [
     images: dsc(9692, 9693),
     imageClassName: "-rotate-90",
     available: true,
-    availabilityCount: 2,
+    availabilityCount: 1,
   },
   {
     id: "tent-6x4",
@@ -318,7 +286,7 @@ export const products: Product[] = [
   },
   {
     id: "jbl-box",
-    name: "JBL box",
+    name: "JBL Partybox",
     description: "JBL draagbare box voor muziek en omroep.",
     category: "sound-light",
     price: 20,
@@ -336,7 +304,7 @@ export const products: Product[] = [
     price: 15,
     image: productImagePaths[17],
     available: true,
-    availabilityCount: 6,
+    availabilityCount: 1,
   },
   {
     id: "bain-marie-gel",
@@ -346,7 +314,6 @@ export const products: Product[] = [
     price: 3,
     image: productImagePaths[18],
     available: true,
-    availabilityCount: 30,
   },
 ];
 
