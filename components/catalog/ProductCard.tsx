@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Product } from "@/types";
 import { getCategoryDisplayName } from "@/lib/data/products";
 import { useCart } from "@/contexts/CartContext";
-import { IMAGE_PLACEHOLDER_BLUR } from "@/lib/utils";
+import { cn, IMAGE_PLACEHOLDER_BLUR } from "@/lib/utils";
 import { useState } from "react";
 
 interface ProductCardProps {
@@ -15,9 +15,12 @@ interface ProductCardProps {
   priority?: boolean;
 }
 
+const PLACEHOLDER_IMAGE = "/placeholder-product.svg";
+
 export default function ProductCard({ product, onAddToQuote, index = 0, priority = false }: ProductCardProps) {
   const { addItem, items } = useCart();
   const [addedToCart, setAddedToCart] = useState(false);
+  const [imageError, setImageError] = useState(false);
   const availabilityCount = product.availabilityCount ?? 0;
   const isAvailable = product.available && availabilityCount > 0;
   const cartItem = items.find((item: { productId: string; quantity: number }) => item.productId === product.id);
@@ -35,6 +38,16 @@ export default function ProductCard({ product, onAddToQuote, index = 0, priority
   };
 
   const displayImage = product.image ?? product.images?.[0];
+  const usePlaceholder = !displayImage || imageError;
+
+  const imageTransform =
+    product.imageClassName === "rotate-180"
+      ? "rotate(180deg)"
+      : product.imageClassName === "rotate-90"
+        ? "rotate(90deg)"
+        : product.imageClassName === "-rotate-90"
+          ? "rotate(-90deg)"
+          : undefined;
 
   return (
     <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow overflow-hidden group relative">
@@ -47,8 +60,16 @@ export default function ProductCard({ product, onAddToQuote, index = 0, priority
 
       {/* Image - link to detail page */}
       <Link href={`/catalog/product/${product.id}`} className="block">
-        {displayImage ? (
-          <div className="aspect-square bg-gray-200 relative overflow-hidden">
+        <div className="aspect-square bg-gray-200 relative overflow-hidden">
+          {usePlaceholder ? (
+            <Image
+              src={PLACEHOLDER_IMAGE}
+              alt={product.name}
+              fill
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+              className="object-cover group-hover:scale-105 transition-transform duration-300"
+            />
+          ) : (
             <Image
               src={displayImage}
               alt={product.name}
@@ -57,15 +78,13 @@ export default function ProductCard({ product, onAddToQuote, index = 0, priority
               placeholder="blur"
               blurDataURL={IMAGE_PLACEHOLDER_BLUR}
               className="object-cover group-hover:scale-105 transition-transform duration-300"
+              style={imageTransform ? { transform: imageTransform } : undefined}
               quality={75}
               priority={priority}
+              onError={() => setImageError(true)}
             />
-          </div>
-        ) : (
-          <div className="aspect-square bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
-            <span className="text-gray-400 text-sm">Geen afbeelding</span>
-          </div>
-        )}
+          )}
+        </div>
       </Link>
 
       <div className="p-4">

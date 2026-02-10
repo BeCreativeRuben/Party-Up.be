@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -147,10 +148,16 @@ export default function BookingForm({ initialItems = [] }: BookingFormProps) {
             </div>
           ))}
         </div>
-        <div className="flex justify-between mt-2 text-sm text-gray-600">
-          <span>Evenementgegevens</span>
-          <span>Selecteer Items</span>
-          <span>Controleer & Verzend</span>
+        <div className="flex mt-2 text-sm text-gray-600">
+          <div className="flex-1 flex items-center">
+            <span>Evenementgegevens</span>
+          </div>
+          <div className="flex-1 flex items-center">
+            <span>Selecteer Items</span>
+          </div>
+          <div className="flex-1 flex items-center">
+            <span>Verzend aanvraag</span>
+          </div>
         </div>
       </motion.div>
 
@@ -290,6 +297,7 @@ export default function BookingForm({ initialItems = [] }: BookingFormProps) {
                       type="checkbox"
                       checked={selectedItems.includes(product.id)}
                       onChange={() => toggleItem(product.id)}
+                      onClick={(e) => e.stopPropagation()}
                       className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500"
                     />
                     <div>
@@ -332,7 +340,7 @@ export default function BookingForm({ initialItems = [] }: BookingFormProps) {
               whileTap={selectedItems.length > 0 ? { scale: 0.95 } : {}}
               className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
             >
-              Volgende: Controleer & Verzend
+              Volgende: Controleer & verzend aanvraag
             </motion.button>
           </div>
         </motion.div>
@@ -348,7 +356,7 @@ export default function BookingForm({ initialItems = [] }: BookingFormProps) {
             transition={{ duration: 0.3 }}
             className="bg-white rounded-lg shadow-md p-8"
           >
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Controleer & Verzend</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">Controleer & verzend aanvraag</h2>
 
           <div className="space-y-6 mb-8">
             <div>
@@ -462,6 +470,18 @@ export default function BookingForm({ initialItems = [] }: BookingFormProps) {
               </div>
             </motion.div>
           )}
+
+          <p className="mb-6 text-sm text-gray-600">
+            Door je aanvraag te versturen ga je akkoord met onze{" "}
+            <Link href="/legal/terms" className="text-blue-600 hover:underline">
+              Algemene Voorwaarden
+            </Link>{" "}
+            en de{" "}
+            <Link href="/legal/waiver" className="text-blue-600 hover:underline">
+              Aansprakelijkheidsverklaring
+            </Link>
+            .
+          </p>
 
           <div className="flex justify-between">
             <motion.button

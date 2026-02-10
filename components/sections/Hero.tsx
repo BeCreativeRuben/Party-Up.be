@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function Hero() {
   return (
-    <section className="relative min-h-screen -mt-[104px] flex items-center justify-center overflow-hidden">
+    <section className="relative min-h-screen -mt-16 flex items-center justify-center overflow-hidden">
       {/* Background Video with Overlay */}
       <div className="absolute inset-0 z-0">
         <video

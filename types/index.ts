@@ -6,6 +6,8 @@ export type Product = {
   price: number;
   image?: string;
   images?: string[];
+  /** Optional Tailwind class for the product image (e.g. -rotate-90) */
+  imageClassName?: string;
   available: boolean;
   availabilityCount?: number;
   popular?: boolean;

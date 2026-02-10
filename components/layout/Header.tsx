@@ -2,58 +2,83 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import Navigation from "./Navigation";
 import { useState, useEffect } from "react";
 import { useCart } from "@/contexts/CartContext";
 
 export default function Header() {
-  const [scrolled, setScrolled] = useState(false);
+  const pathname = usePathname();
+  const isHome = pathname === "/";
+  const [scrolled, setScrolled] = useState(!isHome);
   const { getItemCount } = useCart();
   const itemCount = getItemCount();
 
   useEffect(() => {
+    if (!isHome) {
+      setScrolled(true);
+      return;
+    }
     const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
+      const pastHero = typeof window !== "undefined" && window.scrollY > window.innerHeight - 1;
+      setScrolled(pastHero);
     };
+    handleScroll();
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [isHome]);
 
   return (
     <>
-      {/* NOT YET FINISHED Banner */}
-      <div className="fixed top-0 left-0 right-0 bg-yellow-400 text-yellow-900 text-center py-2 px-4 text-sm font-semibold z-50">
-        ⚠️ NOT YET FINISHED - Website Under Construction
-      </div>
       <header
-        className={`fixed left-0 right-0 top-10 z-40 transition-all duration-300 animate-header-slide ${
+        className={`fixed left-0 right-0 top-0 z-40 transition-all duration-300 animate-header-slide ${
           scrolled
             ? "bg-white/95 backdrop-blur-md shadow-lg"
             : "bg-transparent"
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <Link href="/" className="flex items-center group">
-              <div className="flex items-center transition-transform duration-300 group-hover:scale-105">
-                <div className="relative bg-transparent">
-                  <Image
-                    src="/logo-full.png"
-                    alt="Party-Up Logo"
-                    width={200}
-                    height={100}
-                    className="h-14 w-auto object-contain drop-shadow-md"
-                    priority
-                    style={{
-                      backgroundColor: "transparent",
-                      imageRendering: "auto",
-                    }}
-                  />
+          <div className="flex items-center justify-between gap-4 h-16">
+            {/* Left: logo */}
+            <div className="flex flex-1 justify-start min-w-0">
+              <Link href="/" className="flex items-center group">
+                <div className="flex items-center transition-transform duration-300 group-hover:scale-105">
+                  <div className="relative bg-transparent">
+                    <Image
+                      src="/logo-full.png"
+                      alt="Party-Up Logo"
+                      width={200}
+                      height={100}
+                      className="h-14 w-auto object-contain drop-shadow-md"
+                      priority
+                      style={{
+                        backgroundColor: "transparent",
+                        imageRendering: "auto",
+                      }}
+                    />
+                  </div>
                 </div>
+              </Link>
+            </div>
+            {/* Center: nav links */}
+            <div className="hidden md:flex flex-1 justify-center min-w-0">
+              <Navigation scrolled={scrolled} showCta={false} />
+            </div>
+            {/* Right: mobile menu, CTA + cart */}
+            <div className="flex flex-1 justify-end items-center gap-2 min-w-0">
+              <div className="md:hidden">
+                <Navigation scrolled={scrolled} showCta={true} />
               </div>
-            </Link>
-            <div className="flex items-center gap-4">
-              <Navigation scrolled={scrolled} />
+              <Link
+                href="/booking"
+                className={`hidden md:inline-flex px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  scrolled
+                    ? "bg-blue-600 text-white hover:bg-blue-700"
+                    : "bg-white text-blue-600 hover:bg-white/90"
+                }`}
+              >
+                Reserveer Nu
+              </Link>
               <Link
                 href="/cart"
                 className={`relative p-2 transition-colors ${

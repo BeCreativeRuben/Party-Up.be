@@ -6,19 +6,19 @@ import { useState, useEffect } from "react";
 
 interface NavigationProps {
   scrolled?: boolean;
+  /** When false, desktop nav shows only links (CTA is rendered by Header). Default true. */
+  showCta?: boolean;
 }
 
-export default function Navigation({ scrolled = false }: NavigationProps) {
+export default function Navigation({ scrolled = false, showCta = true }: NavigationProps) {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
 
   const navLinks = [
     { href: "/", label: "Home" },
     { href: "/catalog", label: "Catalogus" },
-    { href: "/pricing", label: "Prijzen" },
-    { href: "/faq", label: "Veelgestelde Vragen" },
+    { href: "/faq", label: "FAQ" },
     { href: "/contact", label: "Contact" },
-    { href: "/reviews", label: "Beoordelingen" },
   ];
 
   const isActive = (href: string) => {
@@ -66,16 +66,18 @@ export default function Navigation({ scrolled = false }: NavigationProps) {
             {link.label}
           </Link>
         ))}
-        <Link
-          href="/booking"
-          className={`ml-4 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-            scrolled
-              ? "bg-blue-600 text-white hover:bg-blue-700"
-              : "bg-white text-blue-600 hover:bg-white/90"
-          }`}
-        >
-          Reserveer Nu
-        </Link>
+        {showCta && (
+          <Link
+            href="/booking"
+            className={`ml-4 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              scrolled
+                ? "bg-blue-600 text-white hover:bg-blue-700"
+                : "bg-white text-blue-600 hover:bg-white/90"
+            }`}
+          >
+            Reserveer Nu
+          </Link>
+        )}
       </div>
 
       {/* Mobile: Hamburger button */}

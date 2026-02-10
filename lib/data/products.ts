@@ -18,7 +18,7 @@ export const products: Product[] = [
     description: "Verplaatsbare toiletwagen voor je evenement.",
     category: "facilities",
     price: 285,
-    image: productImagePaths[0],
+    image: undefined, // placeholder only
     available: true,
     availabilityCount: 2,
     popular: true,
@@ -41,7 +41,7 @@ export const products: Product[] = [
     description: "Staafdoek, ideale aanvulling voor je bar. Per stuk.",
     category: "decoration",
     price: 3,
-    image: productImagePaths[2],
+    image: undefined, // placeholder only
     available: true,
     availabilityCount: 50,
   },
@@ -58,8 +58,8 @@ export const products: Product[] = [
   },
   {
     id: "pannenkoeken",
-    name: "Pannenkoeken",
-    description: "Pannenkoekservice voor je evenement.",
+    name: "Pannekoeken machine",
+    description: "Pannekoekenmachine voor je evenement.",
     category: "catering",
     price: 40,
     image: productImagePaths[19],
@@ -69,8 +69,8 @@ export const products: Product[] = [
   },
   {
     id: "wafels",
-    name: "Wafels",
-    description: "Wafelservice voor je evenement.",
+    name: "Wafelijzer",
+    description: "Wafelijzer voor je evenement.",
     category: "catering",
     price: 35,
     image: productImagePaths[7],
@@ -80,7 +80,7 @@ export const products: Product[] = [
   },
   {
     id: "borden",
-    name: "Borden (groot Ø 25, soep Ø 22)",
+    name: "Bord & bestek set",
     description: "Bordenset: groot Ø 25 cm, soep Ø 22 cm. Per weekend.",
     category: "catering",
     price: 50,
@@ -95,7 +95,7 @@ export const products: Product[] = [
     description: "Bekers, 10 stuks. Excl. BTW.",
     category: "catering",
     price: 40,
-    image: productImagePaths[7],
+    image: undefined, // placeholder only
     available: true,
     availabilityCount: 20,
   },
@@ -109,6 +109,7 @@ export const products: Product[] = [
     images: dsc(9640, 9641),
     available: true,
     availabilityCount: 2,
+    imageClassName: "-rotate-90",
   },
   {
     id: "ofyr",
@@ -116,7 +117,7 @@ export const products: Product[] = [
     description: "Ofyr vuurgrill voor buitenshuis koken.",
     category: "catering",
     price: 180,
-    image: productImagePaths[9],
+    image: undefined, // placeholder only
     available: true,
     availabilityCount: 1,
   },
@@ -145,7 +146,7 @@ export const products: Product[] = [
   {
     id: "licht-slingers",
     name: "Licht slingers",
-    description: "Lichtslingers. Per stuk.",
+    description: "Lichtslingers 10 meter.",
     category: "decoration",
     price: 15,
     image: productImagePaths[37],
@@ -156,7 +157,7 @@ export const products: Product[] = [
   {
     id: "glazen-6",
     name: "Glazen (6 st.)",
-    description: "Set van 6 glazen. Water & champagne.",
+    description: "Set van 6 glazen. Champagne.",
     category: "catering",
     price: 2.7,
     image: productImagePaths[23],
@@ -170,7 +171,7 @@ export const products: Product[] = [
     description: "Wegwerpglazen, 12 stuks. Water & champagne.",
     category: "catering",
     price: 5,
-    image: productImagePaths[14],
+    image: undefined, // placeholder only
     available: true,
     availabilityCount: 50,
   },
@@ -180,7 +181,7 @@ export const products: Product[] = [
     description: "Feesttent 6 × 4 m met zijwanden. Weerbestendig.",
     category: "tents",
     price: 250,
-    image: productImagePaths[15],
+    image: undefined, // placeholder only
     available: true,
     availabilityCount: 2,
     popular: true,
@@ -193,6 +194,7 @@ export const products: Product[] = [
     price: 20,
     image: productImagePaths[60],
     images: dsc(9695, 9696, 9697, 9698, 9699, 9700),
+    imageClassName: "-rotate-90",
     available: true,
     availabilityCount: 4,
   },

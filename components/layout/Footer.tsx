@@ -25,7 +25,7 @@ export default function Footer() {
           </div>
 
           <div>
-            <h4 className="text-white font-semibold mb-4">Snelle Links</h4>
+            <h4 className="text-white font-semibold mb-4">Links</h4>
             <ul className="space-y-2 text-sm">
               <li>
                 <Link href="/catalog" className="hover:text-white transition-colors">
@@ -54,18 +54,8 @@ export default function Footer() {
             <h4 className="text-white font-semibold mb-4">Juridisch</h4>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link href="/legal/terms" className="hover:text-white transition-colors">
-                  Algemene Voorwaarden
-                </Link>
-              </li>
-              <li>
                 <Link href="/legal/privacy" className="hover:text-white transition-colors">
                   Privacybeleid
-                </Link>
-              </li>
-              <li>
-                <Link href="/legal/waiver" className="hover:text-white transition-colors">
-                  Aansprakelijkheidsverklaring
                 </Link>
               </li>
             </ul>

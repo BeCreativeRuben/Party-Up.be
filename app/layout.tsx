@@ -31,7 +31,7 @@ export default function RootLayout({
         <ErrorBoundaryWrapper>
           <CartProvider>
             <Header />
-            <main className="min-h-screen pt-[104px]">{children}</main>
+            <main className="min-h-screen pt-16">{children}</main>
             <Footer />
           </CartProvider>
         </ErrorBoundaryWrapper>
