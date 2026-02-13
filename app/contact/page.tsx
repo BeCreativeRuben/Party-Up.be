@@ -209,6 +209,16 @@ export default function ContactPage() {
               </div>
 
               <div>
+                <h3 className="font-semibold text-gray-900 mb-2">Telefoon</h3>
+                <a
+                  href="tel:+32475940048"
+                  className="text-blue-600 hover:underline"
+                >
+                  +32 475 94 00 48
+                </a>
+              </div>
+
+              <div>
                 <h3 className="font-semibold text-gray-900 mb-2">Ophalen van materialen</h3>
                 <p className="text-gray-700">
                   Het ophalen van materialen gebeurt standaard &apos;s avonds na 18:00 uur. Andere tijden zijn bespreekbaar - bel ons daarvoor.
