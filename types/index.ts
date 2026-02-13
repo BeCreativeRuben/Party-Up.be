@@ -11,12 +11,18 @@ export type Product = {
   available: boolean;
   availabilityCount?: number;
   popular?: boolean;
+  /** Minimum rental period in days */
+  minimumRentalPeriod?: number;
+  /** Deposit/waarborg amount */
+  deposit?: number;
 };
 
 export type Category = "tents" | "tables-chairs" | "sound-light" | "decoration" | "catering" | "facilities";
 
 export type BookingFormData = {
-  eventDate: string;
+  rentalPeriodType: "standard" | "custom";
+  startDate: string;
+  endDate: string;
   eventLocation: string;
   numberOfGuests: number;
   selectedItems: string[];

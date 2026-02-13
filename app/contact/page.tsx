@@ -33,16 +33,20 @@ export default function ContactPage() {
     setIsSubmitting(true);
     setSubmitError(null);
     try {
-      // TODO: Implement actual email sending
-      console.log("Contact form submitted:", data);
-      
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      
-      setSubmitSuccess(true);
-      reset();
-      
-      setTimeout(() => setSubmitSuccess(false), 5000);
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      if (response.ok) {
+        setSubmitSuccess(true);
+        reset();
+        setTimeout(() => setSubmitSuccess(false), 5000);
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || "Submission failed");
+      }
     } catch (error) {
       setSubmitError(
         "We konden je bericht niet verzenden. Probeer het opnieuw of neem direct contact met ons op via info@party-up.be"
@@ -205,11 +209,9 @@ export default function ContactPage() {
               </div>
 
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">Openingsuren</h3>
+                <h3 className="font-semibold text-gray-900 mb-2">Ophalen van materialen</h3>
                 <p className="text-gray-700">
-                  Maandag - Vrijdag: 9:00 - 18:00<br />
-                  Zaterdag: 10:00 - 16:00<br />
-                  Zondag: Gesloten
+                  Het ophalen van materialen gebeurt standaard 's avonds na 18:00 uur. Andere tijden zijn bespreekbaar - bel ons daarvoor.
                 </p>
               </div>
 

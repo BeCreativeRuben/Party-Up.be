@@ -8,7 +8,8 @@ export async function POST(request: NextRequest) {
 
     // Validate required fields
     if (
-      !data.eventDate ||
+      !data.startDate ||
+      !data.endDate ||
       !data.eventLocation ||
       !data.numberOfGuests ||
       !data.contactName ||

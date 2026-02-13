@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { getProductById, getCategoryDisplayName, products } from "@/lib/data/products";
-import { formatPrice } from "@/lib/utils";
+import { formatPrice, calculateVAT, calculatePriceInclVAT } from "@/lib/utils";
 import ProductDetailActions from "@/components/catalog/ProductDetailActions";
 
 const ProductImageGallery = dynamic(() => import("@/components/catalog/ProductImageGallery"), {
@@ -66,7 +66,15 @@ export default async function ProductPage({ params }: ProductPageProps) {
             {getCategoryDisplayName(product.category)}
           </span>
           <h1 className="text-3xl font-bold text-gray-900 mt-1 mb-4">{product.name}</h1>
-          <p className="text-xl font-semibold text-blue-600 mb-6">{formatPrice(product.price)}</p>
+          <div className="mb-6">
+            <p className="text-xl font-semibold text-blue-600">{formatPrice(product.price)}</p>
+            <p className="text-xs text-gray-500 mt-1">Alle prijzen zijn excl. BTW</p>
+            <p className="text-sm text-gray-500 mt-1">
+              BTW (21%): {formatPrice(calculateVAT(product.price))} | 
+              Totaal incl. BTW: {formatPrice(calculatePriceInclVAT(product.price))}
+            </p>
+            <p className="text-sm text-gray-500 mt-1">per periode (3 dagen - vrijdag t/m zondag)</p>
+          </div>
           <p className="text-gray-600 mb-8">{product.description}</p>
 
           <ProductDetailActions product={product} />

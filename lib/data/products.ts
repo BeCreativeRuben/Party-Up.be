@@ -18,10 +18,24 @@ export const products: Product[] = [
     description: "Verplaatsbare toiletwagen voor je evenement.",
     category: "facilities",
     price: 285,
-    image: undefined, // placeholder only
+    image: "/ProductImages/optimized/WhatsApp Image 2026-02-10 at 18.44.05.jpeg",
+    images: [
+      "/ProductImages/optimized/WhatsApp Image 2026-02-10 at 18.44.05.jpeg",
+      "/ProductImages/optimized/WhatsApp Image 2026-02-10 at 18.44.05 (1).jpeg",
+      "/ProductImages/optimized/WhatsApp Image 2026-02-10 at 18.44.05 (2).jpeg",
+      "/ProductImages/optimized/WhatsApp Image 2026-02-10 at 18.44.05 (3).jpeg",
+      "/ProductImages/optimized/WhatsApp Image 2026-02-10 at 18.44.05 (4).jpeg",
+      "/ProductImages/optimized/WhatsApp Image 2026-02-10 at 18.44.05 (5).jpeg",
+      "/ProductImages/optimized/WhatsApp Image 2026-02-10 at 18.44.05 (6).jpeg",
+      "/ProductImages/optimized/WhatsApp Image 2026-02-10 at 18.44.05 (7).jpeg",
+      "/ProductImages/optimized/WhatsApp Image 2026-02-10 at 18.44.05 (8).jpeg",
+      "/ProductImages/optimized/WhatsApp Image 2026-02-10 at 18.44.05 (9).jpeg",
+    ],
     available: true,
     availabilityCount: 1,
     popular: true,
+    minimumRentalPeriod: 3,
+    deposit: 300,
   },
   {
     id: "tafels-hoog",
@@ -67,7 +81,7 @@ export const products: Product[] = [
     name: "Normale stoelen",
     description: "Normale stoelen met armleuningen, 20 stuks. Perfect voor gebruik bij lage tafels.",
     category: "tables-chairs",
-    price: 3,
+    price: 2,
     image: productImagePaths[47], // dsc_9682.webp
     images: dsc(9682, 9683),
     available: true,
@@ -99,7 +113,7 @@ export const products: Product[] = [
   {
     id: "wafels",
     name: "Wafelijzer",
-    description: "Wafelijzer voor je evenement.",
+    description: "Voor 2 luikse wafels. 14.8cm x 10.7cm x 3.10cm. 4x5 ruitjes. 1400W.",
     category: "catering",
     price: 35,
     image: productImagePaths[7],
@@ -109,11 +123,22 @@ export const products: Product[] = [
   },
   {
     id: "borden",
-    name: "Bord & bestek set",
-    description: "Bordenset: groot Ø 25 cm, soep Ø 22 cm.",
+    name: "Borden",
+    description: "Borden per 24 stuks: groot Ø 25 cm, soep Ø 22 cm.",
     category: "catering",
-    price: 50,
+    price: 5,
     image: productImagePaths[40],
+    images: dsc(9675, 9676, 9677, 9678, 9679, 9680),
+    available: true,
+    availabilityCount: 90,
+  },
+  {
+    id: "bestek",
+    name: "Bestek",
+    description: "Bestek per 24 stuks.",
+    category: "catering",
+    price: 5,
+    image: productImagePaths[40], // Using same image as borden for now
     images: dsc(9675, 9676, 9677, 9678, 9679, 9680),
     available: true,
     availabilityCount: 90,
@@ -150,7 +175,7 @@ export const products: Product[] = [
     images: dsc(9637, 9638, 9639),
     imageClassName: "-rotate-90",
     available: true,
-    availabilityCount: 4,
+    availabilityCount: 1,
   },
   {
     id: "grill-panini",
@@ -279,10 +304,12 @@ export const products: Product[] = [
     description: "Feesttent 6 × 4 m met zijwanden. Weerbestendig.",
     category: "tents",
     price: 250,
-    image: undefined, // placeholder only
+    image: "/ProductImages/optimized/tent6x4.gif",
     available: true,
     availabilityCount: 2,
     popular: true,
+    minimumRentalPeriod: 3,
+    deposit: 500,
   },
   {
     id: "jbl-box",
@@ -314,6 +341,7 @@ export const products: Product[] = [
     price: 3,
     image: productImagePaths[18],
     available: true,
+    availabilityCount: 20,
   },
 ];
 

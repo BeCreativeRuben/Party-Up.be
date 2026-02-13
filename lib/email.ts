@@ -39,9 +39,11 @@ export function generateCustomerEmail(data: BookingFormData): { subject: string;
             
             <div class="section">
               <h2>Evenementgegevens</h2>
-              <p><strong>Datum:</strong> ${new Date(data.eventDate).toLocaleDateString('nl-BE')}</p>
+              <p><strong>Huurperiode:</strong> ${data.rentalPeriodType === "standard" ? "Standaard (3 dagen - Vrijdag t/m Zondag)" : "Aangepaste periode"}</p>
+              <p><strong>Ophaaldatum:</strong> ${new Date(data.startDate).toLocaleDateString('nl-BE')}</p>
+              <p><strong>Retourdatum:</strong> ${new Date(data.endDate).toLocaleDateString('nl-BE')}</p>
               <p><strong>Locatie:</strong> ${data.eventLocation}</p>
-              <p><strong>Aantal Gasten:</strong> ${data.numberOfGuests}</p>
+              <p><strong>Aantal Gasten (schatting):</strong> ${data.numberOfGuests}</p>
             </div>
 
             <div class="section">
@@ -85,9 +87,11 @@ Beste ${data.contactName},
 Bedankt voor je boekingsaanvraag! We hebben je reservering ontvangen en zullen deze binnenkort bekijken.
 
 Evenementgegevens:
-- Datum: ${new Date(data.eventDate).toLocaleDateString('nl-BE')}
+- Huurperiode: ${data.rentalPeriodType === "standard" ? "Standaard (3 dagen - Vrijdag t/m Zondag)" : "Aangepaste periode"}
+- Ophaaldatum: ${new Date(data.startDate).toLocaleDateString('nl-BE')}
+- Retourdatum: ${new Date(data.endDate).toLocaleDateString('nl-BE')}
 - Locatie: ${data.eventLocation}
-- Aantal Gasten: ${data.numberOfGuests}
+- Aantal Gasten (schatting): ${data.numberOfGuests}
 
 Geselecteerde Items:
 ${selectedProducts.map((p) => `- ${p?.name}: ${formatPrice(p?.price || 0)}`).join("\n")}
@@ -144,9 +148,11 @@ export function generateAdminEmail(data: BookingFormData): { subject: string; ht
 
             <div class="section">
               <h2>Evenementgegevens</h2>
-              <p><strong>Datum:</strong> ${new Date(data.eventDate).toLocaleDateString('nl-BE')}</p>
+              <p><strong>Huurperiode:</strong> ${data.rentalPeriodType === "standard" ? "Standaard (3 dagen - Vrijdag t/m Zondag)" : "Aangepaste periode"}</p>
+              <p><strong>Ophaaldatum:</strong> ${new Date(data.startDate).toLocaleDateString('nl-BE')}</p>
+              <p><strong>Retourdatum:</strong> ${new Date(data.endDate).toLocaleDateString('nl-BE')}</p>
               <p><strong>Locatie:</strong> ${data.eventLocation}</p>
-              <p><strong>Aantal Gasten:</strong> ${data.numberOfGuests}</p>
+              <p><strong>Aantal Gasten (schatting):</strong> ${data.numberOfGuests}</p>
             </div>
 
             <div class="section">
@@ -178,9 +184,11 @@ Contactgegevens:
 - Telefoon: ${data.contactPhone}
 
 Evenementgegevens:
-- Datum: ${new Date(data.eventDate).toLocaleDateString('nl-BE')}
+- Huurperiode: ${data.rentalPeriodType === "standard" ? "Standaard (3 dagen - Vrijdag t/m Zondag)" : "Aangepaste periode"}
+- Ophaaldatum: ${new Date(data.startDate).toLocaleDateString('nl-BE')}
+- Retourdatum: ${new Date(data.endDate).toLocaleDateString('nl-BE')}
 - Locatie: ${data.eventLocation}
-- Aantal Gasten: ${data.numberOfGuests}
+- Aantal Gasten (schatting): ${data.numberOfGuests}
 
 Geselecteerde Items:
 ${selectedProducts.map((p) => `- ${p?.name}: ${formatPrice(p?.price || 0)}`).join("\n")}
@@ -189,6 +197,84 @@ Totaal: ${formatPrice(total)}
 
 ${data.additionalNotes ? `Aanvullende Opmerkingen: ${data.additionalNotes}\n` : ""}
   `.trim();
+
+  return { subject, html, text };
+}
+
+export type ContactFormData = {
+  name: string;
+  email: string;
+  phone?: string;
+  subject: string;
+  message: string;
+};
+
+export function generateContactEmail(data: ContactFormData): { subject: string; html: string; text: string } {
+  const subject = `Contactformulier: ${data.subject}`;
+
+  const html = `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <meta charset="utf-8">
+        <style>
+          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+          .header { background: linear-gradient(to right, #dc2626, #0284c7); color: white; padding: 20px; text-align: center; }
+          .content { background: #f9fafb; padding: 20px; }
+          .section { margin-bottom: 20px; background: white; padding: 15px; border-radius: 5px; }
+          .footer { text-align: center; padding: 20px; color: #666; font-size: 0.9em; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1>Party-Up.be</h1>
+            <p>Nieuw Contactformulier Bericht</p>
+          </div>
+          <div class="content">
+            <div class="section">
+              <h2>Contactgegevens</h2>
+              <p><strong>Naam:</strong> ${data.name}</p>
+              <p><strong>E-mail:</strong> <a href="mailto:${data.email}">${data.email}</a></p>
+              ${data.phone ? `<p><strong>Telefoon:</strong> <a href="tel:${data.phone}">${data.phone}</a></p>` : ""}
+            </div>
+
+            <div class="section">
+              <h2>Onderwerp</h2>
+              <p>${data.subject}</p>
+            </div>
+
+            <div class="section">
+              <h2>Bericht</h2>
+              <p style="white-space: pre-wrap;">${data.message}</p>
+            </div>
+          </div>
+          <div class="footer">
+            <p>Dit bericht is verzonden via het contactformulier op Party-Up.be</p>
+          </div>
+        </div>
+      </body>
+    </html>
+  `;
+
+  const text = `
+Nieuw Contactformulier Bericht - Party-Up.be
+
+Contactgegevens:
+- Naam: ${data.name}
+- E-mail: ${data.email}
+${data.phone ? `- Telefoon: ${data.phone}` : ""}
+
+Onderwerp:
+${data.subject}
+
+Bericht:
+${data.message}
+
+---
+Dit bericht is verzonden via het contactformulier op Party-Up.be
+  `;
 
   return { subject, html, text };
 }

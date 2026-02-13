@@ -16,3 +16,22 @@ export function formatPrice(price: number): string {
 export function formatPricePerDay(price: number): string {
   return `€${price} / day`;
 }
+
+// BTW/VAT calculations (21% BTW in Belgium)
+const VAT_RATE = 0.21;
+
+export function calculateVAT(priceExclVAT: number): number {
+  return priceExclVAT * VAT_RATE;
+}
+
+export function calculatePriceInclVAT(priceExclVAT: number): number {
+  return priceExclVAT + calculateVAT(priceExclVAT);
+}
+
+export function formatPriceExclVAT(price: number): string {
+  return formatPrice(price);
+}
+
+export function formatPriceInclVAT(price: number): string {
+  return formatPrice(calculatePriceInclVAT(price));
+}

@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useState, useCallback, useEffect, useRef } from "react";
 import { IMAGE_PLACEHOLDER_BLUR } from "@/lib/utils";
+import LazyGif from "@/components/ui/LazyGif";
 
 interface ProductImageGalleryProps {
   images: string[];
@@ -69,26 +70,37 @@ export default function ProductImageGallery({ images, productName, imageClassNam
             onScroll={handleScroll}
             className="overflow-x-auto overflow-y-hidden snap-x snap-mandatory h-full flex scroll-smooth scrollbar-hide"
           >
-            {images.map((src, i) => (
-              <div
-                key={src}
-                ref={(el) => { slideRefs.current[i] = el; }}
-                className="relative flex-shrink-0 w-full h-full snap-center"
-              >
-                <Image
-                  src={src}
-                  alt={`${productName} - ${i + 1}`}
-                  fill
-                  className={`object-contain ${imageClassName || ""}`}
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                  priority={i === 0}
-                  loading={i === 0 ? undefined : "lazy"}
-                  placeholder="blur"
-                  blurDataURL={IMAGE_PLACEHOLDER_BLUR}
-                  quality={i === 0 ? 80 : 75}
-                />
-              </div>
-            ))}
+            {images.map((src, i) => {
+              const isGif = src.toLowerCase().endsWith('.gif');
+              return (
+                <div
+                  key={src}
+                  ref={(el) => { slideRefs.current[i] = el; }}
+                  className="relative flex-shrink-0 w-full h-full snap-center"
+                >
+                  {isGif ? (
+                    <LazyGif
+                      src={src}
+                      alt={`${productName} - ${i + 1}`}
+                      className={`object-contain w-full h-full ${imageClassName || ""}`}
+                    />
+                  ) : (
+                    <Image
+                      src={src}
+                      alt={`${productName} - ${i + 1}`}
+                      fill
+                      className={`object-contain ${imageClassName || ""}`}
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                      priority={i === 0}
+                      loading={i === 0 ? undefined : "lazy"}
+                      placeholder="blur"
+                      blurDataURL={IMAGE_PLACEHOLDER_BLUR}
+                      quality={i === 0 ? 80 : 75}
+                    />
+                  )}
+                </div>
+              );
+            })}
           </div>
           {images.length > 1 && (
             <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5">

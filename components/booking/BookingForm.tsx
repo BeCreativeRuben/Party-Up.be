@@ -1,18 +1,23 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { BookingFormData } from "@/types";
 import { products, getProductById } from "@/lib/data/products";
 import { motion, AnimatePresence } from "framer-motion";
+import { useCart } from "@/contexts/CartContext";
+import { formatPrice } from "@/lib/utils";
+import Image from "next/image";
 
 const bookingSchema = z.object({
-  eventDate: z.string().min(1, "Evenementdatum is verplicht"),
+  rentalPeriodType: z.enum(["standard", "custom"]),
+  startDate: z.string().min(1, "Ophaaldatum is verplicht"),
+  endDate: z.string().min(1, "Retourdatum is verplicht"),
   eventLocation: z.string().min(1, "Evenementlocatie is verplicht"),
-  numberOfGuests: z.number().min(10, "Minimum 10 gasten").max(100, "Maximum 100 gasten"),
+  numberOfGuests: z.number({ required_error: "Aantal gasten is verplicht" }).min(1, "Minimum 1 gast").max(1000, "Maximum 1000 gasten"),
   contactName: z.string().min(1, "Naam is verplicht"),
   contactEmail: z.string().email("Geldig e-mailadres is verplicht"),
   contactPhone: z.string().min(1, "Telefoonnummer is verplicht"),
@@ -27,34 +32,100 @@ interface BookingFormProps {
   initialItems?: string[];
 }
 
+type RentalPeriodType = "standard" | "custom";
+
 export default function BookingForm({ initialItems = [] }: BookingFormProps) {
+  const { items, addItem, removeItem, updateQuantity } = useCart();
   const [step, setStep] = useState(1);
-  const [selectedItems, setSelectedItems] = useState<string[]>(initialItems);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [rentalPeriodType, setRentalPeriodType] = useState<RentalPeriodType>("standard");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
   const {
     register,
     handleSubmit,
     formState: { errors },
     watch,
+    setValue,
   } = useForm<BookingFormValues>({
     resolver: zodResolver(bookingSchema),
     defaultValues: {
-      selectedItems: initialItems,
+      selectedItems: [],
       numberOfGuests: 20,
+      rentalPeriodType: "standard",
     },
   });
 
   const numberOfGuests = watch("numberOfGuests");
 
-  const toggleItem = (productId: string) => {
-    setSelectedItems((prev) =>
-      prev.includes(productId)
-        ? prev.filter((id) => id !== productId)
-        : [...prev, productId]
+  // Add initial items to cart on mount
+  useEffect(() => {
+    if (initialItems.length > 0) {
+      initialItems.forEach(itemId => {
+        const existingItem = items.find(item => item.productId === itemId);
+        if (!existingItem) {
+          addItem(itemId);
+        }
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Set default dates for standard period on mount (suggest next Friday)
+  useEffect(() => {
+    if (rentalPeriodType === "standard" && !startDate && !endDate) {
+      const today = new Date();
+      const dayOfWeek = today.getDay();
+      const daysUntilFriday = dayOfWeek <= 5 ? 5 - dayOfWeek : 5 - dayOfWeek + 7;
+      const friday = new Date(today);
+      friday.setDate(today.getDate() + daysUntilFriday);
+      const sunday = new Date(friday);
+      sunday.setDate(friday.getDate() + 2);
+      
+      const startDateStr = friday.toISOString().split("T")[0];
+      const endDateStr = sunday.toISOString().split("T")[0];
+      
+      setStartDate(startDateStr);
+      setEndDate(endDateStr);
+      setValue("startDate", startDateStr);
+      setValue("endDate", endDateStr);
+      setValue("rentalPeriodType", "standard");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Get suggested products based on items in cart
+  const getSuggestedProducts = () => {
+    if (items.length === 0) {
+      // If cart is empty, suggest popular items
+      return products.filter(p => p.popular).slice(0, 4);
+    }
+    
+    // Get categories of items in cart
+    const cartCategories = new Set(
+      items.map(item => {
+        const product = getProductById(item.productId);
+        return product?.category;
+      }).filter(Boolean)
     );
+    
+    // Get cart product IDs
+    const cartProductIds = new Set(items.map(item => item.productId));
+    
+    // Suggest products from same or related categories, excluding items already in cart
+    const suggestions = products
+      .filter(product => {
+        // Don't suggest items already in cart
+        if (cartProductIds.has(product.id)) return false;
+        // Suggest items from same category or popular items
+        return cartCategories.has(product.category) || product.popular;
+      })
+      .slice(0, 4);
+    
+    return suggestions;
   };
 
 
@@ -62,13 +133,22 @@ export default function BookingForm({ initialItems = [] }: BookingFormProps) {
     setIsSubmitting(true);
     setSubmitError(null);
     try {
+      // Get selected items from cart
+      const selectedItems = items.map(item => item.productId);
+      
+      // Ensure dates are set correctly
+      const formData = {
+        ...data,
+        rentalPeriodType: rentalPeriodType,
+        startDate: rentalPeriodType === "standard" ? startDate : data.startDate,
+        endDate: rentalPeriodType === "standard" ? endDate : data.endDate,
+        selectedItems,
+      };
+      
       const response = await fetch("/api/booking", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...data,
-          selectedItems,
-        }),
+        body: JSON.stringify(formData),
       });
 
       if (response.ok) {
@@ -198,18 +278,149 @@ export default function BookingForm({ initialItems = [] }: BookingFormProps) {
           </div>
 
           <div className="space-y-6">
+            {/* Rental Period Selector */}
             <div>
-              <label htmlFor="eventDate" className="block text-sm font-medium text-gray-700 mb-2">
-                Evenementdatum *
+              <label className="block text-sm font-medium text-gray-700 mb-3">
+                Huurperiode *
               </label>
-              <input
-                type="date"
-                id="eventDate"
-                {...register("eventDate")}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              />
-              {errors.eventDate && (
-                <p className="mt-1 text-sm text-red-600">{errors.eventDate.message}</p>
+              <div className="space-y-4">
+                <div className="flex items-center gap-4">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="rentalPeriod"
+                      value="standard"
+                      checked={rentalPeriodType === "standard"}
+                      onChange={(e) => {
+                        setRentalPeriodType(e.target.value as RentalPeriodType);
+                        setValue("rentalPeriodType", e.target.value as RentalPeriodType);
+                      }}
+                      className="w-4 h-4 text-blue-600"
+                    />
+                    <span className="text-gray-700 font-medium">Standaard (3 dagen)</span>
+                  </label>
+                  <span className="text-sm text-gray-500">Vrijdag t/m zondag</span>
+                </div>
+                
+                <div className="flex items-center gap-4">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="rentalPeriod"
+                      value="custom"
+                      checked={rentalPeriodType === "custom"}
+                      onChange={(e) => {
+                        setRentalPeriodType(e.target.value as RentalPeriodType);
+                        setValue("rentalPeriodType", e.target.value as RentalPeriodType);
+                      }}
+                      className="w-4 h-4 text-blue-600"
+                    />
+                    <span className="text-gray-700 font-medium">Aangepaste periode</span>
+                  </label>
+                </div>
+
+                {/* Date inputs - always visible */}
+                <div className="ml-6 mt-3 space-y-3 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label htmlFor="startDate" className="block text-sm font-medium text-gray-700 mb-1">
+                        Ophaaldatum *
+                      </label>
+                      <input
+                        type="date"
+                        id="startDate"
+                        {...register("startDate")}
+                        value={startDate}
+                        onChange={(e) => {
+                          const newStartDate = e.target.value;
+                          setStartDate(newStartDate);
+                          setValue("startDate", newStartDate);
+                          
+                          // If standard period, auto-calculate end date (start + 2 days = 3 days total)
+                          if (rentalPeriodType === "standard" && newStartDate) {
+                            const start = new Date(newStartDate);
+                            const end = new Date(start);
+                            end.setDate(start.getDate() + 2); // +2 days = 3 days total (including start day)
+                            const endDateStr = end.toISOString().split("T")[0];
+                            setEndDate(endDateStr);
+                            setValue("endDate", endDateStr);
+                          }
+                        }}
+                        min={new Date().toISOString().split("T")[0]}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      />
+                      {errors.startDate && (
+                        <p className="mt-1 text-xs text-red-600">{errors.startDate.message}</p>
+                      )}
+                    </div>
+                    <div>
+                      <label htmlFor="endDate" className="block text-sm font-medium text-gray-700 mb-1">
+                        Retourdatum *
+                      </label>
+                      <input
+                        type="date"
+                        id="endDate"
+                        {...register("endDate")}
+                        value={endDate}
+                        onChange={(e) => {
+                          const newEndDate = e.target.value;
+                          setEndDate(newEndDate);
+                          setValue("endDate", newEndDate);
+                        }}
+                        min={rentalPeriodType === "standard" && startDate ? (() => {
+                          const start = new Date(startDate);
+                          const minEnd = new Date(start);
+                          minEnd.setDate(start.getDate() + 2);
+                          return minEnd.toISOString().split("T")[0];
+                        })() : (startDate || new Date().toISOString().split("T")[0])}
+                        disabled={rentalPeriodType === "standard"}
+                        className={`w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                          rentalPeriodType === "standard" ? "bg-gray-100 cursor-not-allowed" : ""
+                        }`}
+                      />
+                      {errors.endDate && (
+                        <p className="mt-1 text-xs text-red-600">{errors.endDate.message}</p>
+                      )}
+                      {rentalPeriodType === "standard" && (
+                        <p className="mt-1 text-xs text-gray-500">
+                          Automatisch berekend (3 dagen vanaf ophaaldatum)
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  {startDate && endDate && (
+                    <div className="text-sm text-gray-600">
+                      {(() => {
+                        const start = new Date(startDate);
+                        const end = new Date(endDate);
+                        const diffTime = Math.abs(end.getTime() - start.getTime());
+                        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+                        const isValid = rentalPeriodType === "standard" ? diffDays === 3 : diffDays >= 3;
+                        return isValid ? (
+                          <span className="text-green-600 font-medium">
+                            ✓ Periode: {diffDays} dag{diffDays !== 1 ? "en" : ""} 
+                            {rentalPeriodType === "standard" ? " (standaard 3 dagen)" : ` (minimum: 3 dagen)`}
+                          </span>
+                        ) : (
+                          <span className="text-red-600 font-medium">
+                            ⚠ Periode: {diffDays} dag{diffDays !== 1 ? "en" : ""} 
+                            {rentalPeriodType === "standard" ? " (moet exact 3 dagen zijn)" : " (minimum: 3 dagen vereist)"}
+                          </span>
+                        );
+                      })()}
+                    </div>
+                  )}
+                  {rentalPeriodType === "custom" && (
+                    <p className="text-xs text-gray-500 mt-2">
+                      Minimum huurperiode is 3 dagen. Voor aangepaste periodes neem contact met ons op voor beschikbaarheid en prijsopgave.
+                    </p>
+                  )}
+                </div>
+              </div>
+              {(errors.startDate || errors.endDate) && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.startDate?.message || errors.endDate?.message}
+                </p>
               )}
             </div>
 
@@ -237,14 +448,18 @@ export default function BookingForm({ initialItems = [] }: BookingFormProps) {
                 htmlFor="numberOfGuests"
                 className="block text-sm font-medium text-gray-700 mb-2"
               >
-                Aantal Gasten * (10-100)
+                Aantal Gasten (schatting) *
               </label>
               <input
                 type="number"
                 id="numberOfGuests"
-                {...register("numberOfGuests", { valueAsNumber: true })}
-                min="10"
-                max="100"
+                {...register("numberOfGuests", { 
+                  valueAsNumber: true,
+                  setValueAs: (value) => value === "" ? undefined : Number(value)
+                })}
+                min="1"
+                max="1000"
+                placeholder="Bijv. 50"
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
               {errors.numberOfGuests && (
@@ -277,50 +492,169 @@ export default function BookingForm({ initialItems = [] }: BookingFormProps) {
             transition={{ duration: 0.3 }}
             className="bg-white rounded-lg shadow-md p-8"
           >
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Selecteer Items</h2>
-          <div className="space-y-4 mb-6">
-            {products.map((product) => (
-              <motion.div
-                key={product.id}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className={`border-2 rounded-lg p-4 cursor-pointer transition-all duration-300 ${
-                  selectedItems.includes(product.id)
-                    ? "border-blue-600 bg-blue-50 shadow-md"
-                    : "border-gray-200 hover:border-blue-300 hover:shadow-md"
-                }`}
-                onClick={() => toggleItem(product.id)}
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-4">
-                    <input
-                      type="checkbox"
-                      checked={selectedItems.includes(product.id)}
-                      onChange={() => toggleItem(product.id)}
-                      onClick={(e) => e.stopPropagation()}
-                      className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500"
-                    />
-                    <div>
-                      <h3 className="font-semibold text-gray-900">{product.name}</h3>
-                      <p className="text-sm text-gray-600">{product.description}</p>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">Controleer je bestelling</h2>
+          
+          {/* Cart Items */}
+          {items.length > 0 ? (
+            <div className="space-y-4 mb-8">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Jouw winkelmandje</h3>
+              {items.map((item) => {
+                const product = getProductById(item.productId);
+                if (!product) return null;
+                const availabilityCount = product.availabilityCount ?? 0;
+                const maxQuantity = availabilityCount;
+                const canIncrease = item.quantity < maxQuantity;
+                
+                return (
+                  <motion.div
+                    key={item.productId}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="bg-gray-50 rounded-lg p-4 border border-gray-200"
+                  >
+                    <div className="flex flex-col sm:flex-row gap-4">
+                      {/* Product Image */}
+                      {product.image ? (
+                        <div className="w-full sm:w-24 h-24 bg-gray-200 rounded-lg relative overflow-hidden flex-shrink-0">
+                          <Image
+                            src={product.image}
+                            alt={product.name}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                      ) : (
+                        <div className="w-full sm:w-24 h-24 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg flex items-center justify-center flex-shrink-0">
+                          <span className="text-gray-400 text-xs">Geen afbeelding</span>
+                        </div>
+                      )}
 
-          {selectedItems.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="mb-6 p-6 bg-blue-50 rounded-lg border border-blue-200"
-            >
-              <p className="text-sm text-gray-600 mb-2">
-                {selectedItems.length} item{selectedItems.length !== 1 ? "s" : ""} geselecteerd
-              </p>
-            </motion.div>
+                      {/* Product Details */}
+                      <div className="flex-1">
+                        <h4 className="font-semibold text-gray-900 mb-1">{product.name}</h4>
+                        <p className="text-sm text-gray-600 mb-2">{product.description}</p>
+                        <p className="text-sm font-medium text-gray-900">
+                          {formatPrice(product.price)} per stuk
+                        </p>
+                      </div>
+
+                      {/* Quantity Controls */}
+                      <div className="flex items-center gap-3">
+                        <button
+                          type="button"
+                          onClick={() => updateQuantity(item.productId, item.quantity - 1)}
+                          className="flex items-center justify-center w-10 h-10 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors"
+                          aria-label="Verlaag aantal"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+                          </svg>
+                        </button>
+                        <span className="text-lg font-semibold text-gray-900 min-w-[3rem] text-center">
+                          {item.quantity}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => updateQuantity(item.productId, item.quantity + 1)}
+                          disabled={!canIncrease}
+                          className={`flex items-center justify-center w-10 h-10 rounded-lg transition-colors ${
+                            canIncrease
+                              ? "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                              : "bg-gray-100 text-gray-400 cursor-not-allowed"
+                          }`}
+                          aria-label="Verhoog aantal"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                          </svg>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => removeItem(item.productId)}
+                          className="ml-2 text-red-600 hover:text-red-700 transition-colors p-2"
+                          aria-label="Verwijder item"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="mb-8 p-6 bg-gray-50 rounded-lg border border-gray-200 text-center">
+              <p className="text-gray-600 mb-4">Je winkelmandje is leeg</p>
+              <Link
+                href="/catalog"
+                className="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+              >
+                Bekijk Catalogus
+              </Link>
+            </div>
           )}
+
+          {/* Suggestions */}
+          {(() => {
+            const suggestions = getSuggestedProducts();
+            if (suggestions.length === 0) return null;
+            
+            return (
+              <div className="mb-8">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                  Dit wordt vaak samengebruikt met:
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {suggestions.map((product) => (
+                    <motion.div
+                      key={product.id}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className="border border-gray-200 rounded-lg p-4 hover:border-blue-300 hover:shadow-md transition-all cursor-pointer"
+                      onClick={() => addItem(product.id)}
+                    >
+                      <div className="flex items-start gap-3">
+                        {product.image ? (
+                          <div className="w-16 h-16 bg-gray-200 rounded-lg relative overflow-hidden flex-shrink-0">
+                            <Image
+                              src={product.image}
+                              alt={product.name}
+                              fill
+                              className="object-cover"
+                            />
+                          </div>
+                        ) : (
+                          <div className="w-16 h-16 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg flex-shrink-0" />
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-semibold text-gray-900 mb-1 line-clamp-1">{product.name}</h4>
+                          <p className="text-sm text-gray-600 mb-2 line-clamp-2">{product.description}</p>
+                          <p className="text-sm font-medium text-blue-600">
+                            {formatPrice(product.price)}
+                          </p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            addItem(product.id);
+                          }}
+                          className="ml-2 p-2 text-blue-600 hover:text-blue-700 transition-colors"
+                          aria-label="Voeg toe"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                          </svg>
+                        </button>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            );
+          })()}
 
           <div className="flex justify-between">
             <motion.button
@@ -335,9 +669,9 @@ export default function BookingForm({ initialItems = [] }: BookingFormProps) {
             <motion.button
               type="button"
               onClick={() => setStep(3)}
-              disabled={selectedItems.length === 0}
-              whileHover={selectedItems.length > 0 ? { scale: 1.05 } : {}}
-              whileTap={selectedItems.length > 0 ? { scale: 0.95 } : {}}
+              disabled={items.length === 0}
+              whileHover={items.length > 0 ? { scale: 1.05 } : {}}
+              whileTap={items.length > 0 ? { scale: 0.95 } : {}}
               className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
             >
               Volgende: Controleer & verzend aanvraag
@@ -421,12 +755,18 @@ export default function BookingForm({ initialItems = [] }: BookingFormProps) {
             <div className="border-t pt-6">
               <h3 className="font-semibold text-gray-900 mb-4">Geselecteerde Items</h3>
               <div className="space-y-2 mb-4">
-                {selectedItems.map((itemId) => {
-                  const product = getProductById(itemId);
+                {items.map((item) => {
+                  const product = getProductById(item.productId);
                   if (!product) return null;
                   return (
-                    <div key={itemId} className="text-sm">
-                      <span>{product.name}</span>
+                    <div key={item.productId} className="flex justify-between items-center py-2 border-b border-gray-200">
+                      <div>
+                        <p className="font-medium text-gray-900">{product.name}</p>
+                        <p className="text-sm text-gray-600">Aantal: {item.quantity}</p>
+                      </div>
+                      <p className="text-sm font-medium text-gray-900">
+                        {formatPrice(product.price * item.quantity)}
+                      </p>
                     </div>
                   );
                 })}

@@ -1,5 +1,5 @@
 import { categories, products } from "@/lib/data/products";
-import { formatPrice } from "@/lib/utils";
+import { formatPrice, calculateVAT, calculatePriceInclVAT } from "@/lib/utils";
 import Link from "next/link";
 
 export default function PricingPage() {
@@ -8,7 +8,7 @@ export default function PricingPage() {
       <div className="text-center mb-8">
         <h1 className="text-4xl font-bold text-gray-900 mb-3">Prijzen</h1>
         <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-          Transparante prijzen zonder verborgen kosten. Alle prijzen zijn per huurperiode.
+          Transparante prijzen zonder verborgen kosten. Alle prijzen zijn excl. BTW (21%). Alle prijzen zijn per huurperiode.
         </p>
       </div>
 
@@ -36,6 +36,12 @@ export default function PricingPage() {
                         <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Prijs
                         </th>
+                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          BTW (21%)
+                        </th>
+                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Prijs (incl. BTW)
+                        </th>
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
@@ -51,6 +57,12 @@ export default function PricingPage() {
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-semibold text-blue-600">
                             {formatPrice(product.price)}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-600">
+                            {formatPrice(calculateVAT(product.price))}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-semibold text-gray-900">
+                            {formatPrice(calculatePriceInclVAT(product.price))}
                           </td>
                         </tr>
                       ))}
