@@ -1,3 +1,4 @@
+import nodemailer from "nodemailer";
 import { BookingFormData } from "@/types";
 import { getProductById } from "@/lib/data/products";
 import { formatPrice } from "@/lib/utils";
@@ -279,24 +280,40 @@ Dit bericht is verzonden via het contactformulier op Party-Up.be
   return { subject, html, text };
 }
 
-// TODO: Integrate with actual email service (Resend, SendGrid, Nodemailer, etc.)
 export async function sendEmail(
   to: string,
   subject: string,
   html: string,
   text: string
 ): Promise<boolean> {
-  // Placeholder implementation
-  // In production, integrate with email service:
-  // - Resend: https://resend.com
-  // - SendGrid: https://sendgrid.com
-  // - Nodemailer with SMTP
-  
-  console.log("Email would be sent:", { to, subject });
-  console.log("HTML:", html);
-  console.log("Text:", text);
-  
-  // Return true for now - actual implementation needed
-  return true;
+  const user = process.env.SMTP_USER;
+  const pass = process.env.SMTP_PASS;
+
+  if (!user || !pass) {
+    console.log("Email skipped (SMTP not configured):", { to, subject });
+    return true;
+  }
+
+  try {
+    const transporter = nodemailer.createTransport({
+      host: "smtp.gmail.com",
+      port: 587,
+      secure: false,
+      requireTLS: true,
+      auth: { user, pass },
+    });
+
+    await transporter.sendMail({
+      from: user,
+      to,
+      subject,
+      html,
+      text,
+    });
+    return true;
+  } catch (err) {
+    console.error("Send email error:", err);
+    return false;
+  }
 }
 
