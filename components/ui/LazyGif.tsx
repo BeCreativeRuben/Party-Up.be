@@ -47,10 +47,10 @@ export default function LazyGif({ src, alt, className, style, fill }: LazyGifPro
         inset: 0,
         ...style,
       }
-    : style;
+    : style ?? {};
 
-  // eslint-disable-next-line @next/next/no-img-element -- Animated GIFs require <img> for proper playback; next/image does not support lazy play-on-view for GIFs
   return (
+    // eslint-disable-next-line @next/next/no-img-element -- Animated GIFs require <img> for proper playback
     <img
       ref={imgRef}
       src={isInView ? src : undefined}
