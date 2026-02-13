@@ -97,6 +97,11 @@ export default function BookingForm({ initialItems = [] }: BookingFormProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Scroll to top when changing step so the new step is visible
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [step]);
+
   // Get suggested products based on items in cart
   const getSuggestedProducts = () => {
     if (items.length === 0) {
@@ -536,6 +541,11 @@ export default function BookingForm({ initialItems = [] }: BookingFormProps) {
                         <p className="text-sm font-medium text-gray-900">
                           {formatPrice(product.price)} per stuk
                         </p>
+                        {product.deposit != null && product.deposit > 0 && (
+                          <p className="text-xs text-orange-600 font-medium mt-1">
+                            Waarborg: {formatPrice(product.deposit)} per stuk
+                          </p>
+                        )}
                       </div>
 
                       {/* Quantity Controls */}
@@ -583,6 +593,22 @@ export default function BookingForm({ initialItems = [] }: BookingFormProps) {
                   </motion.div>
                 );
               })}
+              {items.some((item) => {
+                const p = getProductById(item.productId);
+                return p?.deposit != null && p.deposit > 0;
+              }) && (
+                <div className="mt-4 pt-4 border-t border-gray-200 flex justify-between items-center">
+                  <span className="font-medium text-gray-700">Totaal waarborg</span>
+                  <span className="font-semibold text-orange-600">
+                    {formatPrice(
+                      items.reduce((sum, item) => {
+                        const p = getProductById(item.productId);
+                        return sum + (p?.deposit ?? 0) * item.quantity;
+                      }, 0)
+                    )}
+                  </span>
+                </div>
+              )}
             </div>
           ) : (
             <div className="mb-8 p-6 bg-gray-50 rounded-lg border border-gray-200 text-center">
@@ -634,6 +660,11 @@ export default function BookingForm({ initialItems = [] }: BookingFormProps) {
                           <p className="text-sm font-medium text-blue-600">
                             {formatPrice(product.price)}
                           </p>
+                          {product.deposit != null && product.deposit > 0 && (
+                            <p className="text-xs text-orange-600 font-medium">
+                              Waarborg: {formatPrice(product.deposit)}
+                            </p>
+                          )}
                         </div>
                         <button
                           type="button"

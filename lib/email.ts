@@ -3,12 +3,28 @@ import { BookingFormData } from "@/types";
 import { getProductById } from "@/lib/data/products";
 import { formatPrice } from "@/lib/utils";
 
+function getItemCounts(selectedItems: string[]): Record<string, number> {
+  return selectedItems.reduce((acc, id) => {
+    acc[id] = (acc[id] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+}
+
 export function generateCustomerEmail(data: BookingFormData): { subject: string; html: string; text: string } {
-  const selectedProducts = data.selectedItems
+  const itemCounts = getItemCounts(data.selectedItems);
+  const uniqueIds = [...new Set(data.selectedItems)];
+  const selectedProducts = uniqueIds
     .map((id) => getProductById(id))
     .filter((p) => p !== undefined);
 
-  const total = selectedProducts.reduce((sum, product) => sum + (product?.price || 0), 0);
+  const total = selectedProducts.reduce((sum, product) => {
+    const qty = itemCounts[product?.id ?? ""] ?? 0;
+    return sum + (product?.price || 0) * qty;
+  }, 0);
+  const totalDeposit = selectedProducts.reduce((sum, product) => {
+    const qty = itemCounts[product?.id ?? ""] ?? 0;
+    return sum + (product?.deposit || 0) * qty;
+  }, 0);
 
   const subject = `Boekingsbevestiging - Party-Up.be`;
 
@@ -50,13 +66,20 @@ export function generateCustomerEmail(data: BookingFormData): { subject: string;
             <div class="section">
               <h2>Geselecteerde Items</h2>
               ${selectedProducts.map(
-                (product) => `
+                (product) => {
+                  const qty = itemCounts[product?.id ?? ""] ?? 0;
+                  const lineTotal = (product?.price || 0) * qty;
+                  const lineDeposit = (product?.deposit || 0) * qty;
+                  return `
                 <div class="item">
-                  <strong>${product?.name}</strong> - ${formatPrice(product?.price || 0)}
+                  <strong>${product?.name}</strong> × ${qty} - ${formatPrice(product?.price || 0)}/st = ${formatPrice(lineTotal)}
+                  ${lineDeposit > 0 ? `<br><span style="color:#ea580c;">Waarborg: ${formatPrice(product?.deposit || 0)}/st = ${formatPrice(lineDeposit)}</span>` : ""}
                 </div>
-              `
+              `;
+                }
               ).join("")}
               <div class="total">Totaal: ${formatPrice(total)}</div>
+              ${totalDeposit > 0 ? `<div class="total" style="color:#ea580c;">Totaal waarborg: ${formatPrice(totalDeposit)}</div>` : ""}
             </div>
 
             ${data.additionalNotes ? `
@@ -95,9 +118,14 @@ Evenementgegevens:
 - Aantal Gasten (schatting): ${data.numberOfGuests}
 
 Geselecteerde Items:
-${selectedProducts.map((p) => `- ${p?.name}: ${formatPrice(p?.price || 0)}`).join("\n")}
+${selectedProducts.map((p) => {
+  const qty = itemCounts[p?.id ?? ""] ?? 0;
+  const lineDeposit = (p?.deposit || 0) * qty;
+  return `- ${p?.name} × ${qty}: ${formatPrice((p?.price || 0) * qty)}${lineDeposit > 0 ? ` (waarborg: ${formatPrice(lineDeposit)})` : ""}`;
+}).join("\n")}
 
 Totaal: ${formatPrice(total)}
+${totalDeposit > 0 ? `Totaal waarborg: ${formatPrice(totalDeposit)}` : ""}
 
 ${data.additionalNotes ? `Aanvullende Opmerkingen: ${data.additionalNotes}\n` : ""}
 
@@ -112,11 +140,20 @@ Power Up BV - Party-Up.be
 }
 
 export function generateAdminEmail(data: BookingFormData): { subject: string; html: string; text: string } {
-  const selectedProducts = data.selectedItems
+  const itemCounts = getItemCounts(data.selectedItems);
+  const uniqueIds = [...new Set(data.selectedItems)];
+  const selectedProducts = uniqueIds
     .map((id) => getProductById(id))
     .filter((p) => p !== undefined);
 
-  const total = selectedProducts.reduce((sum, product) => sum + (product?.price || 0), 0);
+  const total = selectedProducts.reduce((sum, product) => {
+    const qty = itemCounts[product?.id ?? ""] ?? 0;
+    return sum + (product?.price || 0) * qty;
+  }, 0);
+  const totalDeposit = selectedProducts.reduce((sum, product) => {
+    const qty = itemCounts[product?.id ?? ""] ?? 0;
+    return sum + (product?.deposit || 0) * qty;
+  }, 0);
 
   const subject = `Nieuwe Boekingsaanvraag - ${data.contactName}`;
 
@@ -159,9 +196,15 @@ export function generateAdminEmail(data: BookingFormData): { subject: string; ht
             <div class="section">
               <h2>Geselecteerde Items</h2>
               ${selectedProducts.map(
-                (product) => `<p><strong>${product?.name}</strong> - ${formatPrice(product?.price || 0)}</p>`
+                (product) => {
+                  const qty = itemCounts[product?.id ?? ""] ?? 0;
+                  const lineTotal = (product?.price || 0) * qty;
+                  const lineDeposit = (product?.deposit || 0) * qty;
+                  return `<p><strong>${product?.name}</strong> × ${qty} - ${formatPrice(product?.price || 0)}/st = ${formatPrice(lineTotal)}${lineDeposit > 0 ? ` <span style="color:#ea580c;">Waarborg: ${formatPrice(lineDeposit)}</span>` : ""}</p>`;
+                }
               ).join("")}
               <p class="total">Totaal: ${formatPrice(total)}</p>
+              ${totalDeposit > 0 ? `<p class="total" style="color:#ea580c;">Totaal waarborg: ${formatPrice(totalDeposit)}</p>` : ""}
             </div>
 
             ${data.additionalNotes ? `
@@ -192,9 +235,14 @@ Evenementgegevens:
 - Aantal Gasten (schatting): ${data.numberOfGuests}
 
 Geselecteerde Items:
-${selectedProducts.map((p) => `- ${p?.name}: ${formatPrice(p?.price || 0)}`).join("\n")}
+${selectedProducts.map((p) => {
+  const qty = itemCounts[p?.id ?? ""] ?? 0;
+  const lineDeposit = (p?.deposit || 0) * qty;
+  return `- ${p?.name} × ${qty}: ${formatPrice((p?.price || 0) * qty)}${lineDeposit > 0 ? ` (waarborg: ${formatPrice(lineDeposit)})` : ""}`;
+}).join("\n")}
 
 Totaal: ${formatPrice(total)}
+${totalDeposit > 0 ? `Totaal waarborg: ${formatPrice(totalDeposit)}` : ""}
 
 ${data.additionalNotes ? `Aanvullende Opmerkingen: ${data.additionalNotes}\n` : ""}
   `.trim();
