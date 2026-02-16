@@ -26,6 +26,10 @@ export function generateCustomerEmail(data: BookingFormData): { subject: string;
     return sum + (product?.deposit || 0) * qty;
   }, 0);
 
+  const subtotalExclVAT = total;
+  const vatAmount = calculateVAT(total);
+  const totalInclVAT = calculatePriceInclVAT(total);
+
   const subject = `Boekingsbevestiging - Party-Up.be`;
 
   const html = `

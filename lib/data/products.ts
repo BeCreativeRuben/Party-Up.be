@@ -258,11 +258,12 @@ export const products: Product[] = [
   {
     id: "waterkaraffen",
     name: "Waterkaraffen (per 6)",
-    description: "Waterkaraffen, 6 stuks. 1.3L per karaff.",
+    description: "Waterkaraffen, 6 stuks. 1.3L per karaf.",
     category: "catering",
     price: 5,
     image: productImagePaths[35], // dsc_9670.webp
     images: dsc(9670, 9671),
+    imageClassNames: [undefined, "-rotate-90"], // eerste 0°, tweede -90°
     available: true,
     availabilityCount: 1, // 1 doos beschikbaar
   },
