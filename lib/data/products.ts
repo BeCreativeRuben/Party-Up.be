@@ -130,7 +130,7 @@ export const products: Product[] = [
     image: productImagePaths[40],
     images: dsc(9675, 9676, 9677, 9678, 9679, 9680),
     available: true,
-    availabilityCount: 90,
+    availabilityCount: 3, // 90 borden totaal = 3 sets van 24
   },
   {
     id: "bestek",
@@ -138,10 +138,10 @@ export const products: Product[] = [
     description: "Bestek per 24 stuks.",
     category: "catering",
     price: 5,
-    image: productImagePaths[40], // Using same image as borden for now
-    images: dsc(9675, 9676, 9677, 9678, 9679, 9680),
+    image: "/ProductImages/optimized/dsc_9679.webp",
+    images: dsc(9679, 9675, 9676, 9677, 9678, 9680),
     available: true,
-    availabilityCount: 90,
+    availabilityCount: 3, // totaal aantal sets van 24 (zoals borden)
   },
   {
     id: "oven",
@@ -168,20 +168,20 @@ export const products: Product[] = [
   },
   {
     id: "percolator-verwarmer",
-    name: "Percolator + 8 L verwarmer",
-    description: "Percolator met 8 L verwarmer voor koffie.",
+    name: "Warme dranken koker 9 liter",
+    description: "Goed voor 60 tassen. 2200W. Verwarmen van water, warme wijn, chocolademelk.",
     category: "catering",
     price: 15,
     image: productImagePaths[2], // dsc_9637.webp
-    images: dsc(9637, 9638, 9639),
+    images: dsc(9637, 9638), // dsc_9639 verwijderd van de site
     imageClassName: "-rotate-90",
     available: true,
     availabilityCount: 1,
   },
   {
     id: "grill-panini",
-    name: "Grill panini",
-    description: "Paninigrill voor broodjes.",
+    name: "Contactgrill",
+    description: "Contactgrill 2200W 230V.\nGeschikt voor panini's en allerhande grill-toepassingen.",
     category: "catering",
     price: 25,
     image: productImagePaths[27],
@@ -202,69 +202,69 @@ export const products: Product[] = [
   },
   {
     id: "glazen-6",
-    name: "Champagne glazen (6 st.)",
-    description: "Champagne glazen, 8 dozen van 6 glazen. 19 cl per glas.",
+    name: "Champagne glazen (per 6)",
+    description: "Champagne glazen, 48 stuks. 19 cl per glas.",
     category: "catering",
     price: 2.7,
-    image: productImagePaths[23],
-    images: dsc(9658, 9659, 9660, 9661),
+    image: "/ProductImages/optimized/dsc_9661.webp",
+    images: dsc(9661, 9658, 9659, 9660),
     available: true,
-    availabilityCount: 48, // 8 dozen × 6 = 48
+    availabilityCount: 8, // 8 dozen beschikbaar
   },
   {
     id: "glazen-wegwerp-12",
-    name: "Wijnglazen",
-    description: "Wijnglazen, 5 dozen van 12. 30cl per glas.",
+    name: "Wijnglazen (per 12)",
+    description: "Wijnglazen, 60 stuks. 30cl per glas.",
     category: "catering",
     price: 5,
     image: productImagePaths[30], // dsc_9665.webp
     images: dsc(9665, 9666),
     available: true,
-    availabilityCount: 60, // 5 dozen × 12 = 60
+    availabilityCount: 5, // 5 dozen beschikbaar
   },
   {
     id: "waterglazen",
-    name: "Waterglazen",
-    description: "Waterglazen, 5 dozen van 6. 37 cl per glas.",
+    name: "Waterglazen (per 6)",
+    description: "Waterglazen, 30 stuks. 37 cl per glas.",
     category: "catering",
     price: 2.7,
     image: productImagePaths[32], // dsc_9667.webp
     images: dsc(9667),
     available: true,
-    availabilityCount: 30, // 5 dozen × 6 = 30
+    availabilityCount: 5, // 5 dozen beschikbaar
   },
   {
     id: "koffie-tassen",
-    name: "Koffie tassen",
-    description: "Koffie tassen, 2 dozen van 24. 30cl per tas.",
+    name: "Koffie tassen (per 24)",
+    description: "Koffie tassen, 48 stuks. 30cl per tas.",
     category: "catering",
     price: 2.7,
     image: productImagePaths[33], // dsc_9668.webp
     images: dsc(9668, 9669),
     available: true,
-    availabilityCount: 48, // 2 dozen × 24 = 48
+    availabilityCount: 2, // 2 dozen beschikbaar
   },
   {
     id: "koffieglazen",
-    name: "Koffieglazen",
-    description: "Koffieglazen, 15 dozen van 2. 33cl per glas.",
+    name: "Koffieglazen (per 2)",
+    description: "Koffieglazen, 30 stuks. 33cl per glas.",
     category: "catering",
     price: 2.7,
     image: productImagePaths[10], // dsc_9645.webp
     images: dsc(9645, 9646),
     available: true,
-    availabilityCount: 30, // 15 dozen × 2 = 30
+    availabilityCount: 15, // 15 dozen beschikbaar
   },
   {
     id: "waterkaraffen",
-    name: "Waterkaraf",
-    description: "Waterkaraffen, 1 doos van 6. 1.3L per karaff.",
+    name: "Waterkaraffen (per 6)",
+    description: "Waterkaraffen, 6 stuks. 1.3L per karaff.",
     category: "catering",
     price: 5,
     image: productImagePaths[35], // dsc_9670.webp
     images: dsc(9670, 9671),
     available: true,
-    availabilityCount: 6, // 1 doos × 6 = 6
+    availabilityCount: 1, // 1 doos beschikbaar
   },
   {
     id: "generator",
