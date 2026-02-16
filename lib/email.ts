@@ -1,7 +1,7 @@
 import nodemailer from "nodemailer";
 import { BookingFormData } from "@/types";
 import { getProductById } from "@/lib/data/products";
-import { formatPrice } from "@/lib/utils";
+import { formatPrice, calculateVAT, calculatePriceInclVAT } from "@/lib/utils";
 
 function getItemCounts(selectedItems: string[]): Record<string, number> {
   return selectedItems.reduce((acc, id) => {
@@ -68,18 +68,40 @@ export function generateCustomerEmail(data: BookingFormData): { subject: string;
               ${selectedProducts.map(
                 (product) => {
                   const qty = itemCounts[product?.id ?? ""] ?? 0;
-                  const lineTotal = (product?.price || 0) * qty;
+                  const lineTotalExclVAT = (product?.price || 0) * qty;
+                  const lineVAT = calculateVAT(lineTotalExclVAT);
+                  const lineTotalInclVAT = calculatePriceInclVAT(lineTotalExclVAT);
                   const lineDeposit = (product?.deposit || 0) * qty;
                   return `
                 <div class="item">
-                  <strong>${product?.name}</strong> × ${qty} - ${formatPrice(product?.price || 0)}/st = ${formatPrice(lineTotal)}
+                  <strong>${product?.name}</strong> × ${qty}<br>
+                  Prijs/st: ${formatPrice(product?.price || 0)} excl. BTW<br>
+                  Subtotaal: ${formatPrice(lineTotalExclVAT)} excl. BTW<br>
+                  BTW (21%): ${formatPrice(lineVAT)}<br>
+                  <strong>Totaal: ${formatPrice(lineTotalInclVAT)} incl. BTW</strong>
                   ${lineDeposit > 0 ? `<br><span style="color:#ea580c;">Waarborg: ${formatPrice(product?.deposit || 0)}/st = ${formatPrice(lineDeposit)}</span>` : ""}
                 </div>
               `;
                 }
               ).join("")}
-              <div class="total">Totaal: ${formatPrice(total)}</div>
-              ${totalDeposit > 0 ? `<div class="total" style="color:#ea580c;">Totaal waarborg: ${formatPrice(totalDeposit)}</div>` : ""}
+              <div style="background: white; padding: 15px; border-radius: 5px; margin-top: 15px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                  <span>Subtotaal (per periode):</span>
+                  <span>${formatPrice(subtotalExclVAT)} excl. BTW</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                  <span>BTW (21%):</span>
+                  <span>${formatPrice(vatAmount)}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 1.2em; font-weight: bold; padding-top: 8px; border-top: 2px solid #e5e7eb; margin-top: 8px;">
+                  <span>Totaal incl. BTW:</span>
+                  <span>${formatPrice(totalInclVAT)}</span>
+                </div>
+                ${totalDeposit > 0 ? `<div style="display: flex; justify-content: space-between; color:#ea580c; font-weight: bold; margin-top: 8px;">
+                  <span>Totaal waarborg:</span>
+                  <span>${formatPrice(totalDeposit)}</span>
+                </div>` : ""}
+              </div>
             </div>
 
             ${data.additionalNotes ? `
@@ -120,11 +142,19 @@ Evenementgegevens:
 Geselecteerde Items:
 ${selectedProducts.map((p) => {
   const qty = itemCounts[p?.id ?? ""] ?? 0;
+  const lineTotalExclVAT = (p?.price || 0) * qty;
+  const lineVAT = calculateVAT(lineTotalExclVAT);
+  const lineTotalInclVAT = calculatePriceInclVAT(lineTotalExclVAT);
   const lineDeposit = (p?.deposit || 0) * qty;
-  return `- ${p?.name} × ${qty}: ${formatPrice((p?.price || 0) * qty)}${lineDeposit > 0 ? ` (waarborg: ${formatPrice(lineDeposit)})` : ""}`;
-}).join("\n")}
+  return `- ${p?.name} × ${qty}
+  Prijs/st: ${formatPrice(p?.price || 0)} excl. BTW
+  Subtotaal: ${formatPrice(lineTotalExclVAT)} excl. BTW | BTW: ${formatPrice(lineVAT)} | Totaal: ${formatPrice(lineTotalInclVAT)} incl. BTW${lineDeposit > 0 ? `\n  Waarborg: ${formatPrice(lineDeposit)}` : ""}`;
+}).join("\n\n")}
 
-Totaal: ${formatPrice(total)}
+PRIJSOVERZICHT:
+Subtotaal (per periode): ${formatPrice(subtotalExclVAT)} excl. BTW
+BTW (21%): ${formatPrice(vatAmount)}
+Totaal incl. BTW: ${formatPrice(totalInclVAT)}
 ${totalDeposit > 0 ? `Totaal waarborg: ${formatPrice(totalDeposit)}` : ""}
 
 ${data.additionalNotes ? `Aanvullende Opmerkingen: ${data.additionalNotes}\n` : ""}
@@ -146,10 +176,12 @@ export function generateAdminEmail(data: BookingFormData): { subject: string; ht
     .map((id) => getProductById(id))
     .filter((p) => p !== undefined);
 
-  const total = selectedProducts.reduce((sum, product) => {
+  const subtotalExclVAT = selectedProducts.reduce((sum, product) => {
     const qty = itemCounts[product?.id ?? ""] ?? 0;
     return sum + (product?.price || 0) * qty;
   }, 0);
+  const vatAmount = calculateVAT(subtotalExclVAT);
+  const totalInclVAT = calculatePriceInclVAT(subtotalExclVAT);
   const totalDeposit = selectedProducts.reduce((sum, product) => {
     const qty = itemCounts[product?.id ?? ""] ?? 0;
     return sum + (product?.deposit || 0) * qty;
@@ -198,13 +230,33 @@ export function generateAdminEmail(data: BookingFormData): { subject: string; ht
               ${selectedProducts.map(
                 (product) => {
                   const qty = itemCounts[product?.id ?? ""] ?? 0;
-                  const lineTotal = (product?.price || 0) * qty;
+                  const lineTotalExclVAT = (product?.price || 0) * qty;
+                  const lineVAT = calculateVAT(lineTotalExclVAT);
+                  const lineTotalInclVAT = calculatePriceInclVAT(lineTotalExclVAT);
                   const lineDeposit = (product?.deposit || 0) * qty;
-                  return `<p><strong>${product?.name}</strong> × ${qty} - ${formatPrice(product?.price || 0)}/st = ${formatPrice(lineTotal)}${lineDeposit > 0 ? ` <span style="color:#ea580c;">Waarborg: ${formatPrice(lineDeposit)}</span>` : ""}</p>`;
+                  return `<p><strong>${product?.name}</strong> × ${qty}<br>
+                  Prijs/st: ${formatPrice(product?.price || 0)} excl. BTW<br>
+                  Subtotaal: ${formatPrice(lineTotalExclVAT)} excl. BTW | BTW: ${formatPrice(lineVAT)} | <strong>Totaal: ${formatPrice(lineTotalInclVAT)} incl. BTW</strong>${lineDeposit > 0 ? ` <span style="color:#ea580c;">Waarborg: ${formatPrice(lineDeposit)}</span>` : ""}</p>`;
                 }
               ).join("")}
-              <p class="total">Totaal: ${formatPrice(total)}</p>
-              ${totalDeposit > 0 ? `<p class="total" style="color:#ea580c;">Totaal waarborg: ${formatPrice(totalDeposit)}</p>` : ""}
+              <div style="background: #f9fafb; padding: 15px; border-radius: 5px; margin-top: 15px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                  <span>Subtotaal (per periode):</span>
+                  <span>${formatPrice(subtotalExclVAT)} excl. BTW</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                  <span>BTW (21%):</span>
+                  <span>${formatPrice(vatAmount)}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 1.2em; font-weight: bold; padding-top: 8px; border-top: 2px solid #e5e7eb; margin-top: 8px;">
+                  <span>Totaal incl. BTW:</span>
+                  <span>${formatPrice(totalInclVAT)}</span>
+                </div>
+                ${totalDeposit > 0 ? `<div style="display: flex; justify-content: space-between; color:#ea580c; font-weight: bold; margin-top: 8px;">
+                  <span>Totaal waarborg:</span>
+                  <span>${formatPrice(totalDeposit)}</span>
+                </div>` : ""}
+              </div>
             </div>
 
             ${data.additionalNotes ? `
@@ -237,11 +289,19 @@ Evenementgegevens:
 Geselecteerde Items:
 ${selectedProducts.map((p) => {
   const qty = itemCounts[p?.id ?? ""] ?? 0;
+  const lineTotalExclVAT = (p?.price || 0) * qty;
+  const lineVAT = calculateVAT(lineTotalExclVAT);
+  const lineTotalInclVAT = calculatePriceInclVAT(lineTotalExclVAT);
   const lineDeposit = (p?.deposit || 0) * qty;
-  return `- ${p?.name} × ${qty}: ${formatPrice((p?.price || 0) * qty)}${lineDeposit > 0 ? ` (waarborg: ${formatPrice(lineDeposit)})` : ""}`;
-}).join("\n")}
+  return `- ${p?.name} × ${qty}
+  Prijs/st: ${formatPrice(p?.price || 0)} excl. BTW
+  Subtotaal: ${formatPrice(lineTotalExclVAT)} excl. BTW | BTW: ${formatPrice(lineVAT)} | Totaal: ${formatPrice(lineTotalInclVAT)} incl. BTW${lineDeposit > 0 ? `\n  Waarborg: ${formatPrice(lineDeposit)}` : ""}`;
+}).join("\n\n")}
 
-Totaal: ${formatPrice(total)}
+PRIJSOVERZICHT:
+Subtotaal (per periode): ${formatPrice(subtotalExclVAT)} excl. BTW
+BTW (21%): ${formatPrice(vatAmount)}
+Totaal incl. BTW: ${formatPrice(totalInclVAT)}
 ${totalDeposit > 0 ? `Totaal waarborg: ${formatPrice(totalDeposit)}` : ""}
 
 ${data.additionalNotes ? `Aanvullende Opmerkingen: ${data.additionalNotes}\n` : ""}
@@ -251,9 +311,12 @@ ${data.additionalNotes ? `Aanvullende Opmerkingen: ${data.additionalNotes}\n` : 
 }
 
 export type ContactFormData = {
+  type: "particulier" | "bedrijf";
   name: string;
   email: string;
   phone?: string;
+  companyName?: string;
+  vatNumber?: string;
   subject: string;
   message: string;
 };
@@ -284,7 +347,10 @@ export function generateContactEmail(data: ContactFormData): { subject: string; 
           <div class="content">
             <div class="section">
               <h2>Contactgegevens</h2>
-              <p><strong>Naam:</strong> ${data.name}</p>
+              <p><strong>Type:</strong> ${data.type === "bedrijf" ? "Bedrijf" : "Particulier"}</p>
+              ${data.type === "bedrijf" && data.companyName ? `<p><strong>Bedrijfsnaam:</strong> ${data.companyName}</p>` : ""}
+              ${data.type === "bedrijf" && data.vatNumber ? `<p><strong>BTW-nummer:</strong> ${data.vatNumber}</p>` : ""}
+              <p><strong>${data.type === "bedrijf" ? "Contactpersoon" : "Naam"}:</strong> ${data.name}</p>
               <p><strong>E-mail:</strong> <a href="mailto:${data.email}">${data.email}</a></p>
               ${data.phone ? `<p><strong>Telefoon:</strong> <a href="tel:${data.phone}">${data.phone}</a></p>` : ""}
             </div>
@@ -311,7 +377,10 @@ export function generateContactEmail(data: ContactFormData): { subject: string; 
 Nieuw Contactformulier Bericht - Party-Up.be
 
 Contactgegevens:
-- Naam: ${data.name}
+- Type: ${data.type === "bedrijf" ? "Bedrijf" : "Particulier"}
+${data.type === "bedrijf" && data.companyName ? `- Bedrijfsnaam: ${data.companyName}` : ""}
+${data.type === "bedrijf" && data.vatNumber ? `- BTW-nummer: ${data.vatNumber}` : ""}
+- ${data.type === "bedrijf" ? "Contactpersoon" : "Naam"}: ${data.name}
 - E-mail: ${data.email}
 ${data.phone ? `- Telefoon: ${data.phone}` : ""}
 

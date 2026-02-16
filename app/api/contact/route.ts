@@ -7,6 +7,7 @@ export async function POST(request: NextRequest) {
 
     // Validate required fields
     if (
+      !data.type ||
       !data.name ||
       !data.email ||
       !data.subject ||
@@ -14,6 +15,14 @@ export async function POST(request: NextRequest) {
     ) {
       return NextResponse.json(
         { error: "Missing required fields" },
+        { status: 400 }
+      );
+    }
+
+    // Validate company fields if type is bedrijf
+    if (data.type === "bedrijf" && (!data.companyName || !data.vatNumber)) {
+      return NextResponse.json(
+        { error: "Bedrijfsnaam en BTW-nummer zijn verplicht voor bedrijven" },
         { status: 400 }
       );
     }

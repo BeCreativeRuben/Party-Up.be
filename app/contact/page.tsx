@@ -6,11 +6,24 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 const contactSchema = z.object({
+  type: z.enum(["particulier", "bedrijf"], {
+    required_error: "Selecteer of je een particulier of bedrijf bent",
+  }),
   name: z.string().min(1, "Naam is verplicht"),
   email: z.string().email("Geldig e-mailadres is verplicht"),
   phone: z.string().optional(),
+  companyName: z.string().optional(),
+  vatNumber: z.string().optional(),
   subject: z.string().min(1, "Onderwerp is verplicht"),
   message: z.string().min(10, "Bericht moet minimaal 10 tekens bevatten"),
+}).refine((data) => {
+  if (data.type === "bedrijf") {
+    return data.companyName && data.companyName.length > 0 && data.vatNumber && data.vatNumber.length > 0;
+  }
+  return true;
+}, {
+  message: "Bedrijfsnaam en BTW-nummer zijn verplicht voor bedrijven",
+  path: ["companyName"],
 });
 
 type ContactFormValues = z.infer<typeof contactSchema>;
@@ -25,9 +38,15 @@ export default function ContactPage() {
     handleSubmit,
     formState: { errors },
     reset,
+    watch,
   } = useForm<ContactFormValues>({
     resolver: zodResolver(contactSchema),
+    defaultValues: {
+      type: "particulier",
+    },
   });
+
+  const watchedType = watch("type");
 
   const onSubmit = async (data: ContactFormValues) => {
     setIsSubmitting(true);
@@ -41,7 +60,16 @@ export default function ContactPage() {
 
       if (response.ok) {
         setSubmitSuccess(true);
-        reset();
+        reset({
+          type: "particulier",
+          name: "",
+          email: "",
+          phone: "",
+          companyName: "",
+          vatNumber: "",
+          subject: "",
+          message: "",
+        });
         setTimeout(() => setSubmitSuccess(false), 5000);
       } else {
         const errorData = await response.json().catch(() => ({}));
@@ -111,9 +139,76 @@ export default function ContactPage() {
           )}
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            {/* Type Selection */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-3">
+                Ik ben een *
+              </label>
+              <div className="flex gap-4">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    value="particulier"
+                    {...register("type")}
+                    className="w-4 h-4 text-blue-600"
+                  />
+                  <span className="text-gray-700">Particulier</span>
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    value="bedrijf"
+                    {...register("type")}
+                    className="w-4 h-4 text-blue-600"
+                  />
+                  <span className="text-gray-700">Bedrijf</span>
+                </label>
+              </div>
+              {errors.type && (
+                <p className="mt-1 text-sm text-red-600">{errors.type.message}</p>
+              )}
+            </div>
+
+            {/* Company Name - Only for bedrijf */}
+            {watchedType === "bedrijf" && (
+              <div>
+                <label htmlFor="companyName" className="block text-sm font-medium text-gray-700 mb-2">
+                  Bedrijfsnaam *
+                </label>
+                <input
+                  type="text"
+                  id="companyName"
+                  {...register("companyName")}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
+                {errors.companyName && (
+                  <p className="mt-1 text-sm text-red-600">{errors.companyName.message}</p>
+                )}
+              </div>
+            )}
+
+            {/* VAT Number - Only for bedrijf */}
+            {watchedType === "bedrijf" && (
+              <div>
+                <label htmlFor="vatNumber" className="block text-sm font-medium text-gray-700 mb-2">
+                  BTW-nummer *
+                </label>
+                <input
+                  type="text"
+                  id="vatNumber"
+                  {...register("vatNumber")}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Bijv. BE0123.456.789"
+                />
+                {errors.vatNumber && (
+                  <p className="mt-1 text-sm text-red-600">{errors.vatNumber.message}</p>
+                )}
+              </div>
+            )}
+
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-                Naam *
+                {watchedType === "bedrijf" ? "Contactpersoon" : "Naam"} *
               </label>
               <input
                 type="text"

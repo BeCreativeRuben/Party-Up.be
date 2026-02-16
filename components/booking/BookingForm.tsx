@@ -11,6 +11,15 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useCart } from "@/contexts/CartContext";
 import { formatPrice } from "@/lib/utils";
 import Image from "next/image";
+import type { Product } from "@/types";
+
+function getProductImageStyle(product: Product): React.CSSProperties | undefined {
+  const c = product.imageClassName;
+  if (c === "rotate-180") return { transform: "rotate(180deg)" };
+  if (c === "rotate-90") return { transform: "rotate(90deg)" };
+  if (c === "-rotate-90") return { transform: "rotate(-90deg)" };
+  return undefined;
+}
 
 const bookingSchema = z.object({
   rentalPeriodType: z.enum(["standard", "custom"]),
@@ -526,6 +535,7 @@ export default function BookingForm({ initialItems = [] }: BookingFormProps) {
                             alt={product.name}
                             fill
                             className="object-cover"
+                            style={getProductImageStyle(product)}
                           />
                         </div>
                       ) : (
@@ -649,6 +659,7 @@ export default function BookingForm({ initialItems = [] }: BookingFormProps) {
                               alt={product.name}
                               fill
                               className="object-cover"
+                              style={getProductImageStyle(product)}
                             />
                           </div>
                         ) : (
