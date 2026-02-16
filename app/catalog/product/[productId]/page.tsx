@@ -130,14 +130,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
                     <li>• Elektrische handdrogers</li>
                     <li>• LED strips in het plafond</li>
                     <li>• Hangende toiletten met normale doorspoelfunctie</li>
-                    <li>• Zwarte vinyl vloer</li>
                     <li>• Stabiele steunpoten</li>
-                    <li>• Geïsoleerde sandwichpanelen</li>
-                    <li>• Bovenbladen van compactlaminaat</li>
                     <li>• Porseleinen opbouw wasbak en spiegel aan beide zijden</li>
                     <li>• Voorzien van verwarming (ook in technische ruimte)</li>
-                    <li>• Volledig gegoten polyester dak</li>
-                    <li>• Thermisch verzinkt chassis</li>
                   </ul>
                 </div>
 
