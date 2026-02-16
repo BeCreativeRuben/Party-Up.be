@@ -52,7 +52,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         {/* Image gallery */}
         <div className="lg:sticky lg:top-28">
           {images.length > 0 ? (
-            <ProductImageGallery images={images} productName={product.name} imageClassName={product.imageClassName} />
+            <ProductImageGallery images={images} productName={product.name} imageClassName={product.imageClassName} imageClassNames={product.imageClassNames} />
           ) : (
             <div className="aspect-square bg-gray-200 rounded-lg flex items-center justify-center">
               <span className="text-gray-400">No image</span>
@@ -75,7 +75,28 @@ export default async function ProductPage({ params }: ProductPageProps) {
             </p>
             <p className="text-sm text-gray-500 mt-1">per periode (3 dagen - vrijdag t/m zondag)</p>
           </div>
-          <p className="text-gray-600 mb-8">{product.description}</p>
+          <p className="text-gray-600 mb-8 whitespace-pre-line">{product.description}</p>
+
+          {/* Specifications - Ofyr */}
+          {product.id === "ofyr" && (
+            <div className="mb-8 space-y-6">
+              <div>
+                <h2 className="text-xl font-semibold text-gray-900 mb-4">Specificaties</h2>
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-gray-700">
+                    <li><strong>Materiaal:</strong> Cortenstaal</li>
+                    <li><strong>Bodemdiameter:</strong> 50 cm</li>
+                    <li><strong>Afwerking:</strong> Poeder gecoat staal</li>
+                    <li><strong>Totale hoogte:</strong> 100 cm</li>
+                    <li><strong>Bakplaat:</strong> Zwart staal</li>
+                    <li><strong>Gewicht:</strong> 101 kg</li>
+                    <li><strong>Kookoppervlak:</strong> 100 cm</li>
+                    <li><strong>Brandstof:</strong> Hout</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Specifications - Only show for WC-wagen */}
           {product.id === "wc-wagen" && (

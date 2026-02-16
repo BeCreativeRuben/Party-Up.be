@@ -4,14 +4,6 @@ export default function PrivacyPage() {
       <div className="text-center mb-8">
         <h1 className="text-4xl font-bold text-gray-900 mb-3">Privacy Policy</h1>
       </div>
-      
-      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 mb-8">
-        <p className="text-yellow-800">
-          <strong>Legal Notice:</strong> This privacy policy is a placeholder and must be
-          reviewed and approved by a legal professional to ensure compliance with GDPR and Belgian
-          data protection laws.
-        </p>
-      </div>
 
       <div className="prose prose-lg max-w-none space-y-8">
         <section>

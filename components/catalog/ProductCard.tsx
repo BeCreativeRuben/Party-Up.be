@@ -100,12 +100,13 @@ export default function ProductCard({ product, onAddToQuote, index = 0, priority
   const usePlaceholder = !displayImage || imageError;
   const isGif = displayImage?.toLowerCase().endsWith('.gif');
 
+  const imageClass = product.imageClassNames?.[0] ?? product.imageClassName;
   const imageTransform =
-    product.imageClassName === "rotate-180"
+    imageClass === "rotate-180"
       ? "rotate(180deg)"
-      : product.imageClassName === "rotate-90"
+      : imageClass === "rotate-90"
         ? "rotate(90deg)"
-        : product.imageClassName === "-rotate-90"
+        : imageClass === "-rotate-90"
           ? "rotate(-90deg)"
           : undefined;
 

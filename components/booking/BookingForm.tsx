@@ -14,7 +14,7 @@ import Image from "next/image";
 import type { Product } from "@/types";
 
 function getProductImageStyle(product: Product): React.CSSProperties | undefined {
-  const c = product.imageClassName;
+  const c = product.imageClassNames?.[0] ?? product.imageClassName;
   if (c === "rotate-180") return { transform: "rotate(180deg)" };
   if (c === "rotate-90") return { transform: "rotate(90deg)" };
   if (c === "-rotate-90") return { transform: "rotate(-90deg)" };

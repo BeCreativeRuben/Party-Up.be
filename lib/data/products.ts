@@ -40,7 +40,7 @@ export const products: Product[] = [
   {
     id: "tafels-hoog",
     name: "Tafels hoog",
-    description: "Hoge tafels, 7 stuks. Hoezen zitten er bij. Diameter blad 85cm. Transporthoogte 1.45m. Bladhoogte 1.10m.",
+    description: "Hoge tafels, 7 stuks. Zwarte hoezen zitten er bij. Diameter blad 85cm. Transporthoogte 1.45m. Bladhoogte 1.10m.",
     category: "tables-chairs",
     price: 6,
     image: productImagePaths[52], // dsc_9687.webp
@@ -58,7 +58,7 @@ export const products: Product[] = [
     price: 6,
     image: productImagePaths[46], // dsc_9681.webp
     images: dsc(9681, 9684),
-    imageClassName: "-rotate-90",
+    imageClassNames: ["-rotate-90"], // alleen eerste beeld (dsc_9681)
     available: true,
     availabilityCount: 10,
     popular: true,
@@ -91,7 +91,7 @@ export const products: Product[] = [
   {
     id: "bakplaat-gas",
     name: "Bakplaat op gas",
-    description: "Bakplaat op gas voor buitenshuis koken.",
+    description: "Bakplaat op gas werkt met 2 warmtezones. Gasfles is zelf te voorzien of apart te verrekenen. Meer informatie hierover na contact.",
     category: "catering",
     price: 30,
     image: productImagePaths[21],
@@ -101,8 +101,8 @@ export const products: Product[] = [
   },
   {
     id: "pannenkoeken",
-    name: "Pannenkoeken bakplaat",
-    description: "Pannekoekenmachine voor je evenement. 220V. Diameter 40cm. 3600 WATT.",
+    name: "Pannekoeken bakplaat",
+    description: "Pannekoeken bakplaat. 220V. Diameter 40cm. 3600 WATT.",
     category: "catering",
     price: 40,
     image: productImagePaths[19],
@@ -124,7 +124,7 @@ export const products: Product[] = [
   {
     id: "borden",
     name: "Borden",
-    description: "Borden per 24 stuks: groot Ø 25 cm, soep Ø 22 cm.",
+    description: "Borden per 24 stuks:\ngroot Ø 25 cm\nsoep Ø 22 cm.",
     category: "catering",
     price: 5,
     image: productImagePaths[40],
@@ -145,8 +145,8 @@ export const products: Product[] = [
   },
   {
     id: "oven",
-    name: "Oven",
-    description: "Oven om te bakken en op te warmen.",
+    name: "Heteluchtoven",
+    description: "0-300 graden. Met grillfunctie.\n3 niveau's",
     category: "catering",
     price: 45,
     image: productImagePaths[5],
@@ -158,10 +158,11 @@ export const products: Product[] = [
   {
     id: "ofyr",
     name: "Ofyr",
-    description: "Ofyr vuurgrill voor buitenshuis koken.",
+    description: "Ofyr vuurgrill op hout voor buitenshuis koken in kortenstaal.\nDiameter 1 meter.",
     category: "catering",
-    price: 180,
-    image: undefined, // placeholder only
+    price: 200,
+    image: "/ProductImages/optimized/filtersquality75.webp",
+    images: ["/ProductImages/optimized/filtersquality75.webp"],
     available: true,
     availabilityCount: 1,
   },

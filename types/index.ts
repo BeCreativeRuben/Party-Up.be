@@ -8,6 +8,8 @@ export type Product = {
   images?: string[];
   /** Optional Tailwind class for the product image (e.g. -rotate-90) */
   imageClassName?: string;
+  /** Optional per-image rotation: one entry per images[] (e.g. ["-rotate-90"] = first only) */
+  imageClassNames?: (string | undefined)[];
   available: boolean;
   availabilityCount?: number;
   popular?: boolean;

@@ -9,15 +9,27 @@ interface ProductImageGalleryProps {
   images: string[];
   productName: string;
   imageClassName?: string;
+  /** Per-image rotation; overrides imageClassName for each image when provided */
+  imageClassNames?: (string | undefined)[];
 }
 
-export default function ProductImageGallery({ images, productName, imageClassName }: ProductImageGalleryProps) {
+function getImageTransformStyle(imageClassName?: string): React.CSSProperties | undefined {
+  if (imageClassName === "rotate-180") return { transform: "rotate(180deg)" };
+  if (imageClassName === "rotate-90") return { transform: "rotate(90deg)" };
+  if (imageClassName === "-rotate-90") return { transform: "rotate(-90deg)" };
+  return undefined;
+}
+
+export default function ProductImageGallery({ images, productName, imageClassName, imageClassNames }: ProductImageGalleryProps) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const slideRefs = useRef<(HTMLDivElement | null)[]>([]);
 
+  const getStyleForIndex = (i: number) => getImageTransformStyle(imageClassNames?.[i] ?? imageClassName);
+
   const currentImage = images[selectedIndex];
+  const currentImageStyle = getStyleForIndex(selectedIndex);
 
   const scrollToIndex = (i: number) => {
     setSelectedIndex(i);
@@ -82,14 +94,16 @@ export default function ProductImageGallery({ images, productName, imageClassNam
                     <LazyGif
                       src={src}
                       alt={`${productName} - ${i + 1}`}
-                      className={`object-contain w-full h-full ${imageClassName || ""}`}
+                      className="object-contain w-full h-full"
+                      style={getStyleForIndex(i)}
                     />
                   ) : (
                     <Image
                       src={src}
                       alt={`${productName} - ${i + 1}`}
                       fill
-                      className={`object-contain ${imageClassName || ""}`}
+                      className="object-contain"
+                      style={getStyleForIndex(i)}
                       sizes="(max-width: 768px) 100vw, 50vw"
                       priority={i === 0}
                       loading={i === 0 ? undefined : "lazy"}
@@ -136,7 +150,8 @@ export default function ProductImageGallery({ images, productName, imageClassNam
                   src={src}
                   alt={`${productName} thumbnail ${i + 1}`}
                   fill
-                  className={`object-cover ${imageClassName || ""}`}
+                  className="object-cover"
+                  style={getStyleForIndex(i)}
                   sizes="64px"
                   loading="lazy"
                   quality={50}
@@ -171,7 +186,8 @@ export default function ProductImageGallery({ images, productName, imageClassNam
               alt={`${productName} - enlarged`}
               width={1200}
               height={900}
-              className={`w-full h-auto max-h-[90vh] object-contain ${imageClassName || ""}`}
+              className="w-full h-auto max-h-[90vh] object-contain"
+              style={currentImageStyle}
               quality={90}
             />
             {images.length > 1 && (
