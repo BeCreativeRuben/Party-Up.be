@@ -77,6 +77,80 @@ export default async function ProductPage({ params }: ProductPageProps) {
           </div>
           <p className="text-gray-600 mb-8">{product.description}</p>
 
+          {/* Specifications - Only show for WC-wagen */}
+          {product.id === "wc-wagen" && (
+            <div className="mb-8 space-y-6">
+              <div>
+                <h2 className="text-xl font-semibold text-gray-900 mb-4">Specificaties</h2>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <h3 className="font-semibold text-gray-900 mb-3">Afmetingen</h3>
+                    <ul className="space-y-2 text-sm text-gray-700">
+                      <li><strong>Lengte:</strong> 240 cm</li>
+                      <li><strong>Lengte incl. dissel:</strong> 400 cm</li>
+                      <li><strong>Breedte:</strong> 230 cm</li>
+                      <li><strong>Hoogte:</strong> 275 cm</li>
+                      <li><strong>Hoogte binnen:</strong> 212 cm</li>
+                      <li><strong>Eigen gewicht:</strong> 750 kg</li>
+                    </ul>
+                  </div>
+
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <h3 className="font-semibold text-gray-900 mb-3">Toiletten</h3>
+                    <ul className="space-y-2 text-sm text-gray-700">
+                      <li><strong>Damestoilet:</strong> 1 afgesloten toiletruimte</li>
+                      <li><strong>Herentoilet:</strong> 1 afgesloten toiletruimte + urinoir</li>
+                      <li><strong>Aantal assen:</strong> 1</li>
+                    </ul>
+                  </div>
+
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <h3 className="font-semibold text-gray-900 mb-3">Stroomvoorziening</h3>
+                    <ul className="space-y-2 text-sm text-gray-700">
+                      <li><strong>Stroom:</strong> 1x CEE-230V / 16A</li>
+                    </ul>
+                  </div>
+
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <h3 className="font-semibold text-gray-900 mb-3">Standaard geleverd met</h3>
+                    <ul className="space-y-2 text-sm text-gray-700">
+                      <li>1x CEE-230V / 16A verloopstekker</li>
+                      <li>1x 20 meter CEE-230V / 16A verlengsnoer</li>
+                      <li>1x 20 meter aanvoerslang</li>
+                      <li>2x 20 meter afvoerslang</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div className="bg-blue-50 rounded-lg p-4 mb-6">
+                  <h3 className="font-semibold text-gray-900 mb-3">Voorzieningen</h3>
+                  <ul className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-700">
+                    <li>• Ieder toilet heeft een eigen vermaalpomp (Grundfos)</li>
+                    <li>• Elektrische handdrogers</li>
+                    <li>• LED strips in het plafond</li>
+                    <li>• Hangende toiletten met normale doorspoelfunctie</li>
+                    <li>• Zwarte vinyl vloer</li>
+                    <li>• Stabiele steunpoten</li>
+                    <li>• Geïsoleerde sandwichpanelen</li>
+                    <li>• Bovenbladen van compactlaminaat</li>
+                    <li>• Porseleinen opbouw wasbak en spiegel aan beide zijden</li>
+                    <li>• Voorzien van verwarming (ook in technische ruimte)</li>
+                    <li>• Volledig gegoten polyester dak</li>
+                    <li>• Thermisch verzinkt chassis</li>
+                  </ul>
+                </div>
+
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <p className="text-sm text-gray-700">
+                    De toiletwagens van Party-Up zijn duurzaam, makkelijk te plaatsen en schoon te houden, maar ook comfortabel in gebruik. 
+                    Standaard is iedere toiletruimte voorzien van eigen vermaalpomp, hangtoilet, wasbak, spiegel, verwarming, handdroger en een eigen technische ruimte.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
           <ProductDetailActions product={product} />
         </div>
       </div>

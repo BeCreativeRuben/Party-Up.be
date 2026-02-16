@@ -15,7 +15,7 @@ export const products: Product[] = [
   {
     id: "wc-wagen",
     name: "VIP WC-wagen",
-    description: "Verplaatsbare toiletwagen voor je evenement.",
+    description: "Luxe VIP toiletwagen met 1 afgesloten damestoilet en 1 afgesloten herentoilet met urinoir. Uitgerust met porseleinen opbouw wasbakken, grote spiegels en stijlvolle LED verlichting. Ieder toilet heeft een eigen vermaalpomp (Grundfos) voor optimale hygiëne.",
     category: "facilities",
     price: 285,
     image: "/ProductImages/optimized/WhatsApp Image 2026-02-10 at 18.44.05.jpeg",
