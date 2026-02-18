@@ -164,6 +164,30 @@ html {
   animation: scale-in 0.2s ease-out;
 }
 
+/* Cart icon bounce when a new item is added (not quantity change) */
+@keyframes cart-add-pop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.35); }
+  70% { transform: scale(0.92); }
+  100% { transform: scale(1); }
+}
+
+.animate-cart-add-pop {
+  animation: cart-add-pop 0.4s ease-out;
+}
+
+/* Add-to-cart button: cart rijdt smooth van links naar rechts in het blokje */
+@keyframes add-cart-slide-in-out {
+  0% { left: 0; transform: translateX(0); }
+  100% { left: 100%; transform: translateX(-100%); }
+}
+
+.add-cart-anim-cart {
+  position: absolute;
+  left: 0;
+  animation: add-cart-slide-in-out 1.6s ease-in-out forwards;
+}
+
 /* Hero & page load animations - no JS required */
 .animate-hero-content { animation: fadeInUp 0.8s ease-out both; }
 .animate-hero-content-delay-1 { animation: fadeInUp 0.6s ease-out 0.2s both; }

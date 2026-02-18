@@ -57,4 +57,6 @@ export type CartContextType = {
   clearCart: () => void;
   getItemCount: () => number;
   getTotalPrice: () => number;
+  /** Timestamp when a *new* item was last added (not quantity change). Used for cart icon animation. */
+  lastNewItemAddedAt: number | null;
 };

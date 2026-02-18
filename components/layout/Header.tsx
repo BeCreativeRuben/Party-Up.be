@@ -4,15 +4,27 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import Navigation from "./Navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useCart } from "@/contexts/CartContext";
 
 export default function Header() {
   const pathname = usePathname();
   const isHome = pathname === "/";
   const [scrolled, setScrolled] = useState(!isHome);
-  const { getItemCount } = useCart();
+  const { getItemCount, lastNewItemAddedAt } = useCart();
   const itemCount = getItemCount();
+  const [playCartPop, setPlayCartPop] = useState(false);
+  const prevNewItemAtRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (lastNewItemAddedAt != null && lastNewItemAddedAt !== prevNewItemAtRef.current) {
+      prevNewItemAtRef.current = lastNewItemAddedAt;
+      setPlayCartPop(true);
+      const t = setTimeout(() => setPlayCartPop(false), 420);
+      return () => clearTimeout(t);
+    }
+    if (lastNewItemAddedAt === null) prevNewItemAtRef.current = null;
+  }, [lastNewItemAddedAt]);
 
   useEffect(() => {
     if (!isHome) {
@@ -81,11 +93,11 @@ export default function Header() {
               </Link>
               <Link
                 href="/cart"
-                className={`relative p-2 transition-colors ${
+                className={`relative p-2 transition-colors inline-block ${
                   scrolled
                     ? "text-gray-700 hover:text-blue-600"
                     : "text-white hover:text-blue-200"
-                }`}
+                } ${playCartPop ? "animate-cart-add-pop" : ""}`}
                 aria-label="Shopping cart"
               >
                 <svg

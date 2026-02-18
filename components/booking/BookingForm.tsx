@@ -9,7 +9,7 @@ import { BookingFormData } from "@/types";
 import { products, getProductById } from "@/lib/data/products";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCart } from "@/contexts/CartContext";
-import { formatPrice } from "@/lib/utils";
+import { formatPrice, calculateVAT, calculatePriceInclVAT } from "@/lib/utils";
 import Image from "next/image";
 import type { Product } from "@/types";
 
@@ -603,22 +603,55 @@ export default function BookingForm({ initialItems = [] }: BookingFormProps) {
                   </motion.div>
                 );
               })}
-              {items.some((item) => {
-                const p = getProductById(item.productId);
-                return p?.deposit != null && p.deposit > 0;
-              }) && (
-                <div className="mt-4 pt-4 border-t border-gray-200 flex justify-between items-center">
-                  <span className="font-medium text-gray-700">Totaal waarborg</span>
-                  <span className="font-semibold text-orange-600">
-                    {formatPrice(
-                      items.reduce((sum, item) => {
-                        const p = getProductById(item.productId);
-                        return sum + (p?.deposit ?? 0) * item.quantity;
-                      }, 0)
-                    )}
-                  </span>
-                </div>
-              )}
+              {/* Totals: subtotaal excl, BTW, totaal incl, waarborg */}
+              <div className="mt-4 pt-4 border-t border-gray-200 space-y-2">
+                {(() => {
+                  const subtotalExclVAT = items.reduce((sum, item) => {
+                    const p = getProductById(item.productId);
+                    return sum + (p?.price ?? 0) * item.quantity;
+                  }, 0);
+                  const vatAmount = calculateVAT(subtotalExclVAT);
+                  const totalInclVAT = calculatePriceInclVAT(subtotalExclVAT);
+                  return (
+                    <>
+                      <div className="flex justify-between text-base">
+                        <span className="text-gray-700 font-medium">Subtotaal (per periode)</span>
+                        <span className="text-gray-900 font-semibold">
+                          {formatPrice(subtotalExclVAT)}
+                        </span>
+                      </div>
+                      <div className="flex justify-between text-base">
+                        <span className="text-gray-700 font-medium">BTW (21%)</span>
+                        <span className="text-gray-900 font-semibold">
+                          {formatPrice(vatAmount)}
+                        </span>
+                      </div>
+                      <div className="flex justify-between text-lg border-t border-gray-300 pt-2 mt-2">
+                        <span className="text-gray-900 font-bold">Totaal incl. BTW</span>
+                        <span className="text-gray-900 font-bold">
+                          {formatPrice(totalInclVAT)}
+                        </span>
+                      </div>
+                    </>
+                  );
+                })()}
+                {items.some((item) => {
+                  const p = getProductById(item.productId);
+                  return p?.deposit != null && p.deposit > 0;
+                }) && (
+                  <div className="flex justify-between items-center border-t border-gray-200 pt-2 mt-2">
+                    <span className="font-medium text-gray-700">Totaal waarborg</span>
+                    <span className="font-semibold text-orange-600">
+                      {formatPrice(
+                        items.reduce((sum, item) => {
+                          const p = getProductById(item.productId);
+                          return sum + (p?.deposit ?? 0) * item.quantity;
+                        }, 0)
+                      )}
+                    </span>
+                  </div>
+                )}
+              </div>
             </div>
           ) : (
             <div className="mb-8 p-6 bg-gray-50 rounded-lg border border-gray-200 text-center">
@@ -812,6 +845,55 @@ export default function BookingForm({ initialItems = [] }: BookingFormProps) {
                     </div>
                   );
                 })}
+              </div>
+              {/* Totals */}
+              <div className="border-t border-gray-200 pt-4 space-y-2">
+                {(() => {
+                  const subtotalExclVAT = items.reduce((sum, item) => {
+                    const p = getProductById(item.productId);
+                    return sum + (p?.price ?? 0) * item.quantity;
+                  }, 0);
+                  const vatAmount = calculateVAT(subtotalExclVAT);
+                  const totalInclVAT = calculatePriceInclVAT(subtotalExclVAT);
+                  return (
+                    <>
+                      <div className="flex justify-between text-base">
+                        <span className="text-gray-700 font-medium">Subtotaal (per periode)</span>
+                        <span className="text-gray-900 font-semibold">
+                          {formatPrice(subtotalExclVAT)}
+                        </span>
+                      </div>
+                      <div className="flex justify-between text-base">
+                        <span className="text-gray-700 font-medium">BTW (21%)</span>
+                        <span className="text-gray-900 font-semibold">
+                          {formatPrice(vatAmount)}
+                        </span>
+                      </div>
+                      <div className="flex justify-between text-lg border-t border-gray-300 pt-2 mt-2">
+                        <span className="text-gray-900 font-bold">Totaal incl. BTW</span>
+                        <span className="text-gray-900 font-bold">
+                          {formatPrice(totalInclVAT)}
+                        </span>
+                      </div>
+                    </>
+                  );
+                })()}
+                {items.some((item) => {
+                  const p = getProductById(item.productId);
+                  return p?.deposit != null && p.deposit > 0;
+                }) && (
+                  <div className="flex justify-between items-center border-t border-gray-200 pt-2 mt-2">
+                    <span className="font-medium text-gray-700">Totaal waarborg</span>
+                    <span className="font-semibold text-orange-600">
+                      {formatPrice(
+                        items.reduce((sum, item) => {
+                          const p = getProductById(item.productId);
+                          return sum + (p?.deposit ?? 0) * item.quantity;
+                        }, 0)
+                      )}
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
           </div>

@@ -34,7 +34,7 @@ export default function ProductCard({ product, onAddToQuote, index = 0, priority
     if (isAvailable) {
       addItem(product.id);
       setAddedToCart(true);
-      setTimeout(() => setAddedToCart(false), 800);
+      setTimeout(() => setAddedToCart(false), 1600);
       if (onAddToQuote) {
         onAddToQuote(product.id);
       }
@@ -262,31 +262,31 @@ export default function ProductCard({ product, onAddToQuote, index = 0, priority
           <button
             onClick={handleAddToCart}
             disabled={!isAvailable}
-            className={`w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
+            className={`w-full min-h-[3.5rem] flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
               isAvailable
                 ? addedToCart
-                  ? 'bg-green-600 text-white hover:bg-green-700 active:scale-95'
+                  ? 'bg-blue-600 text-white cursor-default active:scale-100'
                   : 'bg-blue-600 text-white hover:bg-blue-700 active:scale-95'
                 : 'bg-gray-200 text-gray-500 cursor-not-allowed'
             }`}
           >
             {addedToCart ? (
-              <>
+              <span className="relative w-full flex items-center justify-center overflow-hidden py-0.5 min-h-[1.25rem]">
                 <svg
-                  className="w-4 h-4"
+                  className="w-5 h-5 flex-shrink-0 add-cart-anim-cart"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
+                  aria-hidden
                 >
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeWidth={2}
-                    d="M5 13l4 4L19 7"
+                    d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
                   />
                 </svg>
-                Toegevoegd!
-              </>
+              </span>
             ) : (
               <>
                 <svg

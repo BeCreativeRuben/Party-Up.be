@@ -77,6 +77,24 @@ export default async function ProductPage({ params }: ProductPageProps) {
           </div>
           <p className="text-gray-600 mb-8 whitespace-pre-line">{product.description}</p>
 
+          {/* Specifications - Tent 6×4 m */}
+          {product.id === "tent-6x4" && (
+            <div className="mb-8 space-y-6">
+              <div>
+                <h2 className="text-xl font-semibold text-gray-900 mb-4">Specificaties</h2>
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-gray-700">
+                    <li><strong>Transportafmetingen:</strong> 2 m hoog bij 40/50 cm</li>
+                    <li><strong>Gewicht:</strong> 75 kg</li>
+                    <li><strong>Kleur:</strong> Lichtgrijs</li>
+                    <li><strong>Materiaal:</strong> Brandvertragend / waterproof</li>
+                  </ul>
+                  <p className="text-sm text-gray-700 mt-3">Ledverlichting afzonderlijk bij te huren.</p>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Specifications - Ofyr */}
           {product.id === "ofyr" && (
             <div className="mb-8 space-y-6">

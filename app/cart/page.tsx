@@ -275,27 +275,40 @@ export default function CartPage() {
                 transition={{ delay: index * 0.1 }}
                 className="bg-white rounded-lg shadow-md p-6 flex flex-col sm:flex-row gap-4"
               >
-                {/* Product Image */}
+                {/* Product Image - link to product detail */}
                 {product.image ? (
-                  <div className="w-full sm:w-32 h-32 bg-gray-200 rounded-lg relative overflow-hidden flex-shrink-0">
+                  <Link
+                    href={`/catalog/product/${item.productId}`}
+                    className="w-full sm:w-32 h-32 bg-gray-200 rounded-lg relative overflow-hidden flex-shrink-0 block focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded-lg"
+                  >
                     <Image
                       src={product.image}
                       alt={product.name}
                       fill
                       className="object-cover"
                     />
-                  </div>
+                  </Link>
                 ) : (
-                  <div className="w-full sm:w-32 h-32 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <span className="text-gray-400 text-sm">No image</span>
-                  </div>
+                  <Link
+                    href={`/catalog/product/${item.productId}`}
+                    className="w-full sm:w-32 h-32 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg flex items-center justify-center flex-shrink-0 block text-gray-400 hover:text-gray-600 transition-colors focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                  >
+                    <span className="text-sm">No image</span>
+                  </Link>
                 )}
 
                 {/* Product Details */}
                 <div className="flex-1">
                   <div className="flex justify-between items-start mb-2">
                     <div className="flex-1">
-                      <h3 className="text-lg font-semibold text-gray-900">{product.name}</h3>
+                      <h3 className="text-lg font-semibold text-gray-900">
+                        <Link
+                          href={`/catalog/product/${item.productId}`}
+                          className="hover:text-blue-600 hover:underline focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 rounded outline-none transition-colors"
+                        >
+                          {product.name}
+                        </Link>
+                      </h3>
                       <p className="text-sm text-gray-600">{product.description}</p>
                       <div className="mt-2 space-y-1">
                         <p className="text-xs text-gray-500">

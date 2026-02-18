@@ -11,6 +11,7 @@ const CART_STORAGE_KEY = "party-up-cart";
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [isHydrated, setIsHydrated] = useState(false);
+  const [lastNewItemAddedAt, setLastNewItemAddedAt] = useState<number | null>(null);
 
   // Load cart from localStorage on mount
   useEffect(() => {
@@ -38,6 +39,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   }, [items, isHydrated]);
 
+  // Clear "just added" signal after animation so it can trigger again
+  useEffect(() => {
+    if (lastNewItemAddedAt === null) return;
+    const t = setTimeout(() => setLastNewItemAddedAt(null), 600);
+    return () => clearTimeout(t);
+  }, [lastNewItemAddedAt]);
+
   const addItem = (productId: string) => {
     setItems((prevItems) => {
       const existingItem = prevItems.find((item) => item.productId === productId);
@@ -49,7 +57,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
             : item
         );
       } else {
-        // Add new item
+        // Add new item – signal for cart icon animation
+        setLastNewItemAddedAt(Date.now());
         return [...prevItems, { productId, quantity: 1 }];
       }
     });
@@ -96,6 +105,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         clearCart,
         getItemCount,
         getTotalPrice,
+        lastNewItemAddedAt,
       }}
     >
       {children}
