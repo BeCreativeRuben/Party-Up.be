@@ -27,10 +27,23 @@ const bookingSchema = z.object({
   endDate: z.string().min(1, "Retourdatum is verplicht"),
   eventLocation: z.string().min(1, "Evenementlocatie is verplicht"),
   numberOfGuests: z.number({ required_error: "Aantal gasten is verplicht" }).min(1, "Minimum 1 gast").max(1000, "Maximum 1000 gasten"),
+  type: z.enum(["particulier", "bedrijf"], {
+    required_error: "Selecteer of je een particulier of bedrijf bent",
+  }),
+  companyName: z.string().optional(),
+  vatNumber: z.string().optional(),
   contactName: z.string().min(1, "Naam is verplicht"),
   contactEmail: z.string().email("Geldig e-mailadres is verplicht"),
   contactPhone: z.string().min(1, "Telefoonnummer is verplicht"),
   additionalNotes: z.string().optional(),
+}).refine((data) => {
+  if (data.type === "bedrijf") {
+    return data.companyName && data.companyName.length > 0 && data.vatNumber && data.vatNumber.length > 0;
+  }
+  return true;
+}, {
+  message: "Bedrijfsnaam en BTW-nummer zijn verplicht voor bedrijven",
+  path: ["companyName"],
 });
 
 type BookingFormValues = z.infer<typeof bookingSchema> & {
@@ -56,6 +69,7 @@ export default function BookingForm({ initialItems = [] }: BookingFormProps) {
   const {
     register,
     handleSubmit,
+    trigger,
     formState: { errors },
     watch,
     setValue,
@@ -63,12 +77,13 @@ export default function BookingForm({ initialItems = [] }: BookingFormProps) {
     resolver: zodResolver(bookingSchema),
     defaultValues: {
       selectedItems: [],
-      numberOfGuests: 20,
       rentalPeriodType: "standard",
+      type: "particulier",
     },
   });
 
   const numberOfGuests = watch("numberOfGuests");
+  const watchedContactType = watch("type");
 
   // Add initial items to cart on mount
   useEffect(() => {
@@ -212,7 +227,19 @@ export default function BookingForm({ initialItems = [] }: BookingFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="max-w-4xl mx-auto">
+    <form
+      onSubmit={handleSubmit(onSubmit, (errors) => {
+        const contactFieldOrder = ["type", "companyName", "vatNumber", "contactName", "contactEmail", "contactPhone"] as const;
+        const first = contactFieldOrder.find((name) => errors[name]);
+        if (first) {
+          const id = first === "type" ? "contactTypeSection" : first;
+          setTimeout(() => {
+            document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "center" });
+          }, 100);
+        }
+      })}
+      className="max-w-4xl mx-auto"
+    >
       {/* Step Indicator */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
@@ -361,7 +388,9 @@ export default function BookingForm({ initialItems = [] }: BookingFormProps) {
                           }
                         }}
                         min={new Date().toISOString().split("T")[0]}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                          errors.startDate ? "border-red-500 ring-1 ring-red-500" : "border-gray-300"
+                        }`}
                       />
                       {errors.startDate && (
                         <p className="mt-1 text-xs text-red-600">{errors.startDate.message}</p>
@@ -388,9 +417,9 @@ export default function BookingForm({ initialItems = [] }: BookingFormProps) {
                           return minEnd.toISOString().split("T")[0];
                         })() : (startDate || new Date().toISOString().split("T")[0])}
                         disabled={rentalPeriodType === "standard"}
-                        className={`w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-                          rentalPeriodType === "standard" ? "bg-gray-100 cursor-not-allowed" : ""
-                        }`}
+                        className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                          errors.endDate ? "border-red-500 ring-1 ring-red-500" : "border-gray-300"
+                        } ${rentalPeriodType === "standard" ? "bg-gray-100 cursor-not-allowed" : ""}`}
                       />
                       {errors.endDate && (
                         <p className="mt-1 text-xs text-red-600">{errors.endDate.message}</p>
@@ -450,7 +479,9 @@ export default function BookingForm({ initialItems = [] }: BookingFormProps) {
                 id="eventLocation"
                 {...register("eventLocation")}
                 placeholder="Adres of stad"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                  errors.eventLocation ? "border-red-500 ring-1 ring-red-500" : "border-gray-300"
+                }`}
               />
               {errors.eventLocation && (
                 <p className="mt-1 text-sm text-red-600">{errors.eventLocation.message}</p>
@@ -474,7 +505,9 @@ export default function BookingForm({ initialItems = [] }: BookingFormProps) {
                 min="1"
                 max="1000"
                 placeholder="Bijv. 50"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                  errors.numberOfGuests ? "border-red-500 ring-1 ring-red-500" : "border-gray-300"
+                }`}
               />
               {errors.numberOfGuests && (
                 <p className="mt-1 text-sm text-red-600">{errors.numberOfGuests.message}</p>
@@ -484,7 +517,19 @@ export default function BookingForm({ initialItems = [] }: BookingFormProps) {
             <div className="flex justify-end">
               <motion.button
                 type="button"
-                onClick={() => setStep(2)}
+                onClick={async () => {
+                  const step1Fields = ["startDate", "endDate", "eventLocation", "numberOfGuests"] as const;
+                  let allValid = true;
+                  for (const field of step1Fields) {
+                    const valid = await trigger(field);
+                    if (!valid) {
+                      allValid = false;
+                      document.getElementById(field)?.scrollIntoView({ behavior: "smooth", block: "center" });
+                      break;
+                    }
+                  }
+                  if (allValid) setStep(2);
+                }}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
@@ -770,15 +815,85 @@ export default function BookingForm({ initialItems = [] }: BookingFormProps) {
           <div className="space-y-6 mb-8">
             <div>
               <h3 className="font-semibold text-gray-900 mb-2">Contactgegevens</h3>
-              <div className="space-y-2">
+              <div className="space-y-4">
+                <div id="contactTypeSection">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Ik ben een *
+                  </label>
+                  <div className="flex gap-4">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="radio"
+                        value="particulier"
+                        {...register("type")}
+                        className="w-4 h-4 text-blue-600"
+                      />
+                      <span className="text-gray-700">Particulier</span>
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="radio"
+                        value="bedrijf"
+                        {...register("type")}
+                        className="w-4 h-4 text-blue-600"
+                      />
+                      <span className="text-gray-700">Bedrijf</span>
+                    </label>
+                  </div>
+                  {errors.type && (
+                    <p className="mt-1 text-sm text-red-600">{errors.type.message}</p>
+                  )}
+                </div>
+
+                {watchedContactType === "bedrijf" && (
+                  <>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Bedrijfsnaam *
+                      </label>
+                      <input
+                        type="text"
+                        id="companyName"
+                        {...register("companyName")}
+                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                          errors.companyName ? "border-red-500 ring-1 ring-red-500" : "border-gray-300"
+                        }`}
+                      />
+                      {errors.companyName && (
+                        <p className="mt-1 text-sm text-red-600">{errors.companyName.message}</p>
+                      )}
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        BTW-nummer *
+                      </label>
+                      <input
+                        type="text"
+                        id="vatNumber"
+                        {...register("vatNumber")}
+                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                          errors.vatNumber ? "border-red-500 ring-1 ring-red-500" : "border-gray-300"
+                        }`}
+                        placeholder="Bijv. BE0123.456.789"
+                      />
+                      {errors.vatNumber && (
+                        <p className="mt-1 text-sm text-red-600">{errors.vatNumber.message}</p>
+                      )}
+                    </div>
+                  </>
+                )}
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Naam *
+                    {watchedContactType === "bedrijf" ? "Contactpersoon" : "Naam"} *
                   </label>
                   <input
                     type="text"
+                    id="contactName"
                     {...register("contactName")}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                      errors.contactName ? "border-red-500 ring-1 ring-red-500" : "border-gray-300"
+                    }`}
                   />
                   {errors.contactName && (
                     <p className="mt-1 text-sm text-red-600">{errors.contactName.message}</p>
@@ -791,8 +906,11 @@ export default function BookingForm({ initialItems = [] }: BookingFormProps) {
                   </label>
                   <input
                     type="email"
+                    id="contactEmail"
                     {...register("contactEmail")}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                      errors.contactEmail ? "border-red-500 ring-1 ring-red-500" : "border-gray-300"
+                    }`}
                   />
                   {errors.contactEmail && (
                     <p className="mt-1 text-sm text-red-600">{errors.contactEmail.message}</p>
@@ -805,8 +923,11 @@ export default function BookingForm({ initialItems = [] }: BookingFormProps) {
                   </label>
                   <input
                     type="tel"
+                    id="contactPhone"
                     {...register("contactPhone")}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                      errors.contactPhone ? "border-red-500 ring-1 ring-red-500" : "border-gray-300"
+                    }`}
                   />
                   {errors.contactPhone && (
                     <p className="mt-1 text-sm text-red-600">{errors.contactPhone.message}</p>

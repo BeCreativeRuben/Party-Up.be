@@ -24,6 +24,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (data.type === "bedrijf" && (!data.companyName?.trim() || !data.vatNumber?.trim())) {
+      return NextResponse.json(
+        { error: "Bedrijfsnaam en BTW-nummer zijn verplicht voor bedrijven" },
+        { status: 400 }
+      );
+    }
+
     // Generate email content
     const customerEmail = generateCustomerEmail(data);
     const adminEmail = generateAdminEmail(data);

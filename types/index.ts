@@ -28,6 +28,10 @@ export type BookingFormData = {
   eventLocation: string;
   numberOfGuests: number;
   selectedItems: string[];
+  /** Particulier of bedrijf; bepaalt of bedrijfsnaam/BTW/contactpersoon getoond worden */
+  type?: "particulier" | "bedrijf";
+  companyName?: string;
+  vatNumber?: string;
   contactName: string;
   contactEmail: string;
   contactPhone: string;

@@ -215,7 +215,10 @@ export function generateAdminEmail(data: BookingFormData): { subject: string; ht
           <div class="content">
             <div class="section">
               <h2>Contactgegevens</h2>
-              <p><strong>Naam:</strong> ${data.contactName}</p>
+              <p><strong>Type:</strong> ${data.type === "bedrijf" ? "Bedrijf" : "Particulier"}</p>
+              ${data.type === "bedrijf" && data.companyName ? `<p><strong>Bedrijfsnaam:</strong> ${data.companyName}</p>` : ""}
+              ${data.type === "bedrijf" && data.vatNumber ? `<p><strong>BTW-nummer:</strong> ${data.vatNumber}</p>` : ""}
+              <p><strong>${data.type === "bedrijf" ? "Contactpersoon" : "Naam"}:</strong> ${data.contactName}</p>
               <p><strong>E-mail:</strong> ${data.contactEmail}</p>
               <p><strong>Telefoon:</strong> ${data.contactPhone}</p>
             </div>
@@ -279,7 +282,10 @@ export function generateAdminEmail(data: BookingFormData): { subject: string; ht
 Nieuwe Boekingsaanvraag
 
 Contactgegevens:
-- Naam: ${data.contactName}
+- Type: ${data.type === "bedrijf" ? "Bedrijf" : "Particulier"}
+${data.type === "bedrijf" && data.companyName ? `- Bedrijfsnaam: ${data.companyName}` : ""}
+${data.type === "bedrijf" && data.vatNumber ? `- BTW-nummer: ${data.vatNumber}` : ""}
+- ${data.type === "bedrijf" ? "Contactpersoon" : "Naam"}: ${data.contactName}
 - E-mail: ${data.contactEmail}
 - Telefoon: ${data.contactPhone}
 
