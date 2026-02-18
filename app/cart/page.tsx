@@ -6,7 +6,7 @@ import { useCart } from "@/contexts/CartContext";
 import { products } from "@/lib/data/products";
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { formatPrice, calculateVAT, calculatePriceInclVAT } from "@/lib/utils";
+import { formatPrice, calculateVAT, calculatePriceInclVAT, cn } from "@/lib/utils";
 import ConfirmDialog from "@/components/ui/ConfirmDialog";
 
 type RentalPeriodType = "standard" | "custom";
@@ -285,7 +285,7 @@ export default function CartPage() {
                       src={product.image}
                       alt={product.name}
                       fill
-                      className="object-cover"
+                      className={cn("object-cover", product.imageClassName ?? product.imageClassNames?.[0])}
                     />
                   </Link>
                 ) : (
