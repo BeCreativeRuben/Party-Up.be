@@ -138,9 +138,21 @@ export default function ContactPage() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          <form
+            onSubmit={handleSubmit(onSubmit, (errors) => {
+              const order = ["type", "companyName", "vatNumber", "name", "email", "subject", "message"] as const;
+              const first = order.find((name) => errors[name]);
+              if (first) {
+                const id = first === "type" ? "contactTypeSection" : first;
+                setTimeout(() => {
+                  document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "center" });
+                }, 100);
+              }
+            })}
+            className="space-y-6"
+          >
             {/* Type Selection */}
-            <div>
+            <div id="contactTypeSection">
               <label className="block text-sm font-medium text-gray-700 mb-3">
                 Ik ben een *
               </label>
@@ -179,7 +191,9 @@ export default function ContactPage() {
                   type="text"
                   id="companyName"
                   {...register("companyName")}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                    errors.companyName ? "border-red-500 ring-1 ring-red-500" : "border-gray-300"
+                  }`}
                 />
                 {errors.companyName && (
                   <p className="mt-1 text-sm text-red-600">{errors.companyName.message}</p>
@@ -197,7 +211,9 @@ export default function ContactPage() {
                   type="text"
                   id="vatNumber"
                   {...register("vatNumber")}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                    errors.vatNumber ? "border-red-500 ring-1 ring-red-500" : "border-gray-300"
+                  }`}
                   placeholder="Bijv. BE0123.456.789"
                 />
                 {errors.vatNumber && (
@@ -214,7 +230,9 @@ export default function ContactPage() {
                 type="text"
                 id="name"
                 {...register("name")}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                  errors.name ? "border-red-500 ring-1 ring-red-500" : "border-gray-300"
+                }`}
               />
               {errors.name && (
                 <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
@@ -229,7 +247,9 @@ export default function ContactPage() {
                 type="email"
                 id="email"
                 {...register("email")}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                  errors.email ? "border-red-500 ring-1 ring-red-500" : "border-gray-300"
+                }`}
               />
               {errors.email && (
                 <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
@@ -256,7 +276,9 @@ export default function ContactPage() {
                 type="text"
                 id="subject"
                 {...register("subject")}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                  errors.subject ? "border-red-500 ring-1 ring-red-500" : "border-gray-300"
+                }`}
               />
               {errors.subject && (
                 <p className="mt-1 text-sm text-red-600">{errors.subject.message}</p>
@@ -271,7 +293,9 @@ export default function ContactPage() {
                 id="message"
                 rows={6}
                 {...register("message")}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                  errors.message ? "border-red-500 ring-1 ring-red-500" : "border-gray-300"
+                }`}
               />
               {errors.message && (
                 <p className="mt-1 text-sm text-red-600">{errors.message.message}</p>
