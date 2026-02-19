@@ -94,23 +94,27 @@ export default function Navigation({ scrolled = false, showCta = true }: Navigat
         >
           <span className="sr-only">{isOpen ? "Menu sluiten" : "Menu openen"}</span>
           <span className="relative block h-6 w-6">
+            {/* Top line */}
             <span
-              className={`absolute left-1/2 h-0.5 w-5 -translate-x-1/2 bg-current transition-all duration-300 ${
-                isOpen ? "top-1/2 -translate-y-1/2 rotate-45" : "top-1.5"
+              className={`absolute left-1/2 h-0.5 w-5 bg-current transition-all duration-300 ease-out ${
+                isOpen 
+                  ? "top-1/2 rotate-45 -translate-x-1/2 -translate-y-1/2" 
+                  : "top-1.5 -translate-x-1/2"
               }`}
-              style={{ transformOrigin: "center" }}
             />
+            {/* Middle line */}
             <span
-              className={`absolute left-1/2 top-1/2 h-0.5 w-5 -translate-x-1/2 -translate-y-1/2 bg-current transition-all duration-300 ${
-                isOpen ? "opacity-0 scale-x-0" : "opacity-100 scale-x-100"
+              className={`absolute left-1/2 top-1/2 h-0.5 w-5 -translate-x-1/2 -translate-y-1/2 bg-current transition-all duration-300 ease-out ${
+                isOpen ? "opacity-0" : "opacity-100"
               }`}
-              style={{ transformOrigin: "center" }}
             />
+            {/* Bottom line */}
             <span
-              className={`absolute left-1/2 h-0.5 w-5 -translate-x-1/2 bg-current transition-all duration-300 ${
-                isOpen ? "top-1/2 -translate-y-1/2 -rotate-45" : "bottom-1.5"
+              className={`absolute left-1/2 h-0.5 w-5 bg-current transition-all duration-300 ease-out ${
+                isOpen 
+                  ? "top-1/2 -rotate-45 -translate-x-1/2 -translate-y-1/2" 
+                  : "bottom-1.5 -translate-x-1/2"
               }`}
-              style={{ transformOrigin: "center" }}
             />
           </span>
         </button>
