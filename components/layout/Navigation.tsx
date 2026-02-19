@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 
 interface NavigationProps {
   scrolled?: boolean;
@@ -44,6 +45,75 @@ export default function Navigation({ scrolled = false, showCta = true }: Navigat
   useEffect(() => {
     setIsOpen(false);
   }, [pathname]);
+
+  const mobileMenu = (
+    <div
+      className={`fixed inset-0 z-[9999] md:hidden transition-opacity duration-300 ease-out ${
+        isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+      }`}
+      aria-hidden={!isOpen}
+    >
+      {/* Backdrop with blur */}
+      <div
+        className="absolute inset-0 bg-gray-900/50 backdrop-blur-sm"
+        onClick={() => setIsOpen(false)}
+      />
+
+      {/* Slide-in panel */}
+      <div
+        className={`absolute top-0 right-0 bottom-0 w-full max-w-[min(320px,85vw)] bg-white shadow-2xl flex flex-col transition-transform duration-300 ease-out ${
+          isOpen ? "translate-x-0" : "translate-x-full"
+        }`}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Panel header */}
+        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+          <span className="text-sm font-semibold text-gray-500 uppercase tracking-wider">
+            Menu
+          </span>
+          <button
+            type="button"
+            onClick={() => setIsOpen(false)}
+            className="p-2 -mr-2 rounded-lg text-gray-500 hover:text-gray-800 hover:bg-gray-100 transition-colors"
+            aria-label="Menu sluiten"
+          >
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Nav links */}
+        <div className="flex-1 overflow-y-auto py-4 min-h-0 scrollbar-hide">
+          {navLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              onClick={() => setIsOpen(false)}
+              className={`flex items-center px-5 py-3.5 text-base font-medium transition-colors border-l-4 border-transparent ${
+                isActive(link.href)
+                  ? "text-blue-700 bg-blue-50 border-blue-600"
+                  : "text-gray-700 hover:text-blue-600 hover:bg-gray-50 border-gray-100"
+              }`}
+            >
+              {link.label}
+            </Link>
+          ))}
+        </div>
+
+        {/* CTA at bottom */}
+        <div className="p-4 border-t border-gray-100 bg-gray-50/50">
+          <Link
+            href="/booking"
+            onClick={() => setIsOpen(false)}
+            className="flex items-center justify-center w-full py-3.5 px-4 rounded-xl bg-blue-600 text-white font-semibold text-base shadow-lg shadow-blue-600/25 hover:bg-blue-700 active:scale-[0.98] transition-all"
+          >
+            Reserveer Nu
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <nav className="relative">
@@ -118,76 +188,10 @@ export default function Navigation({ scrolled = false, showCta = true }: Navigat
             />
           </span>
         </button>
-
-        {/* Mobile menu overlay + panel */}
-        <div
-          className={`fixed inset-0 z-[100] md:hidden transition-opacity duration-300 ease-out ${
-            isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
-          }`}
-          aria-hidden={!isOpen}
-        >
-          {/* Backdrop with blur */}
-          <button
-            type="button"
-            onClick={() => setIsOpen(false)}
-            className="absolute inset-0 bg-gray-900/50 backdrop-blur-sm transition-opacity"
-            aria-label="Menu sluiten"
-          />
-
-          {/* Slide-in panel */}
-          <div
-            className={`absolute top-0 right-0 bottom-0 w-full max-w-[min(320px,85vw)] bg-white shadow-2xl flex flex-col transition-transform duration-300 ease-out ${
-              isOpen ? "translate-x-0" : "translate-x-full"
-            }`}
-          >
-            {/* Panel header */}
-            <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
-              <span className="text-sm font-semibold text-gray-500 uppercase tracking-wider">
-                Menu
-              </span>
-              <button
-                type="button"
-                onClick={() => setIsOpen(false)}
-                className="p-2 -mr-2 rounded-lg text-gray-500 hover:text-gray-800 hover:bg-gray-100 transition-colors"
-                aria-label="Menu sluiten"
-              >
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-
-            {/* Nav links */}
-            <div className="flex-1 overflow-y-auto py-4">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setIsOpen(false)}
-                  className={`flex items-center px-5 py-3.5 text-base font-medium transition-colors border-l-4 border-transparent ${
-                    isActive(link.href)
-                      ? "text-blue-700 bg-blue-50 border-blue-600"
-                      : "text-gray-700 hover:text-blue-600 hover:bg-gray-50 border-gray-100"
-                  }`}
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </div>
-
-            {/* CTA at bottom */}
-            <div className="p-4 border-t border-gray-100 bg-gray-50/50">
-              <Link
-                href="/booking"
-                onClick={() => setIsOpen(false)}
-                className="flex items-center justify-center w-full py-3.5 px-4 rounded-xl bg-blue-600 text-white font-semibold text-base shadow-lg shadow-blue-600/25 hover:bg-blue-700 active:scale-[0.98] transition-all"
-              >
-                Reserveer Nu
-              </Link>
-            </div>
-          </div>
-        </div>
       </div>
+
+      {/* Mobile menu overlay + panel - rendered via portal to body */}
+      {typeof window !== "undefined" && createPortal(mobileMenu, document.body)}
     </nav>
   );
 }
