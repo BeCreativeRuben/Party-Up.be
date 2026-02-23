@@ -1060,10 +1060,6 @@ export default function BookingForm({ initialItems = [] }: BookingFormProps) {
             Door je aanvraag te versturen ga je akkoord met onze{" "}
             <Link href="/legal/terms" className="text-blue-600 hover:underline">
               Algemene Voorwaarden
-            </Link>{" "}
-            en de{" "}
-            <Link href="/legal/waiver" className="text-blue-600 hover:underline">
-              Aansprakelijkheidsverklaring
             </Link>
             .
           </p>

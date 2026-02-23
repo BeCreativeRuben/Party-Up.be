@@ -35,7 +35,7 @@ export const products: Product[] = [
     availabilityCount: 1,
     popular: true,
     minimumRentalPeriod: 3,
-    deposit: 300,
+    deposit: 500,
   },
   {
     id: "tafels-hoog",
@@ -311,7 +311,7 @@ export const products: Product[] = [
     availabilityCount: 2,
     popular: true,
     minimumRentalPeriod: 3,
-    deposit: 500,
+    deposit: 300,
   },
   {
     id: "jbl-box",
