@@ -1,9 +1,28 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { useInView } from "framer-motion";
 import { useRef } from "react";
+
+function answerWithLinks(text: string) {
+  const phrase = "Algemene Voorwaarden";
+  const parts = text.split(phrase);
+  if (parts.length < 2) return text;
+  return parts.map((part, i) =>
+    i < parts.length - 1 ? (
+      <span key={i}>
+        {part}
+        <Link href="/legal/terms" className="text-blue-600 hover:underline font-medium">
+          {phrase}
+        </Link>
+      </span>
+    ) : (
+      <span key={i}>{part}</span>
+    )
+  );
+}
 
 const faqs = [
   {
@@ -172,7 +191,7 @@ export default function FAQPage() {
                       transition={{ duration: 0.3 }}
                       className="px-6 py-5 bg-gradient-to-b from-blue-50 to-white border-t border-blue-100"
                     >
-                      <p className="text-gray-700 leading-relaxed">{faq.answer}</p>
+                      <p className="text-gray-700 leading-relaxed">{answerWithLinks(faq.answer)}</p>
                     </motion.div>
                   </motion.div>
                 )}

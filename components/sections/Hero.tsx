@@ -5,14 +5,16 @@ export default function Hero() {
     <section className="relative min-h-screen -mt-16 flex items-center justify-center overflow-hidden">
       {/* Background Video with Overlay */}
       <div className="absolute inset-0 z-0">
+        {/* Op desktop wordt groter getoond → ziet er zachter uit. Voor scherpe weergave: voeg public/hero-video-desktop.mp4 toe (bv. 1920×1080). Anders wordt hero-video.mp4 gebruikt. */}
         <video
           autoPlay
           loop
           muted
           playsInline
-          preload="metadata"
-          className="absolute inset-0 w-full h-full object-cover"
+          preload="auto"
+          className="absolute inset-0 w-full h-full object-cover hero-video-quality"
         >
+          <source src="/hero-video-desktop.mp4" type="video/mp4" media="(min-width: 768px)" />
           <source src="/hero-video.mp4" type="video/mp4" />
         </video>
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/50 z-10" />
