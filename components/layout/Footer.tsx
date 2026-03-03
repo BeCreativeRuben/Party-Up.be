@@ -9,7 +9,7 @@ export default function Footer() {
           <div>
             <div className="mb-4 relative inline-block bg-transparent">
               <Image
-                src="/logo-icon.png"
+                src="/logo-icon.png?v=2"
                 alt="Party-Up Logo"
                 width={80}
                 height={80}
