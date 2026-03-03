@@ -9,10 +9,10 @@ export default function Footer() {
           <div>
             <div className="mb-4 relative inline-block bg-transparent">
               <Image
-                src="/logo-stacked.png?v=3"
+                src="/logo-stacked.svg"
                 alt="Party-Up Logo"
                 width={140}
-                height={100}
+                height={130}
                 className="h-14 w-auto object-contain drop-shadow-xl"
                 style={{ 
                   backgroundColor: 'transparent',
