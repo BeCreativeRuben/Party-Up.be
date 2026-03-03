@@ -9,7 +9,7 @@ export default function TermsPage() {
           <h2 className="text-2xl font-semibold text-gray-800">ALGEMENE VOORWAARDEN</h2>
         </div>
         <div className="flex-shrink-0">
-          <Image src="/logo-full.png?v=2" alt="Party-Up Logo" width={240} height={72} priority className="h-20 w-auto" />
+          <Image src="/logo-full.png?v=3" alt="Party-Up Logo" width={240} height={72} priority className="h-20 w-auto" />
         </div>
       </div>
 

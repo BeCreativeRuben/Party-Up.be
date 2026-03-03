@@ -57,10 +57,10 @@ export default function Header() {
                 <div className="flex items-center transition-transform duration-300 group-hover:scale-105">
                   <div className="relative bg-transparent">
                     <Image
-                      src="/logo-full.png?v=2"
+                      src="/logo-full.png?v=3"
                       alt="Party-Up Logo"
-                      width={200}
-                      height={100}
+                      width={140}
+                      height={120}
                       className="h-14 w-auto object-contain drop-shadow-md"
                       priority
                       style={{
