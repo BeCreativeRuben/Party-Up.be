@@ -1,6 +1,12 @@
+import type { Metadata } from "next";
 import { categories, products } from "@/lib/data/products";
 import { formatPrice, calculateVAT, calculatePriceInclVAT } from "@/lib/utils";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  alternates: { canonical: "/pricing" },
+};
+
 
 export default function PricingPage() {
   return (

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { categories, getProductsByCategory } from "@/lib/data/products";
 import CategoryGrid from "@/components/catalog/CategoryGrid";
@@ -5,6 +6,11 @@ import Link from "next/link";
 
 interface CategoryPageProps {
   params: Promise<{ category: string }>;
+}
+
+export async function generateMetadata({ params }: CategoryPageProps): Promise<Metadata> {
+  const { category } = await params;
+  return { alternates: { canonical: `/catalog/${category}` } };
 }
 
 export async function generateStaticParams() {

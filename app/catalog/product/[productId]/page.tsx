@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import dynamic from "next/dynamic";
 import Link from "next/link";
@@ -13,6 +14,11 @@ const ProductImageGallery = dynamic(() => import("@/components/catalog/ProductIm
 
 interface ProductPageProps {
   params: Promise<{ productId: string }>;
+}
+
+export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
+  const { productId } = await params;
+  return { alternates: { canonical: `/catalog/product/${productId}` } };
 }
 
 export function generateStaticParams() {

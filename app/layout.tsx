@@ -13,6 +13,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://party-up.be"),
   title: "Party-Up.be - No Nonsense Feestverhuur",
   description: "Verhuur van feest- en evenementmateriaal voor privé- en kleine professionele evenementen in België. Geen opslag, geen onderhoud, betrouwbare service.",
   icons: {
