@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import Hero from "@/components/sections/Hero";
+import { homeMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  alternates: { canonical: "/" },
-};
+export const metadata: Metadata = homeMetadata;
 
 
 const FeaturedProducts = dynamic(() => import("@/components/sections/FeaturedProducts"), {

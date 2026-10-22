@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { categories, getProductsByCategory } from "@/lib/data/products";
+import { categoryLabel, categoryPageMetadata, categorySummary } from "@/lib/seo";
+import { formatPrice } from "@/lib/utils";
 import CategoryGrid from "@/components/catalog/CategoryGrid";
 import Link from "next/link";
 
@@ -10,7 +12,11 @@ interface CategoryPageProps {
 
 export async function generateMetadata({ params }: CategoryPageProps): Promise<Metadata> {
   const { category } = await params;
-  return { alternates: { canonical: `/catalog/${category}` } };
+  const categoryData = categories.find((item) => item.id === category);
+  if (!categoryData) {
+    return { title: "Categorie niet gevonden", robots: { index: false, follow: false } };
+  }
+  return categoryPageMetadata(categoryData.id);
 }
 
 export async function generateStaticParams() {
@@ -27,7 +33,9 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
     notFound();
   }
 
-  const products = getProductsByCategory(category as any);
+  const categoryId = categoryData.id;
+  const products = getProductsByCategory(categoryId);
+  const label = categoryLabel(categoryId);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -47,9 +55,24 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
           Terug naar Catalogus
         </Link>
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-3">{categoryData.name}</h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">{categoryData.description}</p>
+          <h1 className="text-4xl font-bold text-gray-900 mb-3">{label} huren</h1>
+          <p className="text-lg text-gray-600 max-w-3xl mx-auto">{categorySummary(categoryId)}</p>
         </div>
+        {products.length > 0 && (
+          <ul className="max-w-2xl mx-auto mb-10 divide-y divide-gray-200 border border-gray-200 rounded-lg bg-white">
+            {products.map((product) => (
+              <li key={product.id} className="flex items-baseline justify-between gap-4 px-4 py-3 text-left">
+                <Link
+                  href={`/catalog/product/${product.id}`}
+                  className="font-medium text-blue-600 hover:text-blue-700"
+                >
+                  {product.name}
+                </Link>
+                <span className="shrink-0 text-sm text-gray-700">{formatPrice(product.price)} excl. BTW</span>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
 
       <CategoryGrid products={products} />
