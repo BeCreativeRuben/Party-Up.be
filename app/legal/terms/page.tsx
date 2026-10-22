@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import { termsMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  alternates: { canonical: "/legal/terms" },
-};
+export const metadata: Metadata = termsMetadata;
 
 
 export default function TermsPage() {

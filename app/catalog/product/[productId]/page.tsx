@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { getProductById, getCategoryDisplayName, products } from "@/lib/data/products";
+import { getProductById, getCategoryDisplayName, getProductsByCategory, products } from "@/lib/data/products";
 import { formatPrice, calculateVAT, calculatePriceInclVAT } from "@/lib/utils";
+import { categoryLabel, productPageMetadata, productRentalParagraph } from "@/lib/seo";
 import ProductDetailActions from "@/components/catalog/ProductDetailActions";
 
 const ProductImageGallery = dynamic(() => import("@/components/catalog/ProductImageGallery"), {
@@ -18,7 +19,11 @@ interface ProductPageProps {
 
 export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
   const { productId } = await params;
-  return { alternates: { canonical: `/catalog/product/${productId}` } };
+  const product = getProductById(productId);
+  if (!product) {
+    return { title: "Product niet gevonden", robots: { index: false, follow: false } };
+  }
+  return productPageMetadata(product);
 }
 
 export function generateStaticParams() {
@@ -36,6 +41,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
   }
 
   const images = product.images ?? (product.image ? [product.image] : []);
+  const related = getProductsByCategory(product.category).filter((item) => item.id !== product.id);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -81,7 +87,46 @@ export default async function ProductPage({ params }: ProductPageProps) {
             </p>
             <p className="text-sm text-gray-500 mt-1">per periode (3 dagen - vrijdag t/m zondag)</p>
           </div>
-          <p className="text-gray-600 mb-8 whitespace-pre-line">{product.description}</p>
+          <div className="mb-8 space-y-4">
+            <p className="text-gray-600 whitespace-pre-line">{product.description}</p>
+            <p className="text-gray-700">{productRentalParagraph(product)}</p>
+            <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 bg-gray-50 rounded-lg p-4 text-sm text-gray-700">
+              <div>
+                <dt className="font-semibold text-gray-900">Categorie</dt>
+                <dd>
+                  <Link href={`/catalog/${product.category}`} className="text-blue-600 hover:text-blue-700">
+                    {categoryLabel(product.category)}
+                  </Link>
+                </dd>
+              </div>
+              <div>
+                <dt className="font-semibold text-gray-900">Prijs excl. BTW</dt>
+                <dd>{formatPrice(product.price)} per huurperiode</dd>
+              </div>
+              <div>
+                <dt className="font-semibold text-gray-900">Prijs incl. 21% BTW</dt>
+                <dd>{formatPrice(calculatePriceInclVAT(product.price))}</dd>
+              </div>
+              {typeof product.availabilityCount === "number" && (
+                <div>
+                  <dt className="font-semibold text-gray-900">Beschikbaar</dt>
+                  <dd>{product.availabilityCount} beschikbaar</dd>
+                </div>
+              )}
+              {typeof product.deposit === "number" && (
+                <div>
+                  <dt className="font-semibold text-gray-900">Waarborg</dt>
+                  <dd>{formatPrice(product.deposit)}</dd>
+                </div>
+              )}
+              {typeof product.minimumRentalPeriod === "number" && (
+                <div>
+                  <dt className="font-semibold text-gray-900">Minimale huurperiode</dt>
+                  <dd>{product.minimumRentalPeriod} dagen</dd>
+                </div>
+              )}
+            </dl>
+          </div>
 
           {/* Specifications - Tent 6×4 m */}
           {product.id === "tent-6x4" && (
@@ -194,6 +239,28 @@ export default async function ProductPage({ params }: ProductPageProps) {
           <ProductDetailActions product={product} />
         </div>
       </div>
+
+      {related.length > 0 && (
+        <section className="mt-16 pt-10 border-t border-gray-200">
+          <h2 className="text-2xl font-semibold text-gray-900 mb-6">
+            Ook in {categoryLabel(product.category).toLowerCase()}
+          </h2>
+          <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {related.map((item) => (
+              <li key={item.id} className="bg-gray-50 rounded-lg p-4">
+                <Link
+                  href={`/catalog/product/${item.id}`}
+                  className="font-semibold text-blue-600 hover:text-blue-700"
+                >
+                  {item.name}
+                </Link>
+                <p className="text-sm text-gray-500 mt-1">{formatPrice(item.price)} excl. BTW per huurperiode</p>
+                <p className="text-sm text-gray-700 mt-2 whitespace-pre-line">{item.description}</p>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
     </div>
   );
 }

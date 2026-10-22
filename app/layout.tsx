@@ -6,6 +6,7 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { CartProvider } from "@/contexts/CartContext";
 import ErrorBoundaryWrapper from "@/components/ErrorBoundaryWrapper";
+import { HOME_DESCRIPTION, HOME_TITLE, SITE_NAME } from "@/lib/seo";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -14,8 +15,19 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://party-up.be"),
-  title: "Party-Up.be - No Nonsense Feestverhuur",
-  description: "Verhuur van feest- en evenementmateriaal voor privé- en kleine professionele evenementen in België. Geen opslag, geen onderhoud, betrouwbare service.",
+  title: {
+    default: HOME_TITLE,
+    template: `%s | ${SITE_NAME}`,
+  },
+  description: HOME_DESCRIPTION,
+  openGraph: {
+    title: HOME_TITLE,
+    description: HOME_DESCRIPTION,
+    url: "/",
+    siteName: SITE_NAME,
+    locale: "nl_BE",
+    type: "website",
+  },
   icons: {
     icon: "/favicon.png",
     apple: "/favicon.png",
