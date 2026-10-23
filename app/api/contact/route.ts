@@ -1,13 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
-import { generateContactEmail, sendEmail, ContactFormData } from "@/lib/email";
+import {
+  generateContactEmail,
+  sendEmail,
+  ContactFormData,
+  ADMIN_INBOX,
+  isSingleEmailAddress,
+  smtpCredentialsConfigured,
+} from "@/lib/email";
 
 export async function POST(request: NextRequest) {
   try {
     const data: ContactFormData = await request.json();
 
-    // Validate required fields
+    // Validate required fields. Recipient is never taken from the body.
     if (
-      !data.type ||
+      (data.type !== "particulier" && data.type !== "bedrijf") ||
       !data.name ||
       !data.email ||
       !data.subject ||
@@ -15,6 +22,13 @@ export async function POST(request: NextRequest) {
     ) {
       return NextResponse.json(
         { error: "Missing required fields" },
+        { status: 400 }
+      );
+    }
+
+    if (!isSingleEmailAddress(data.email)) {
+      return NextResponse.json(
+        { error: "Geldig e-mailadres is verplicht" },
         { status: 400 }
       );
     }
@@ -27,14 +41,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (!smtpCredentialsConfigured()) {
+      console.error("Contact form rejected: SMTP credentials are not configured");
+      return NextResponse.json({ error: "Service unavailable" }, { status: 503 });
+    }
+
     // Generate email content
     const adminEmail = generateContactEmail(data);
 
-    // Send email to admin
-    // Note: In production, you'll need to configure an actual email service
-    // The sendEmail function is a placeholder that logs to console
+    // Always deliver to the fixed inbox. Caller-supplied to/cc/bcc/recipient fields are ignored.
     try {
-      await sendEmail("info@party-up.be", adminEmail.subject, adminEmail.html, adminEmail.text);
+      await sendEmail(ADMIN_INBOX, adminEmail.subject, adminEmail.html, adminEmail.text);
     } catch (emailError) {
       console.error("Error sending email:", emailError);
       // Continue even if email fails - the contact form is still logged

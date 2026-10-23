@@ -1,6 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { BookingFormData } from "@/types";
-import { generateCustomerEmail, generateAdminEmail, sendEmail } from "@/lib/email";
+import {
+  generateCustomerEmail,
+  generateAdminEmail,
+  sendEmail,
+  ADMIN_INBOX,
+  isSingleEmailAddress,
+  smtpCredentialsConfigured,
+} from "@/lib/email";
 
 export async function POST(request: NextRequest) {
   try {
@@ -31,16 +38,26 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (!isSingleEmailAddress(data.contactEmail)) {
+      return NextResponse.json(
+        { error: "Geldig e-mailadres is verplicht" },
+        { status: 400 }
+      );
+    }
+
+    if (!smtpCredentialsConfigured()) {
+      console.error("Booking request rejected: SMTP credentials are not configured");
+      return NextResponse.json({ error: "Service unavailable" }, { status: 503 });
+    }
+
     // Generate email content
     const customerEmail = generateCustomerEmail(data);
     const adminEmail = generateAdminEmail(data);
 
-    // Send emails
-    // Note: In production, you'll need to configure an actual email service
-    // The sendEmail function is a placeholder that logs to console
+    // Confirmation goes only to the submitter's own address. Admin copy goes to the fixed inbox.
     try {
       await sendEmail(data.contactEmail, customerEmail.subject, customerEmail.html, customerEmail.text);
-      await sendEmail("info@party-up.be", adminEmail.subject, adminEmail.html, adminEmail.text);
+      await sendEmail(ADMIN_INBOX, adminEmail.subject, adminEmail.html, adminEmail.text);
     } catch (emailError) {
       console.error("Error sending emails:", emailError);
       // Continue even if email fails - the booking is still logged

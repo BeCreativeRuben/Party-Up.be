@@ -1,7 +1,38 @@
 import nodemailer from "nodemailer";
+import { z } from "zod";
 import { BookingFormData } from "@/types";
 import { getProductById } from "@/lib/data/products";
 import { formatPrice, calculateVAT, calculatePriceInclVAT } from "@/lib/utils";
+
+/** Fixed inbox for contact and booking notifications. Callers cannot choose this. */
+export const ADMIN_INBOX = "info@party-up.be";
+
+const singleEmailSchema = z.string().email();
+
+export function isSingleEmailAddress(value: unknown): value is string {
+  if (typeof value !== "string") return false;
+  if (value.length > 254 || /[\r\n,;]/.test(value) || value.includes("<") || value.includes(">")) {
+    return false;
+  }
+  return singleEmailSchema.safeParse(value).success;
+}
+
+export function containsHeaderBreak(value: unknown): boolean {
+  return typeof value === "string" && /[\r\n]/.test(value);
+}
+
+function escapeHtml(value: unknown): string {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+export function smtpCredentialsConfigured(): boolean {
+  return Boolean(process.env.SMTP_USER && process.env.SMTP_PASS);
+}
 
 function getItemCounts(selectedItems: string[]): Record<string, number> {
   return selectedItems.reduce((acc, id) => {
@@ -55,7 +86,7 @@ export function generateCustomerEmail(data: BookingFormData): { subject: string;
             <p>No Nonsense Feestverhuur</p>
           </div>
           <div class="content">
-            <p>Beste ${data.contactName},</p>
+            <p>Beste ${escapeHtml(data.contactName)},</p>
             <p>Bedankt voor je boekingsaanvraag! We hebben je reservering ontvangen en zullen deze binnenkort bekijken.</p>
             
             <div class="section">
@@ -63,8 +94,8 @@ export function generateCustomerEmail(data: BookingFormData): { subject: string;
               <p><strong>Huurperiode:</strong> ${data.rentalPeriodType === "standard" ? "Standaard (3 dagen - Vrijdag t/m Zondag)" : "Aangepaste periode"}</p>
               <p><strong>Ophaaldatum:</strong> ${new Date(data.startDate).toLocaleDateString('nl-BE')}</p>
               <p><strong>Retourdatum:</strong> ${new Date(data.endDate).toLocaleDateString('nl-BE')}</p>
-              <p><strong>Locatie:</strong> ${data.eventLocation}</p>
-              <p><strong>Aantal Gasten (schatting):</strong> ${data.numberOfGuests}</p>
+              <p><strong>Locatie:</strong> ${escapeHtml(data.eventLocation)}</p>
+              <p><strong>Aantal Gasten (schatting):</strong> ${escapeHtml(data.numberOfGuests)}</p>
             </div>
 
             <div class="section">
@@ -111,7 +142,7 @@ export function generateCustomerEmail(data: BookingFormData): { subject: string;
             ${data.additionalNotes ? `
             <div class="section">
               <h2>Aanvullende Opmerkingen</h2>
-              <p>${data.additionalNotes}</p>
+              <p>${escapeHtml(data.additionalNotes)}</p>
             </div>
             ` : ""}
 
@@ -191,7 +222,7 @@ export function generateAdminEmail(data: BookingFormData): { subject: string; ht
     return sum + (product?.deposit || 0) * qty;
   }, 0);
 
-  const subject = `Nieuwe Boekingsaanvraag - ${data.contactName}`;
+  const subject = `Nieuwe Boekingsaanvraag - ${data.contactName.replace(/[\r\n]+/g, " ")}`;
 
   const html = `
     <!DOCTYPE html>
@@ -216,11 +247,11 @@ export function generateAdminEmail(data: BookingFormData): { subject: string; ht
             <div class="section">
               <h2>Contactgegevens</h2>
               <p><strong>Type:</strong> ${data.type === "bedrijf" ? "Bedrijf" : "Particulier"}</p>
-              ${data.type === "bedrijf" && data.companyName ? `<p><strong>Bedrijfsnaam:</strong> ${data.companyName}</p>` : ""}
-              ${data.type === "bedrijf" && data.vatNumber ? `<p><strong>BTW-nummer:</strong> ${data.vatNumber}</p>` : ""}
-              <p><strong>${data.type === "bedrijf" ? "Contactpersoon" : "Naam"}:</strong> ${data.contactName}</p>
-              <p><strong>E-mail:</strong> ${data.contactEmail}</p>
-              <p><strong>Telefoon:</strong> ${data.contactPhone}</p>
+              ${data.type === "bedrijf" && data.companyName ? `<p><strong>Bedrijfsnaam:</strong> ${escapeHtml(data.companyName)}</p>` : ""}
+              ${data.type === "bedrijf" && data.vatNumber ? `<p><strong>BTW-nummer:</strong> ${escapeHtml(data.vatNumber)}</p>` : ""}
+              <p><strong>${data.type === "bedrijf" ? "Contactpersoon" : "Naam"}:</strong> ${escapeHtml(data.contactName)}</p>
+              <p><strong>E-mail:</strong> ${escapeHtml(data.contactEmail)}</p>
+              <p><strong>Telefoon:</strong> ${escapeHtml(data.contactPhone)}</p>
             </div>
 
             <div class="section">
@@ -228,8 +259,8 @@ export function generateAdminEmail(data: BookingFormData): { subject: string; ht
               <p><strong>Huurperiode:</strong> ${data.rentalPeriodType === "standard" ? "Standaard (3 dagen - Vrijdag t/m Zondag)" : "Aangepaste periode"}</p>
               <p><strong>Ophaaldatum:</strong> ${new Date(data.startDate).toLocaleDateString('nl-BE')}</p>
               <p><strong>Retourdatum:</strong> ${new Date(data.endDate).toLocaleDateString('nl-BE')}</p>
-              <p><strong>Locatie:</strong> ${data.eventLocation}</p>
-              <p><strong>Aantal Gasten (schatting):</strong> ${data.numberOfGuests}</p>
+              <p><strong>Locatie:</strong> ${escapeHtml(data.eventLocation)}</p>
+              <p><strong>Aantal Gasten (schatting):</strong> ${escapeHtml(data.numberOfGuests)}</p>
             </div>
 
             <div class="section">
@@ -269,7 +300,7 @@ export function generateAdminEmail(data: BookingFormData): { subject: string; ht
             ${data.additionalNotes ? `
             <div class="section">
               <h2>Aanvullende Opmerkingen</h2>
-              <p>${data.additionalNotes}</p>
+              <p>${escapeHtml(data.additionalNotes)}</p>
             </div>
             ` : ""}
           </div>
@@ -332,7 +363,7 @@ export type ContactFormData = {
 };
 
 export function generateContactEmail(data: ContactFormData): { subject: string; html: string; text: string } {
-  const subject = `Contactformulier: ${data.subject}`;
+  const subject = `Contactformulier: ${data.subject.replace(/[\r\n]+/g, " ")}`;
 
   const html = `
     <!DOCTYPE html>
@@ -358,21 +389,21 @@ export function generateContactEmail(data: ContactFormData): { subject: string; 
             <div class="section">
               <h2>Contactgegevens</h2>
               <p><strong>Type:</strong> ${data.type === "bedrijf" ? "Bedrijf" : "Particulier"}</p>
-              ${data.type === "bedrijf" && data.companyName ? `<p><strong>Bedrijfsnaam:</strong> ${data.companyName}</p>` : ""}
-              ${data.type === "bedrijf" && data.vatNumber ? `<p><strong>BTW-nummer:</strong> ${data.vatNumber}</p>` : ""}
-              <p><strong>${data.type === "bedrijf" ? "Contactpersoon" : "Naam"}:</strong> ${data.name}</p>
-              <p><strong>E-mail:</strong> <a href="mailto:${data.email}">${data.email}</a></p>
-              ${data.phone ? `<p><strong>Telefoon:</strong> <a href="tel:${data.phone}">${data.phone}</a></p>` : ""}
+              ${data.type === "bedrijf" && data.companyName ? `<p><strong>Bedrijfsnaam:</strong> ${escapeHtml(data.companyName)}</p>` : ""}
+              ${data.type === "bedrijf" && data.vatNumber ? `<p><strong>BTW-nummer:</strong> ${escapeHtml(data.vatNumber)}</p>` : ""}
+              <p><strong>${data.type === "bedrijf" ? "Contactpersoon" : "Naam"}:</strong> ${escapeHtml(data.name)}</p>
+              <p><strong>E-mail:</strong> <a href="mailto:${escapeHtml(data.email)}">${escapeHtml(data.email)}</a></p>
+              ${data.phone ? `<p><strong>Telefoon:</strong> <a href="tel:${escapeHtml(data.phone)}">${escapeHtml(data.phone)}</a></p>` : ""}
             </div>
 
             <div class="section">
               <h2>Onderwerp</h2>
-              <p>${data.subject}</p>
+              <p>${escapeHtml(data.subject)}</p>
             </div>
 
             <div class="section">
               <h2>Bericht</h2>
-              <p style="white-space: pre-wrap;">${data.message}</p>
+              <p style="white-space: pre-wrap;">${escapeHtml(data.message)}</p>
             </div>
           </div>
           <div class="footer">
@@ -413,12 +444,17 @@ export async function sendEmail(
   html: string,
   text: string
 ): Promise<boolean> {
+  if (!isSingleEmailAddress(to)) {
+    console.error("Email rejected: recipient is not a single email address");
+    return false;
+  }
+
   const user = process.env.SMTP_USER;
   const pass = process.env.SMTP_PASS;
 
   if (!user || !pass) {
-    console.log("Email skipped (SMTP not configured):", { to, subject });
-    return true;
+    console.error("Email rejected: SMTP credentials are not configured");
+    return false;
   }
 
   try {
@@ -433,7 +469,7 @@ export async function sendEmail(
     await transporter.sendMail({
       from: user,
       to,
-      subject,
+      subject: subject.replace(/[\r\n]/g, " "),
       html,
       text,
     });
