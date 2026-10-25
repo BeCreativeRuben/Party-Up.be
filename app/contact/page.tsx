@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 const contactSchema = z.object({
   type: z.enum(["particulier", "bedrijf"], {
-    required_error: "Selecteer of je een particulier of bedrijf bent",
+    error: "Selecteer of je een particulier of bedrijf bent",
   }),
   name: z.string().min(1, "Naam is verplicht"),
   email: z.string().email("Geldig e-mailadres is verplicht"),
