@@ -26,9 +26,9 @@ const bookingSchema = z.object({
   startDate: z.string().min(1, "Ophaaldatum is verplicht"),
   endDate: z.string().min(1, "Retourdatum is verplicht"),
   eventLocation: z.string().min(1, "Evenementlocatie is verplicht"),
-  numberOfGuests: z.number({ required_error: "Aantal gasten is verplicht" }).min(1, "Minimum 1 gast").max(1000, "Maximum 1000 gasten"),
+  numberOfGuests: z.number({ error: "Aantal gasten is verplicht" }).min(1, "Minimum 1 gast").max(1000, "Maximum 1000 gasten"),
   type: z.enum(["particulier", "bedrijf"], {
-    required_error: "Selecteer of je een particulier of bedrijf bent",
+    error: "Selecteer of je een particulier of bedrijf bent",
   }),
   companyName: z.string().optional(),
   vatNumber: z.string().optional(),
@@ -46,9 +46,7 @@ const bookingSchema = z.object({
   path: ["companyName"],
 });
 
-type BookingFormValues = z.infer<typeof bookingSchema> & {
-  selectedItems: string[];
-};
+type BookingFormValues = z.infer<typeof bookingSchema>;
 
 interface BookingFormProps {
   initialItems?: string[];
@@ -76,7 +74,6 @@ export default function BookingForm({ initialItems = [] }: BookingFormProps) {
   } = useForm<BookingFormValues>({
     resolver: zodResolver(bookingSchema),
     defaultValues: {
-      selectedItems: [],
       rentalPeriodType: "standard",
       type: "particulier",
     },
