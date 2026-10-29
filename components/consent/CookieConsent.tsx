@@ -68,7 +68,7 @@ export default function CookieConsent() {
         <p id="cookie-consent-text" className="text-sm text-gray-700">
           We meten het bezoek met Google Analytics. Die cookie staat uit tot je akkoord gaat.
           Advertentiecookies gebruiken we niet.{" "}
-          <Link href="/legal/privacy" className="text-blue-600 hover:underline">
+          <Link href="/legal/privacy" className="text-blue-600 underline underline-offset-2">
             Privacybeleid
           </Link>
         </p>
