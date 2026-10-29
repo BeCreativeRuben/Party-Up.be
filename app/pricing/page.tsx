@@ -29,7 +29,8 @@ export default function PricingPage() {
               <div key={category.id}>
                 <h3 className="text-2xl font-semibold text-gray-900 mb-6">{category.name}</h3>
                 <div className="bg-white rounded-lg shadow-md overflow-hidden">
-                  <table className="min-w-full divide-y divide-gray-200">
+                  <div className="overflow-x-auto">
+                  <table className="min-w-[720px] w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                       <tr>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -73,6 +74,7 @@ export default function PricingPage() {
                       ))}
                     </tbody>
                   </table>
+                  </div>
                 </div>
               </div>
             );

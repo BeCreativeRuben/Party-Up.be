@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import Hero from "@/components/sections/Hero";
+import HomeFaq from "@/components/sections/HomeFaq";
 import { homeMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = homeMetadata;
@@ -55,6 +56,7 @@ export default function Home() {
     <div>
       <Hero />
       <FeaturedProducts />
+      <HomeFaq />
       <Testimonials />
     </div>
   );

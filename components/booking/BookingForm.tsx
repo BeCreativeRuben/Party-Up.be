@@ -32,18 +32,52 @@ const bookingSchema = z.object({
   }),
   companyName: z.string().optional(),
   vatNumber: z.string().optional(),
-  contactName: z.string().min(1, "Naam is verplicht"),
-  contactEmail: z.string().email("Geldig e-mailadres is verplicht"),
-  contactPhone: z.string().min(1, "Telefoonnummer is verplicht"),
+  contactName: z.string(),
+  contactEmail: z.string(),
+  contactPhone: z.string(),
   additionalNotes: z.string().optional(),
-}).refine((data) => {
-  if (data.type === "bedrijf") {
-    return data.companyName && data.companyName.length > 0 && data.vatNumber && data.vatNumber.length > 0;
+}).check((ctx) => {
+  const data = ctx.value;
+  if (data.contactName.trim().length === 0) {
+    ctx.issues.push({
+      code: "custom",
+      message: "Naam is verplicht",
+      path: ["contactName"],
+      input: data.contactName,
+    });
   }
-  return true;
-}, {
-  message: "Bedrijfsnaam en BTW-nummer zijn verplicht voor bedrijven",
-  path: ["companyName"],
+  if (!z.email().safeParse(data.contactEmail).success) {
+    ctx.issues.push({
+      code: "custom",
+      message: "Geldig e-mailadres is verplicht",
+      path: ["contactEmail"],
+      input: data.contactEmail,
+    });
+  }
+  if (data.contactPhone.trim().length === 0) {
+    ctx.issues.push({
+      code: "custom",
+      message: "Telefoonnummer is verplicht",
+      path: ["contactPhone"],
+      input: data.contactPhone,
+    });
+  }
+  if (data.type === "bedrijf" && (!data.companyName || data.companyName.length === 0)) {
+    ctx.issues.push({
+      code: "custom",
+      message: "Bedrijfsnaam is verplicht voor bedrijven",
+      path: ["companyName"],
+      input: data.companyName,
+    });
+  }
+  if (data.type === "bedrijf" && (!data.vatNumber || data.vatNumber.length === 0)) {
+    ctx.issues.push({
+      code: "custom",
+      message: "BTW-nummer is verplicht voor bedrijven",
+      path: ["vatNumber"],
+      input: data.vatNumber,
+    });
+  }
 });
 
 type BookingFormValues = z.infer<typeof bookingSchema>;
@@ -158,6 +192,11 @@ export default function BookingForm({ initialItems = [] }: BookingFormProps) {
   const onSubmit = async (data: BookingFormValues) => {
     setIsSubmitting(true);
     setSubmitError(null);
+    if (items.length === 0) {
+      setSubmitError("Voeg minstens één item toe voor je de aanvraag verstuurt.");
+      setIsSubmitting(false);
+      return;
+    }
     try {
       // Get selected items from cart
       const selectedItems = items.map(item => item.productId);
@@ -225,6 +264,7 @@ export default function BookingForm({ initialItems = [] }: BookingFormProps) {
 
   return (
     <form
+      noValidate
       onSubmit={handleSubmit(onSubmit, (errors) => {
         const contactFieldOrder = ["type", "companyName", "vatNumber", "contactName", "contactEmail", "contactPhone"] as const;
         const first = contactFieldOrder.find((name) => errors[name]);
@@ -758,7 +798,7 @@ export default function BookingForm({ initialItems = [] }: BookingFormProps) {
                             e.stopPropagation();
                             addItem(product.id);
                           }}
-                          className="ml-2 p-2 text-blue-600 hover:text-blue-700 transition-colors"
+                          className="ml-2 min-w-11 min-h-11 inline-flex items-center justify-center text-blue-600 hover:text-blue-700 transition-colors"
                           aria-label="Voeg toe"
                         >
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -845,89 +885,99 @@ export default function BookingForm({ initialItems = [] }: BookingFormProps) {
                 {watchedContactType === "bedrijf" && (
                   <>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label htmlFor="companyName" className="block text-sm font-medium text-gray-700 mb-1">
                         Bedrijfsnaam *
                       </label>
                       <input
                         type="text"
                         id="companyName"
                         {...register("companyName")}
+                        aria-invalid={errors.companyName ? true : undefined}
+                        aria-describedby={errors.companyName ? "companyName-error" : undefined}
                         className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
                           errors.companyName ? "border-red-500 ring-1 ring-red-500" : "border-gray-300"
                         }`}
                       />
                       {errors.companyName && (
-                        <p className="mt-1 text-sm text-red-600">{errors.companyName.message}</p>
+                        <p id="companyName-error" className="mt-1 text-sm text-red-600">{errors.companyName.message}</p>
                       )}
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label htmlFor="vatNumber" className="block text-sm font-medium text-gray-700 mb-1">
                         BTW-nummer *
                       </label>
                       <input
                         type="text"
                         id="vatNumber"
                         {...register("vatNumber")}
+                        aria-invalid={errors.vatNumber ? true : undefined}
+                        aria-describedby={errors.vatNumber ? "vatNumber-error" : undefined}
                         className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
                           errors.vatNumber ? "border-red-500 ring-1 ring-red-500" : "border-gray-300"
                         }`}
                         placeholder="Bijv. BE0123.456.789"
                       />
                       {errors.vatNumber && (
-                        <p className="mt-1 text-sm text-red-600">{errors.vatNumber.message}</p>
+                        <p id="vatNumber-error" className="mt-1 text-sm text-red-600">{errors.vatNumber.message}</p>
                       )}
                     </div>
                   </>
                 )}
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="contactName" className="block text-sm font-medium text-gray-700 mb-1">
                     {watchedContactType === "bedrijf" ? "Contactpersoon" : "Naam"} *
                   </label>
                   <input
                     type="text"
                     id="contactName"
                     {...register("contactName")}
+                    aria-invalid={errors.contactName ? true : undefined}
+                    aria-describedby={errors.contactName ? "contactName-error" : undefined}
                     className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
                       errors.contactName ? "border-red-500 ring-1 ring-red-500" : "border-gray-300"
                     }`}
                   />
                   {errors.contactName && (
-                    <p className="mt-1 text-sm text-red-600">{errors.contactName.message}</p>
+                    <p id="contactName-error" className="mt-1 text-sm text-red-600">{errors.contactName.message}</p>
                   )}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="contactEmail" className="block text-sm font-medium text-gray-700 mb-1">
                     E-mail *
                   </label>
                   <input
                     type="email"
                     id="contactEmail"
                     {...register("contactEmail")}
+                    aria-invalid={errors.contactEmail ? true : undefined}
+                    aria-describedby={errors.contactEmail ? "contactEmail-error" : undefined}
                     className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
                       errors.contactEmail ? "border-red-500 ring-1 ring-red-500" : "border-gray-300"
                     }`}
                   />
                   {errors.contactEmail && (
-                    <p className="mt-1 text-sm text-red-600">{errors.contactEmail.message}</p>
+                    <p id="contactEmail-error" className="mt-1 text-sm text-red-600">{errors.contactEmail.message}</p>
                   )}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="contactPhone" className="block text-sm font-medium text-gray-700 mb-1">
                     Telefoon *
                   </label>
                   <input
                     type="tel"
                     id="contactPhone"
                     {...register("contactPhone")}
+                    aria-invalid={errors.contactPhone ? true : undefined}
+                    aria-describedby={errors.contactPhone ? "contactPhone-error" : undefined}
                     className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
                       errors.contactPhone ? "border-red-500 ring-1 ring-red-500" : "border-gray-300"
                     }`}
                   />
                   {errors.contactPhone && (
-                    <p className="mt-1 text-sm text-red-600">{errors.contactPhone.message}</p>
+                    <p id="contactPhone-error" className="mt-1 text-sm text-red-600">{errors.contactPhone.message}</p>
                   )}
                 </div>
               </div>
@@ -1041,8 +1091,10 @@ export default function BookingForm({ initialItems = [] }: BookingFormProps) {
                 </div>
                 <div className="ml-auto pl-3">
                   <button
+                    type="button"
                     onClick={() => setSubmitError(null)}
-                    className="text-red-500 hover:text-red-700"
+                    className="min-w-11 min-h-11 inline-flex items-center justify-center text-red-500 hover:text-red-700"
+                    aria-label="Foutmelding sluiten"
                   >
                     <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

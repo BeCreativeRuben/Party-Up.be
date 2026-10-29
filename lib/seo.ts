@@ -12,7 +12,7 @@ export const SITE_ORIGIN = "https://party-up.be";
  * changed on each build and makes lastmod useless to Google.
  * Bump this when indexable copy actually changes.
  */
-export const CONTENT_LAST_MODIFIED = new Date("2026-10-22T00:00:00.000Z");
+export const CONTENT_LAST_MODIFIED = new Date("2026-10-29T00:00:00.000Z");
 
 export const HOME_TITLE = "Party-Up.be - No Nonsense Feestverhuur";
 export const HOME_DESCRIPTION =
@@ -55,22 +55,35 @@ function joinNames(names: string[]): string {
   return `${names.slice(0, -1).join(", ")} en ${names[names.length - 1]}`;
 }
 
+const DEFAULT_OG_IMAGE = {
+  url: "/og.jpg",
+  width: 1200,
+  height: 630,
+  alt: "Feesttenten van Party-Up.be",
+};
+
 /** Document title + matching Open Graph, with a self-referencing canonical path. */
 export function pageMetadata(
   title: string,
   description: string,
   path: string,
-  absolute = false
+  absolute = false,
+  image?: string
 ): Metadata {
   const canonical = path === "" ? "/" : path;
   const fullTitle = absolute ? title : `${title} | ${SITE_NAME}`;
   const desc = clipMeta(description);
+  const images = image ? [{ url: image, alt: title }] : [DEFAULT_OG_IMAGE];
   // Absolute titles so a parent layout that sets its own title cannot
   // drop the root "%s | Party-Up.be" template on nested routes.
+  // Single locale: self-referencing nl-BE hreflang, no extra languages.
   return {
     title: { absolute: fullTitle },
     description: desc,
-    alternates: { canonical },
+    alternates: {
+      canonical,
+      languages: { "nl-BE": canonical },
+    },
     openGraph: {
       title: fullTitle,
       description: desc,
@@ -78,6 +91,13 @@ export function pageMetadata(
       siteName: SITE_NAME,
       locale: "nl_BE",
       type: "website",
+      images,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: fullTitle,
+      description: desc,
+      images: images.map((item) => item.url),
     },
   };
 }
@@ -148,10 +168,14 @@ export function productMetaDescription(product: Product): string {
 
 export function productPageMetadata(product: Product): Metadata {
   const label = CATEGORY_LABEL[product.category];
+  const image =
+    product.image && !/\.(gif|svg)$/i.test(product.image) ? encodeURI(product.image) : undefined;
   return pageMetadata(
     `${product.name} huren (${label})`,
     productMetaDescription(product),
-    `/catalog/product/${product.id}`
+    `/catalog/product/${product.id}`,
+    false,
+    image
   );
 }
 

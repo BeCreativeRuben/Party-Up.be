@@ -127,7 +127,7 @@ export default function ProductCard({ product, onAddToQuote, index = 0, priority
               src={PLACEHOLDER_IMAGE}
               alt={product.name}
               fill
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+              sizes="(max-width: 640px) 92vw, (max-width: 1024px) 46vw, 280px"
               className="object-cover group-hover:scale-105 transition-transform duration-300"
             />
           ) : isGif ? (
@@ -143,7 +143,7 @@ export default function ProductCard({ product, onAddToQuote, index = 0, priority
               src={displayImage}
               alt={product.name}
               fill
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+              sizes="(max-width: 640px) 92vw, (max-width: 1024px) 46vw, 280px"
               placeholder="blur"
               blurDataURL={IMAGE_PLACEHOLDER_BLUR}
               className="object-cover group-hover:scale-105 transition-transform duration-300"
@@ -186,7 +186,7 @@ export default function ProductCard({ product, onAddToQuote, index = 0, priority
           <div className="flex items-center gap-2">
             <button
               onClick={handleDecreaseQuantity}
-              className="flex items-center justify-center w-10 h-10 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors active:scale-95"
+              className="flex items-center justify-center w-11 h-11 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors active:scale-95"
               aria-label="Verlaag aantal"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -201,6 +201,7 @@ export default function ProductCard({ product, onAddToQuote, index = 0, priority
                 onBlur={handleInputBlur}
                 onKeyDown={handleInputKeyDown}
                 className="flex-1 px-3 py-2 rounded-lg border-2 border-green-600 bg-white text-gray-900 font-medium text-center focus:outline-none focus:ring-2 focus:ring-green-500"
+                aria-label={`Aantal ${product.name}`}
                 autoFocus
                 maxLength={3}
                 placeholder="Aantal"
@@ -246,7 +247,7 @@ export default function ProductCard({ product, onAddToQuote, index = 0, priority
             <button
               onClick={handleIncreaseQuantity}
               disabled={currentQuantity >= availabilityCount}
-              className={`flex items-center justify-center w-10 h-10 rounded-lg transition-colors active:scale-95 ${
+              className={`flex items-center justify-center w-11 h-11 rounded-lg transition-colors active:scale-95 ${
                 currentQuantity >= availabilityCount
                   ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
                   : 'bg-gray-200 text-gray-700 hover:bg-gray-300'

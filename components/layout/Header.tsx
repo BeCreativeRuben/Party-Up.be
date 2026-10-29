@@ -74,12 +74,12 @@ export default function Header() {
             </div>
             {/* Center: nav links */}
             <div className="hidden md:flex flex-1 justify-center min-w-0">
-              <Navigation scrolled={scrolled} showCta={false} />
+              <Navigation scrolled={scrolled} showCta={false} variant="desktop" />
             </div>
             {/* Right: mobile menu, CTA + cart */}
             <div className="flex flex-1 justify-end items-center gap-2 min-w-0">
               <div className="md:hidden">
-                <Navigation scrolled={scrolled} showCta={true} />
+                <Navigation scrolled={scrolled} showCta={true} variant="mobile" />
               </div>
               <Link
                 href="/booking"
@@ -93,12 +93,12 @@ export default function Header() {
               </Link>
               <Link
                 href="/cart"
-                className={`relative p-2 transition-colors inline-block ${
+                className={`relative min-w-11 min-h-11 inline-flex items-center justify-center transition-colors ${
                   scrolled
                     ? "text-gray-700 hover:text-blue-600"
                     : "text-white hover:text-blue-200"
                 } ${playCartPop ? "animate-cart-add-pop" : ""}`}
-                aria-label="Shopping cart"
+                aria-label="Winkelwagen"
               >
                 <svg
                   className="w-6 h-6"
