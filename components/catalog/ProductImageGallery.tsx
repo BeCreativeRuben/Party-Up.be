@@ -11,6 +11,8 @@ interface ProductImageGalleryProps {
   imageClassName?: string;
   /** Per-image rotation; overrides imageClassName for each image when provided */
   imageClassNames?: (string | undefined)[];
+  /** Optional mp4 played over the first still. The still stays in the HTML for LCP. */
+  video?: string;
 }
 
 function getImageTransformStyle(imageClassName?: string): React.CSSProperties | undefined {
@@ -20,7 +22,7 @@ function getImageTransformStyle(imageClassName?: string): React.CSSProperties | 
   return undefined;
 }
 
-export default function ProductImageGallery({ images, productName, imageClassName, imageClassNames }: ProductImageGalleryProps) {
+export default function ProductImageGallery({ images, productName, imageClassName, imageClassNames, video }: ProductImageGalleryProps) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -93,24 +95,41 @@ export default function ProductImageGallery({ images, productName, imageClassNam
                   {isGif ? (
                     <LazyGif
                       src={src}
-                      alt={`${productName} - ${i + 1}`}
+                      alt={`${productName} - foto ${i + 1}`}
                       className="object-contain w-full h-full"
                       style={getStyleForIndex(i)}
                     />
                   ) : (
-                    <Image
-                      src={src}
-                      alt={`${productName} - ${i + 1}`}
-                      fill
-                      className="object-contain"
-                      style={getStyleForIndex(i)}
-                      sizes="(max-width: 768px) 100vw, 50vw"
-                      priority={i === 0}
-                      loading={i === 0 ? undefined : "lazy"}
-                      placeholder="blur"
-                      blurDataURL={IMAGE_PLACEHOLDER_BLUR}
-                      quality={i === 0 ? 80 : 75}
-                    />
+                    <>
+                      <Image
+                        src={src}
+                        alt={`${productName} - foto ${i + 1}`}
+                        fill
+                        className="object-contain"
+                        style={getStyleForIndex(i)}
+                        sizes="(max-width: 768px) 100vw, 50vw"
+                        priority={i === 0}
+                        loading={i === 0 ? undefined : "lazy"}
+                        placeholder="blur"
+                        blurDataURL={IMAGE_PLACEHOLDER_BLUR}
+                        quality={i === 0 ? 80 : 75}
+                      />
+                      {i === 0 && video && (
+                        <video
+                          className="absolute inset-0 w-full h-full object-contain"
+                          style={getStyleForIndex(i)}
+                          muted
+                          loop
+                          playsInline
+                          autoPlay
+                          preload="none"
+                          poster={src}
+                          aria-hidden
+                        >
+                          <source src={video} type="video/mp4" />
+                        </video>
+                      )}
+                    </>
                   )}
                 </div>
               );
@@ -121,15 +140,20 @@ export default function ProductImageGallery({ images, productName, imageClassNam
               {images.map((_, i) => (
                 <button
                   key={i}
+                  type="button"
                   onClick={(e) => {
                     e.stopPropagation();
                     scrollToIndex(i);
                   }}
-                  className={`w-2.5 h-2.5 rounded-full transition-colors ${
-                    i === selectedIndex ? "bg-white shadow" : "bg-white/50 hover:bg-white/70"
-                  }`}
-                  aria-label={`View image ${i + 1}`}
-                />
+                  className="min-w-6 min-h-6 flex items-center justify-center"
+                  aria-label={`Foto ${i + 1}`}
+                >
+                  <span
+                    className={`w-2.5 h-2.5 rounded-full transition-colors ${
+                      i === selectedIndex ? "bg-white shadow" : "bg-white/50"
+                    }`}
+                  />
+                </button>
               ))}
             </div>
           )}
@@ -171,7 +195,7 @@ export default function ProductImageGallery({ images, productName, imageClassNam
           <button
             onClick={() => setLightboxOpen(false)}
             className="absolute top-4 right-4 text-white/80 hover:text-white p-2 z-10"
-            aria-label="Close"
+            aria-label="Sluiten"
           >
             <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -198,7 +222,7 @@ export default function ProductImageGallery({ images, productName, imageClassNam
                     setSelectedIndex((i) => (i === 0 ? images.length - 1 : i - 1));
                   }}
                   className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 md:-translate-x-12 text-white/80 hover:text-white p-2 bg-black/50 rounded-full"
-                  aria-label="Previous image"
+                  aria-label="Vorige foto"
                 >
                   <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -210,7 +234,7 @@ export default function ProductImageGallery({ images, productName, imageClassNam
                     setSelectedIndex((i) => (i === images.length - 1 ? 0 : i + 1));
                   }}
                   className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 md:translate-x-12 text-white/80 hover:text-white p-2 bg-black/50 rounded-full"
-                  aria-label="Next image"
+                  aria-label="Volgende foto"
                 >
                   <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />

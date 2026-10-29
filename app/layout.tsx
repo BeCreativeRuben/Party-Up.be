@@ -6,11 +6,16 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { CartProvider } from "@/contexts/CartContext";
 import ErrorBoundaryWrapper from "@/components/ErrorBoundaryWrapper";
+import CookieConsent from "@/components/consent/CookieConsent";
+import JsonLd from "@/components/seo/JsonLd";
+import { localBusinessJsonLd } from "@/lib/structured-data";
 import { HOME_DESCRIPTION, HOME_TITLE, SITE_NAME } from "@/lib/seo";
 
 const inter = Inter({
   subsets: ["latin"],
   display: "swap",
+  preload: true,
+  adjustFontFallback: true,
 });
 
 export const metadata: Metadata = {
@@ -27,14 +32,19 @@ export const metadata: Metadata = {
     siteName: SITE_NAME,
     locale: "nl_BE",
     type: "website",
+    images: [{ url: "/og.jpg", width: 1200, height: 630, alt: "Feesttenten van Party-Up.be" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: HOME_TITLE,
+    description: HOME_DESCRIPTION,
+    images: ["/og.jpg"],
   },
   icons: {
     icon: "/favicon.png",
     apple: "/favicon.png",
   },
 };
-
-const GA_ID = process.env.NEXT_PUBLIC_GA_ID || 'G-NESVHS9C11';
 
 export default function RootLayout({
   children,
@@ -43,28 +53,38 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="nl">
-      <head>
-        <link rel="preload" href="/hero-video.mp4" as="video" type="video/mp4" />
-      </head>
       <body className={inter.className}>
-        {/* Google tag (gtag.js) */}
-        <Script
-          src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
-          strategy="afterInteractive"
-        />
-        <Script id="google-analytics" strategy="afterInteractive">
+        <Script id="consent-default" strategy="beforeInteractive">
           {`
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', '${GA_ID}');
+            gtag('consent', 'default', {
+              ad_storage: 'denied',
+              ad_user_data: 'denied',
+              ad_personalization: 'denied',
+              analytics_storage: 'denied',
+              functionality_storage: 'denied',
+              personalization_storage: 'denied',
+              security_storage: 'granted',
+              wait_for_update: 500
+            });
+            gtag('set', 'ads_data_redaction', true);
+            gtag('set', 'url_passthrough', true);
           `}
         </Script>
+        <a
+          href="#inhoud"
+          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:bg-white focus:text-blue-700 focus:px-4 focus:py-2 focus:rounded-lg focus:shadow-lg"
+        >
+          Ga naar inhoud
+        </a>
+        <JsonLd data={localBusinessJsonLd()} />
         <ErrorBoundaryWrapper>
           <CartProvider>
             <Header />
-            <main className="min-h-screen pt-16">{children}</main>
+            <main id="inhoud" className="min-h-screen pt-16">{children}</main>
             <Footer />
+            <CookieConsent />
           </CartProvider>
         </ErrorBoundaryWrapper>
       </body>

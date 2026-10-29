@@ -81,8 +81,10 @@ export default function PrivacyPage() {
         <section>
           <h2 className="text-2xl font-semibold text-gray-900 mb-4">7. Cookies</h2>
           <p className="text-gray-700 mb-4">
-            Our website may use cookies to improve user experience and analyze website traffic. You
-            can control cookie settings through your browser preferences.
+            We use a cookie only for visit statistics (Google Analytics). It stays off until you
+            choose Accepteren in the cookie bar. Weigeren keeps analytics off. We do not use
+            advertising cookies. You can change your choice by clearing this site&apos;s data in
+            your browser, and you can also block cookies there.
           </p>
         </section>
 
@@ -110,7 +112,7 @@ export default function PrivacyPage() {
       </div>
 
       <div className="mt-8 text-sm text-gray-600">
-        <p>Last updated: {new Date().toLocaleDateString()}</p>
+        <p>Last updated: 29 October 2026</p>
         <p>Power Up BV - Party-Up.be</p>
       </div>
     </div>

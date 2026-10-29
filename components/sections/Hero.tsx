@@ -1,29 +1,21 @@
 import Link from "next/link";
+import HeroVideo from "@/components/sections/HeroVideo";
 
 export default function Hero() {
   return (
     <section className="relative min-h-screen -mt-16 flex items-center justify-center overflow-hidden">
+      <link rel="preload" as="image" href="/hero-poster-640.webp" media="(max-width: 767px)" />
+      <link rel="preload" as="image" href="/hero-poster-1280.webp" media="(min-width: 768px)" />
       {/* Background Video with Overlay */}
       <div className="absolute inset-0 z-0">
-        {/* Op desktop wordt groter getoond → ziet er zachter uit. Voor scherpe weergave: voeg public/hero-video-desktop.mp4 toe (bv. 1920×1080). Anders wordt hero-video.mp4 gebruikt. */}
-        <video
-          autoPlay
-          loop
-          muted
-          playsInline
-          preload="auto"
-          className="absolute inset-0 w-full h-full object-cover hero-video-quality"
-        >
-          <source src="/hero-video-desktop.mp4" type="video/mp4" media="(min-width: 768px)" />
-          <source src="/hero-video.mp4" type="video/mp4" />
-        </video>
+        <HeroVideo />
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/50 z-10" />
       </div>
 
       {/* Content */}
       <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-32 text-center">
         <div>
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold mb-6 text-white drop-shadow-2xl animate-hero-content">
+          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold mb-6 text-white drop-shadow-2xl">
             <span className="bg-gradient-to-r from-white via-yellow-100 to-white bg-clip-text text-transparent animate-gradient">
               No Nonsense Feestverhuur
             </span>

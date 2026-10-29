@@ -1,17 +1,13 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import dynamic from "next/dynamic";
 import Link from "next/link";
 import { getProductById, getCategoryDisplayName, getProductsByCategory, products } from "@/lib/data/products";
 import { formatPrice, calculateVAT, calculatePriceInclVAT } from "@/lib/utils";
 import { categoryLabel, productPageMetadata, productRentalParagraph } from "@/lib/seo";
 import ProductDetailActions from "@/components/catalog/ProductDetailActions";
-
-const ProductImageGallery = dynamic(() => import("@/components/catalog/ProductImageGallery"), {
-  loading: () => (
-    <div className="aspect-square bg-gray-200 rounded-lg animate-pulse" />
-  ),
-});
+import ProductImageGallery from "@/components/catalog/ProductImageGallery";
+import JsonLd from "@/components/seo/JsonLd";
+import { productJsonLd } from "@/lib/structured-data";
 
 interface ProductPageProps {
   params: Promise<{ productId: string }>;
@@ -45,6 +41,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <JsonLd data={productJsonLd(product)} />
       <Link
         href="/catalog"
         className="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium mb-8 transition-colors group"
@@ -57,17 +54,17 @@ export default async function ProductPage({ params }: ProductPageProps) {
         >
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
         </svg>
-        Back to Catalog
+        Terug naar catalogus
       </Link>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
         {/* Image gallery */}
         <div className="lg:sticky lg:top-28">
           {images.length > 0 ? (
-            <ProductImageGallery images={images} productName={product.name} imageClassName={product.imageClassName} imageClassNames={product.imageClassNames} />
+            <ProductImageGallery images={images} productName={product.name} imageClassName={product.imageClassName} imageClassNames={product.imageClassNames} video={product.video} />
           ) : (
             <div className="aspect-square bg-gray-200 rounded-lg flex items-center justify-center">
-              <span className="text-gray-400">No image</span>
+              <span className="text-gray-400">Geen foto</span>
             </div>
           )}
         </div>

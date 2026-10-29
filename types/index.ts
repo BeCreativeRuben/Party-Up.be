@@ -6,6 +6,8 @@ export type Product = {
   price: number;
   image?: string;
   images?: string[];
+  /** Optional looping clip shown over the still on the product page */
+  video?: string;
   /** Optional Tailwind class for the product image (e.g. -rotate-90) */
   imageClassName?: string;
   /** Optional per-image rotation: one entry per images[] (e.g. ["-rotate-90"] = first only) */

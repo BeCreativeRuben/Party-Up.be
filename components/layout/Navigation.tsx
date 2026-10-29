@@ -9,11 +9,14 @@ interface NavigationProps {
   scrolled?: boolean;
   /** When false, desktop nav shows only links (CTA is rendered by Header). Default true. */
   showCta?: boolean;
+  /** Desktop renders the link row. Mobile renders the menu button and panel. */
+  variant?: "desktop" | "mobile";
 }
 
-export default function Navigation({ scrolled = false, showCta = true }: NavigationProps) {
+export default function Navigation({ scrolled = false, showCta = true, variant = "desktop" }: NavigationProps) {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   const navLinks = [
     { href: "/", label: "Home" },
@@ -28,6 +31,10 @@ export default function Navigation({ scrolled = false, showCta = true }: Navigat
     }
     return pathname?.startsWith(href);
   };
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Lock body scroll when mobile menu is open
   useEffect(() => {
@@ -46,12 +53,22 @@ export default function Navigation({ scrolled = false, showCta = true }: Navigat
     setIsOpen(false);
   }, [pathname]);
 
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setIsOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [isOpen]);
+
   const mobileMenu = (
     <div
       className={`fixed inset-0 z-[9999] md:hidden transition-opacity duration-300 ease-out ${
         isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
       }`}
       aria-hidden={!isOpen}
+      inert={!isOpen ? true : undefined}
     >
       {/* Backdrop with blur */}
       <div
@@ -116,8 +133,8 @@ export default function Navigation({ scrolled = false, showCta = true }: Navigat
   );
 
   return (
-    <nav className="relative">
-      {/* Desktop Navigation */}
+          <nav className="relative" aria-label="Hoofdnavigatie">
+      {variant === "desktop" && (
       <div className="hidden md:flex space-x-6">
         {navLinks.map((link) => (
           <Link
@@ -149,10 +166,12 @@ export default function Navigation({ scrolled = false, showCta = true }: Navigat
           </Link>
         )}
       </div>
+      )}
 
-      {/* Mobile: Hamburger button */}
+      {variant === "mobile" && (
       <div className="md:hidden">
         <button
+          type="button"
           onClick={() => setIsOpen(!isOpen)}
           className={`relative p-2.5 rounded-xl transition-all duration-300 ${
             scrolled
@@ -189,9 +208,9 @@ export default function Navigation({ scrolled = false, showCta = true }: Navigat
           </span>
         </button>
       </div>
+      )}
 
-      {/* Mobile menu overlay + panel - rendered via portal to body */}
-      {typeof window !== "undefined" && createPortal(mobileMenu, document.body)}
+      {variant === "mobile" && mounted && typeof document !== "undefined" && createPortal(mobileMenu, document.body)}
     </nav>
   );
 }

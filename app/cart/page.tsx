@@ -293,7 +293,7 @@ export default function CartPage() {
                     href={`/catalog/product/${item.productId}`}
                     className="w-full sm:w-32 h-32 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg flex items-center justify-center flex-shrink-0 block text-gray-400 hover:text-gray-600 transition-colors focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                   >
-                    <span className="text-sm">No image</span>
+                    <span className="text-sm">Geen foto</span>
                   </Link>
                 )}
 
